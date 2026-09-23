@@ -11,7 +11,6 @@ import dev.ryanhcode.sable.companion.math.Pose3dc;
 import dev.ryanhcode.sable.mixinhelpers.block_outline_render.SubLevelCamera;
 import dev.ryanhcode.sable.sublevel.ClientSubLevel;
 import net.minecraft.client.Camera;
-import dev.ryanhcode.sable.backport.client.DeltaTracker;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -45,17 +44,17 @@ public abstract class LevelRendererMixin {
     @Nullable
     private ClientLevel level;
 
-    @WrapOperation(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/neoforged/neoforge/client/ClientHooks;onDrawHighlight(Lnet/minecraft/client/renderer/LevelRenderer;Lnet/minecraft/client/Camera;Lnet/minecraft/world/phys/HitResult;Lnet/minecraft/client/DeltaTracker;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;)Z"))
-    private boolean sable$preRenderHitOutline(final LevelRenderer context, final Camera camera, final HitResult target, final DeltaTracker deltaTracker, final PoseStack poseStack, final MultiBufferSource bufferSource, final Operation<Boolean> original, @Share("drawn") final LocalBooleanRef drawnRef) {
+    @WrapOperation(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraftforge/client/ForgeHooksClient;onDrawHighlight(Lnet/minecraft/client/renderer/LevelRenderer;Lnet/minecraft/client/Camera;Lnet/minecraft/world/phys/HitResult;FLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;)Z", remap = false))
+    private boolean sable$preRenderHitOutline(final LevelRenderer context, final Camera camera, final HitResult target, final float partialTick, final PoseStack poseStack, final MultiBufferSource bufferSource, final Operation<Boolean> original, @Share("drawn") final LocalBooleanRef drawnRef) {
         if (!(target instanceof final BlockHitResult blockTarget)) {
-            return original.call(context, camera, target, deltaTracker, poseStack, bufferSource);
+            return original.call(context, camera, target, partialTick, poseStack, bufferSource);
         }
 
         final BlockPos blockPos = blockTarget.getBlockPos();
         final ClientSubLevel subLevel = (ClientSubLevel) Sable.HELPER.getContaining(this.level, blockPos);
 
         if (subLevel == null) {
-            return original.call(context, camera, target, deltaTracker, poseStack, bufferSource);
+            return original.call(context, camera, target, partialTick, poseStack, bufferSource);
         }
 
         poseStack.pushPose();
@@ -86,11 +85,11 @@ public abstract class LevelRendererMixin {
         poseStack.scale((float) scale.x(), (float) scale.y(), (float) scale.z());
 
         drawnRef.set(true);
-        return original.call(context, this.sable$sublevelCamera, target, deltaTracker, poseStack, bufferSource);
+        return original.call(context, this.sable$sublevelCamera, target, partialTick, poseStack, bufferSource);
     }
 
     @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/debug/DebugRenderer;render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;DDD)V"))
-    public void sable$poseRenderHitOutline(final CallbackInfo ci, @Local final PoseStack poseStack, @Share("drawn") final LocalBooleanRef drawnRef) {
+    public void sable$poseRenderHitOutline(final CallbackInfo ci, @Local(argsOnly = true) final PoseStack poseStack, @Share("drawn") final LocalBooleanRef drawnRef) {
         if (drawnRef.get()) {
             poseStack.popPose();
             this.sable$sublevelCamera.clear();

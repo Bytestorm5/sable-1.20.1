@@ -4,11 +4,9 @@ import dev.ryanhcode.sable.Sable;
 import dev.ryanhcode.sable.companion.math.BoundingBox3d;
 import dev.ryanhcode.sable.sublevel.SubLevel;
 import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
-import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
+import net.minecraftforge.common.extensions.IForgeBlockEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -17,17 +15,19 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public class LevelRendererMixin {
 
     /**
+     * NeoForge 1.21 checks block entity visibility through {@code ClientHooks#isBlockEntityRendererVisible}; Forge 1.20.1
+     * checks {@code frustum.isVisible(blockEntity.getRenderBoundingBox())} inline, so the bounds are transformed instead.
+     *
      * @author RyanH
      * @reason Take sub-levels into account for visibility check
      */
-    @SuppressWarnings("unchecked")
-    @Redirect(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/neoforged/neoforge/client/ClientHooks;isBlockEntityRendererVisible(Lnet/minecraft/client/renderer/blockentity/BlockEntityRenderDispatcher;Lnet/minecraft/world/level/block/entity/BlockEntity;Lnet/minecraft/client/renderer/culling/Frustum;)Z"), require = 0)
-    private static <T extends BlockEntity> boolean isBlockEntityRendererVisible(final BlockEntityRenderDispatcher dispatcher, final BlockEntity blockEntity, final Frustum frustum) {
-        final BlockEntityRenderer<T> renderer = (BlockEntityRenderer<T>) dispatcher.getRenderer(blockEntity);
+    @Redirect(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/entity/BlockEntity;getRenderBoundingBox()Lnet/minecraft/world/phys/AABB;", remap = false), require = 0)
+    private AABB sable$getRenderBoundingBox(final BlockEntity blockEntity) {
+        AABB renderBounds = blockEntity.getRenderBoundingBox();
 
-        if (renderer == null) return false;
-
-        AABB renderBounds = renderer.getRenderBoundingBox((T) blockEntity);
+        if (renderBounds.equals(IForgeBlockEntity.INFINITE_EXTENT_AABB)) {
+            return renderBounds;
+        }
 
         final SubLevel subLevel = Sable.HELPER.getContainingClient(renderBounds.getCenter());
 
@@ -36,6 +36,6 @@ public class LevelRendererMixin {
             renderBounds = bb.transform(subLevel.logicalPose(), bb).toMojang();
         }
 
-        return frustum.isVisible(renderBounds);
+        return renderBounds;
     }
 }
