@@ -63,6 +63,7 @@ dependencies {
     }
     compileOnly "io.github.ocelot:glsl-processor:0.2.3"
     compileOnly "gg.moonflower:molang-compiler:3.1.1.19"
+    compileOnly "io.github.spair:imgui-java-binding:1.92.0"
     compileOnly "org.ow2.asm:asm-tree:9.5"
 
     // ForgeConfigSpec for common code (Forge provides it at runtime)

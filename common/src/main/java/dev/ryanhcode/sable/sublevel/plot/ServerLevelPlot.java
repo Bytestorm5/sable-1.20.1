@@ -543,7 +543,7 @@ public class ServerLevelPlot extends LevelPlot {
                     chunk.setBlockEntityNbt(blockEntityTag);
                 } else {
                     final BlockPos blockPos = BlockEntity.getPosFromTag(blockEntityTag);
-                    final BlockEntity blockEntity = BlockEntity.loadStatic(blockPos, chunk.getBlockState(blockPos), blockEntityTag, level.registryAccess());
+                    final BlockEntity blockEntity = BlockEntity.loadStatic(blockPos, chunk.getBlockState(blockPos), blockEntityTag);
                     if (blockEntity != null) {
                         chunk.setBlockEntity(blockEntity);
                     }

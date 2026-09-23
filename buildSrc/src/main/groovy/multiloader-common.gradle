@@ -131,7 +131,8 @@ pluginManager.withPlugin('net.neoforged.moddev.legacyforge') {
 
 tasks.withType(JavaCompile).configureEach {
     options.release = java_version as int
-    options.compilerArgs.addAll(['-Xmaxerrs', '100000'])
+    // Report every error in one pass while the port is in progress
+    options.compilerArgs.addAll(['-Xmaxerrs', '100000', '-XDshould-stop.ifError=FLOW'])
 }
 
 

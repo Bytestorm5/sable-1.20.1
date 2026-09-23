@@ -29,7 +29,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.FullChunkStatus;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Clearable;
-import net.minecraft.world.RandomizableContainer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.decoration.HangingEntity;
 import net.minecraft.world.level.ChunkPos;
@@ -39,6 +38,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BellAttachType;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -382,7 +382,7 @@ public class SubLevelAssemblyHelper {
                 CompoundTag tag = null;
 
                 if (blockEntity != null) {
-                    tag = blockEntity.saveWithFullMetadata(level.registryAccess());
+                    tag = blockEntity.saveWithFullMetadata();
 
                     tag.putInt("x", newPos.getX());
                     tag.putInt("y", newPos.getY());
@@ -398,8 +398,8 @@ public class SubLevelAssemblyHelper {
                     //
                     // A real solution is to implement Clearable on all block entities that can be cleared in the
                     // same way as Vanilla MC. See SetBlockCommand
-                    if (blockEntity instanceof final RandomizableContainer container) {
-                        container.setLootTable(null);
+                    if (blockEntity instanceof final RandomizableContainerBlockEntity container) {
+                        container.setLootTable(null, 0L);
                     }
                     Clearable.tryClear(blockEntity);
                 }
@@ -412,7 +412,7 @@ public class SubLevelAssemblyHelper {
                 final BlockEntity newBlockEntity = resultingLevel.getBlockEntity(newPos);
 
                 if (newBlockEntity != null && tag != null) {
-                    newBlockEntity.loadWithComponents(tag, level.registryAccess());
+                    newBlockEntity.load(tag);
                 }
 
                 if (state.getBlock() instanceof final BlockSubLevelAssemblyListener listener) {
