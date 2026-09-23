@@ -15,7 +15,7 @@ public class ChunkBorderRendererMixin {
 
     @Inject(at = @At("HEAD"), method = "render", cancellable = true)
     public void render(final PoseStack poseStack, final MultiBufferSource bufferSource, final double camX, final double camY, final double camZ, final CallbackInfo ci) {
-        if (SableClientConfig.DEBUG_DRAW_LOADED_CHUNKS.getAsBoolean()) {
+        if (SableClientConfig.DEBUG_DRAW_LOADED_CHUNKS.get()) {
             ci.cancel();
             SableChunkDebugRenderer.render(poseStack, bufferSource, camX, camY, camZ);
         }

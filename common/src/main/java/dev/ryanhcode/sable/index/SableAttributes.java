@@ -1,7 +1,6 @@
 package dev.ryanhcode.sable.index;
 
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.core.Holder;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -9,6 +8,7 @@ import net.minecraft.world.entity.ai.attributes.*;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 public class SableAttributes {
 
@@ -21,24 +21,24 @@ public class SableAttributes {
     /**
      * Assigned by loader-specific code
      */
-    public static Holder<Attribute> PUNCH_STRENGTH;
-    public static Holder<Attribute> PUNCH_COOLDOWN;
+    public static Supplier<Attribute> PUNCH_STRENGTH;
+    public static Supplier<Attribute> PUNCH_COOLDOWN;
 
     public static void register() {
 
         final AttributeSupplier supplier = DefaultAttributes.getSupplier(EntityType.PLAYER);
 
-        final Map<Holder<Attribute>, AttributeInstance> additionalInstances = AttributeSupplier.builder().add(PUNCH_STRENGTH).add(PUNCH_COOLDOWN).build().instances;
+        final Map<Attribute, AttributeInstance> additionalInstances = AttributeSupplier.builder().add(PUNCH_STRENGTH.get()).add(PUNCH_COOLDOWN.get()).build().instances;
 
         // java was tweaking with generics
         //noinspection unchecked,rawtypes
-        supplier.instances = (Map<Holder<Attribute>, AttributeInstance>) (ImmutableMap) ImmutableMap.builder()
+        supplier.instances = (Map<Attribute, AttributeInstance>) (ImmutableMap) ImmutableMap.builder()
                 .putAll(supplier.instances)
                 .putAll(additionalInstances)
                 .buildKeepingLast();
     }
 
     public static int getPushCooldownTicks(final LivingEntity entity) {
-        return Mth.ceil(Objects.requireNonNull(entity.getAttribute(PUNCH_COOLDOWN)).getValue() * 20);
+        return Mth.ceil(Objects.requireNonNull(entity.getAttribute(PUNCH_COOLDOWN.get())).getValue() * 20);
     }
 }

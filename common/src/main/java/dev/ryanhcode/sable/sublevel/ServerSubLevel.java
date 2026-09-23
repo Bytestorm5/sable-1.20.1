@@ -225,13 +225,13 @@ public class ServerSubLevel extends SubLevel implements PhysicsPipelineBody {
 
         final BoundingBox3dc bounds = this.boundingBox();
 
-        if (!this.isRemoved() && (bounds.minY() < SableConfig.SUB_LEVEL_REMOVE_MIN.getAsDouble() || bounds.maxY() > SableConfig.SUB_LEVEL_REMOVE_MAX.getAsDouble())) {
+        if (!this.isRemoved() && (bounds.minY() < SableConfig.SUB_LEVEL_REMOVE_MIN.get() || bounds.maxY() > SableConfig.SUB_LEVEL_REMOVE_MAX.get())) {
             Sable.LOGGER.info("Sub-level {} has an extreme Y coordinate range, removing", this);
             this.markRemoved();
             return;
         }
 
-        if (SableConfig.SUB_LEVEL_SPLITTING.getAsBoolean()) {
+        if (SableConfig.SUB_LEVEL_SPLITTING.get()) {
             this.heatMapManager.tick();
         }
     }

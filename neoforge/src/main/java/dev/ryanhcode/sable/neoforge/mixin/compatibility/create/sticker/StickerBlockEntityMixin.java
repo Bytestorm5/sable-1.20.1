@@ -1,5 +1,6 @@
 package dev.ryanhcode.sable.neoforge.mixin.compatibility.create.sticker;
 
+import dev.ryanhcode.sable.util.SableClipContexts;
 import com.simibubi.create.content.contraptions.chassis.StickerBlock;
 import com.simibubi.create.content.contraptions.chassis.StickerBlockEntity;
 import com.simibubi.create.content.contraptions.glue.SuperGlueEntity;
@@ -162,7 +163,7 @@ public abstract class StickerBlockEntityMixin extends SmartBlockEntity implement
         final Vec3 start = JOMLConversion.toMojang(rayStartPosition);
         final Vec3 end = start.add(dx * DISTANCE_TOLERANCE, dy * DISTANCE_TOLERANCE, dz * DISTANCE_TOLERANCE);
 
-        final BlockHitResult clip = this.level.clip(new ClipContext(start, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, CollisionContext.empty()));
+        final BlockHitResult clip = this.level.clip(SableClipContexts.create(start, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, CollisionContext.empty()));
         if (clip.getType() != HitResult.Type.MISS && SuperGlueEntity.isValidFace(this.level, clip.getBlockPos(), direction.getOpposite())) {
             final Vec3 hitLocation = clip.getLocation();
             final BlockPos otherPos = clip.getBlockPos();

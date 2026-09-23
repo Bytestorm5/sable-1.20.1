@@ -86,7 +86,7 @@ public class PhysicsChunkTicketManager {
 
         final LongOpenHashSet unloadedChunks = new LongOpenHashSet();
 
-        final boolean cannotUnloadPlayerInhabited = SableConfig.SUB_LEVELS_WITH_PLAYERS_CANNOT_UNLOAD.getAsBoolean();
+        final boolean cannotUnloadPlayerInhabited = SableConfig.SUB_LEVELS_WITH_PLAYERS_CANNOT_UNLOAD.get();
 
         final BoundingBox3d b = new BoundingBox3d();
         final BoundingBox3d b2 = new BoundingBox3d();

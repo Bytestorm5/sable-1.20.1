@@ -70,4 +70,6 @@ dependencies {
     compileOnly("fuzs.forgeconfigapiport:forgeconfigapiport-common:${forgeconfigapiport_version}") {
         transitive = false
     }
+    compileOnly "com.electronwill.night-config:core:3.6.4"
+    compileOnly "com.electronwill.night-config:toml:3.6.4"
 }

@@ -1,6 +1,7 @@
 package dev.ryanhcode.sable.mixinterface.clip_overwrite;
 
 import dev.ryanhcode.sable.sublevel.SubLevel;
+import net.minecraft.world.phys.shapes.CollisionContext;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
@@ -21,4 +22,6 @@ public interface ClipContextExtension {
     void sable$setDoNotProject(boolean doNotProject);
 
     boolean sable$doNotProject();
+
+    void sable$setCollisionContext(CollisionContext collisionContext);
 }

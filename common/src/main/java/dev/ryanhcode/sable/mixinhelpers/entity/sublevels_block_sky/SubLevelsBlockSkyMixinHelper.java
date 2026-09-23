@@ -1,5 +1,6 @@
 package dev.ryanhcode.sable.mixinhelpers.entity.sublevels_block_sky;
 
+import dev.ryanhcode.sable.util.SableClipContexts;
 import dev.ryanhcode.sable.mixinterface.clip_overwrite.ClipContextExtension;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ClipContext;
@@ -16,7 +17,7 @@ public class SubLevelsBlockSkyMixinHelper {
     public static boolean checkSkyWithSublevels(final Level level, final BlockPos pos) {
         final Vec3 start = Vec3.atBottomCenterOf(pos);
 
-        final ClipContext context = new ClipContext(
+        final ClipContext context = SableClipContexts.create(
                 start,
                 new Vec3(start.x, level.getMaxBuildHeight(), start.z),
                 ClipContext.Block.COLLIDER,

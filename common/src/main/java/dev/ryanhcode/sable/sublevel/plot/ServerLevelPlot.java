@@ -359,7 +359,7 @@ public class ServerLevelPlot extends LevelPlot {
                 }
 
                 final CompoundTag sectionTag = new CompoundTag();
-                sectionTag.put("block_states", BLOCK_STATE_CODEC.encodeStart(NbtOps.INSTANCE, section.getStates()).getOrThrow());
+                sectionTag.put("block_states", BLOCK_STATE_CODEC.encodeStart(NbtOps.INSTANCE, section.getStates()).getOrThrow(false, error -> { }));
 
                 final SectionPos sectionPos = SectionPos.of(global, level.getSectionYFromSectionIndex(idx));
                 final DataLayer blockLight = this.lightEngine.getLayerListener(LightLayer.BLOCK).getDataLayerData(sectionPos);

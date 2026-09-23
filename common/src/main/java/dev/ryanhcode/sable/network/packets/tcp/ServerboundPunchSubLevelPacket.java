@@ -97,14 +97,14 @@ public record ServerboundPunchSubLevelPacket(BlockPos punchedBlock, Vector3dc lo
             standingSubLevel.logicalPose().transformNormal(globalDirection);
         }
 
-        final double attributeStrength = Objects.requireNonNull(player.getAttribute(SableAttributes.PUNCH_STRENGTH)).getValue();
+        final double attributeStrength = Objects.requireNonNull(player.getAttribute(SableAttributes.PUNCH_STRENGTH.get())).getValue();
         final int customCooldown = SableAttributes.getPushCooldownTicks(player);
         if (!physicsSystem.tryPunch(player.getGameProfile().getId(), customCooldown)) {
             return;
         }
         player.getCooldowns().addCooldown(player.getMainHandItem().getItem(), customCooldown);
 
-        final double downwardStrengthMultiplier = SableConfig.SUB_LEVEL_PUNCH_DOWNWARD_STRENGTH_MULTIPLIER.getAsDouble();
+        final double downwardStrengthMultiplier = SableConfig.SUB_LEVEL_PUNCH_DOWNWARD_STRENGTH_MULTIPLIER.get();
 
         if (globalDirection.y < 0.0) {
             globalDirection.mul(1.0, downwardStrengthMultiplier, 1.0);
@@ -215,7 +215,7 @@ public record ServerboundPunchSubLevelPacket(BlockPos punchedBlock, Vector3dc lo
 
         final double generalizedInverseMass = massTracker.getInverseNormalMass(localPosition, localDirection);
         final double mass = 1.0 / generalizedInverseMass;
-        final double strengthMultiplier = SableConfig.SUB_LEVEL_PUNCH_STRENGTH_MULTIPLIER.getAsDouble();
+        final double strengthMultiplier = SableConfig.SUB_LEVEL_PUNCH_STRENGTH_MULTIPLIER.get();
 
         return punchCurve(mass) * strengthMultiplier;
     }

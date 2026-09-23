@@ -3,14 +3,23 @@ package dev.ryanhcode.sable.mixin.clip_overwrite;
 import dev.ryanhcode.sable.mixinterface.clip_overwrite.ClipContextExtension;
 import dev.ryanhcode.sable.sublevel.SubLevel;
 import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.phys.shapes.CollisionContext;
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Mutable;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 
 import java.util.function.Predicate;
 
 @Mixin(ClipContext.class)
 public class ClipContextMixin implements ClipContextExtension {
+
+    @Shadow
+    @Final
+    @Mutable
+    private CollisionContext collisionContext;
 
     @Unique
     @Nullable
@@ -64,5 +73,10 @@ public class ClipContextMixin implements ClipContextExtension {
     @Override
     public boolean sable$doNotProject() {
         return this.sable$doNotProject;
+    }
+
+    @Override
+    public void sable$setCollisionContext(final CollisionContext collisionContext) {
+        this.collisionContext = collisionContext;
     }
 }

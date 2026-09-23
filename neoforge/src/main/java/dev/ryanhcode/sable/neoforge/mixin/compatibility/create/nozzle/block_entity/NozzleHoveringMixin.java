@@ -1,5 +1,6 @@
 package dev.ryanhcode.sable.neoforge.mixin.compatibility.create.nozzle.block_entity;
 
+import dev.ryanhcode.sable.util.SableClipContexts;
 import com.simibubi.create.content.kinetics.fan.NozzleBlockEntity;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import dev.ryanhcode.sable.ActiveSableCompanion;
@@ -54,7 +55,7 @@ public abstract class NozzleHoveringMixin extends SmartBlockEntity implements Bl
 			final Couple<Vec3> ray = this.sable$rayPoints.get(this.level.random.nextInt(this.sable$rayPoints.size()));
 			final Vec3 start = ray.getFirst().add(blockCorner);
 			final Vec3 end = ray.getSecond().add(blockCorner);
-			final ClipContext context = new ClipContext(
+			final ClipContext context = SableClipContexts.create(
 					start,
 					end,
 					ClipContext.Block.OUTLINE,

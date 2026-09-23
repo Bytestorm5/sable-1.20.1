@@ -12,11 +12,14 @@ import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.zip.GZIPInputStream;
 
 /**
  * Handles loading schematics
@@ -37,7 +40,7 @@ public class SchematicLoader {
 
         try (final InputStream stream = resource.open()) {
             final StructureTemplate template = new StructureTemplate();
-            final CompoundTag nbt = NbtIo.readCompressed(stream, NbtAccounter.create(0x20000000L));
+            final CompoundTag nbt = NbtIo.read(new DataInputStream(new BufferedInputStream(new GZIPInputStream(stream))), new NbtAccounter(0x20000000L));
             template.load(level.holderLookup(Registries.BLOCK), nbt);
             return template;
         } catch (final IOException e) {

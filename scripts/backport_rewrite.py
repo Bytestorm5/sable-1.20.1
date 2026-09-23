@@ -47,6 +47,22 @@ EXPRESSIONS = [
     # Stream codec constants that live on vanilla types in 1.21
     (re.compile(r"\bUUIDUtil\.STREAM_CODEC\b"), "ByteBufCodecs.UUID"),
     (re.compile(r"\bResourceLocation\.STREAM_CODEC\b"), "ByteBufCodecs.RESOURCE_LOCATION"),
+    # ModConfigSpec values implement BooleanSupplier/IntSupplier/...; ForgeConfigSpec values are plain Suppliers
+    (re.compile(r"(Config\.[A-Z0-9_]+)\.getAs(?:Boolean|Int|Double|Long)\(\)"), r"\1.get()"),
+    # DataFixerUpper 6 (1.20.1) has no argument-less getOrThrow
+    (re.compile(r"\.getOrThrow\(\)"), ".getOrThrow(false, error -> { })"),
+    # Java 21 APIs
+    (re.compile(r"\bThread\.currentThread\(\)\.threadId\(\)"), "Thread.currentThread().getId()"),
+    (re.compile(r"\bMath\.clamp\("), "Mth.clamp("),
+    # 1.21's DeltaTracker; on 1.20.1 Minecraft keeps the (pause-aware) partial tick itself
+    (re.compile(r"\.getTimer\(\)\.getGameTimeDeltaPartialTick\((?:true|false)\)"), ".getFrameTime()"),
+    (re.compile(r"\.getTimer\(\)\.getGameTimeDeltaTicks\(\)"), ".getDeltaFrameTime()"),
+    # NBT accounting
+    (re.compile(r"\bNbtAccounter\.unlimitedHeap\(\)"), "NbtAccounter.UNLIMITED"),
+    (re.compile(r"\bNbtAccounter\.create\("), "new NbtAccounter("),
+    # Component helpers added in 1.20.3+
+    (re.compile(r"\bComponent\.translationArg\(([^()]*(?:\([^()]*\))*[^()]*)\)"), r"Component.literal(String.valueOf(\1))"),
+    (re.compile(r"\.withColor\((0x[0-9a-fA-F]+|\d+)\)"), r".withStyle(style -> style.withColor(\1))"),
 ]
 
 IMPORT_RE = re.compile(r"^import\s+(static\s+)?([\w.$]+)(\.\*)?\s*;\s*$", re.M)
@@ -75,6 +91,8 @@ def rewrite(src: str) -> str:
         src = pattern.sub(new, src)
     if "ByteBufCodecs." in src and "ByteBufCodecs;" not in src and "package dev.ryanhcode.sable.backport.network.codec;" not in src:
         src = add_import(src, f"{BACKPORT}.network.codec.ByteBufCodecs")
+    if "Mth.clamp(" in src and "import net.minecraft.util.Mth;" not in src:
+        src = add_import(src, "net.minecraft.util.Mth")
     if src == original:
         return src
     # Drop duplicate imports produced by the rewrites

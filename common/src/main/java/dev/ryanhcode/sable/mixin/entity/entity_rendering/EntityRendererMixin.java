@@ -134,7 +134,7 @@ public abstract class EntityRendererMixin {
         final SubLevel trackingSubLevel = Sable.HELPER.getTrackingSubLevel(entity);
 
         if (trackingSubLevel != null) {
-            final float pt = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
+            final float pt = Minecraft.getInstance().getFrameTime();
             final Vec3 positionInterpolated = Sable.HELPER.getEyePositionInterpolated(entity, pt)
                     .subtract(0.0, entity.getEyeHeight(), 0.0);
 

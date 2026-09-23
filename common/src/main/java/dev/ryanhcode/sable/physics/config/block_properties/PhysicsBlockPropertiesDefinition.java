@@ -1,6 +1,7 @@
 package dev.ryanhcode.sable.physics.config.block_properties;
 
 import com.mojang.serialization.Codec;
+import dev.ryanhcode.sable.backport.serialization.BackportCodecs;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
 import dev.ryanhcode.sable.backport.network.codec.ByteBufCodecs;
@@ -21,14 +22,14 @@ public record PhysicsBlockPropertiesDefinition(ExtraCodecs.TagOrElementLocation 
                                                Optional<Map<BlockStateConditionSet, Map<ResourceLocation, Object>>> overrides) {
 
     public static final Codec<Map<ResourceLocation, Object>> PROPERTIES_CODEC =
-            Codec.dispatchedMap(ResourceLocation.CODEC, PhysicsBlockPropertyTypes::getPropertyCodec);
+            BackportCodecs.dispatchedMap(ResourceLocation.CODEC, PhysicsBlockPropertyTypes::getPropertyCodec);
 
     public static final Codec<PhysicsBlockPropertiesDefinition> CODEC =
             RecordCodecBuilder.create(i -> i.group(
                     ExtraCodecs.TAG_OR_ELEMENT_ID.fieldOf("selector").forGetter(PhysicsBlockPropertiesDefinition::selector),
                     Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("priority", 1000).forGetter(PhysicsBlockPropertiesDefinition::priority),
                     PROPERTIES_CODEC.fieldOf("properties").forGetter(PhysicsBlockPropertiesDefinition::properties),
-                    Codec.dispatchedMap(BlockStateConditionSet.CODEC, (ignored) -> PROPERTIES_CODEC)
+                    BackportCodecs.dispatchedMap(BlockStateConditionSet.CODEC, (ignored) -> PROPERTIES_CODEC)
                             .optionalFieldOf("overrides").forGetter(PhysicsBlockPropertiesDefinition::overrides)
             ).apply(i, PhysicsBlockPropertiesDefinition::new));
 

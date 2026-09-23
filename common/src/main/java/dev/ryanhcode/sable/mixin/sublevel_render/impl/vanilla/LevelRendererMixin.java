@@ -101,7 +101,7 @@ public abstract class LevelRendererMixin {
     @Inject(method = "renderSectionLayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ShaderInstance;clear()V"))
     public void sable$renderSubLevels(final RenderType renderType, final double x, final double y, final double z, final Matrix4f modelView, final Matrix4f projection, final CallbackInfo ci, @Local ShaderInstance shader) {
         final Iterable<ClientSubLevel> sublevels = ((ClientSubLevelContainer) ((SubLevelContainerHolder) this.level).sable$getPlotContainer()).getAllSubLevels();
-        SubLevelRenderDispatcher.get().renderSectionLayer(sublevels, renderType, shader, x, y, z, modelView, projection, Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false));
+        SubLevelRenderDispatcher.get().renderSectionLayer(sublevels, renderType, shader, x, y, z, modelView, projection, Minecraft.getInstance().getFrameTime());
     }
 
     @Inject(method = "renderSectionLayer", at = @At("TAIL"))
@@ -123,7 +123,7 @@ public abstract class LevelRendererMixin {
             shader.setDefaultUniforms(VertexFormat.Mode.QUADS, modelView, projection, this.minecraft.getWindow());
             shader.apply();
 
-            renderDispatcher.renderSectionLayer(sublevels, renderType, shader, x, y, z, modelView, projection, Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false));
+            renderDispatcher.renderSectionLayer(sublevels, renderType, shader, x, y, z, modelView, projection, Minecraft.getInstance().getFrameTime());
 
             shader.clear();
             layer.clearRenderState();

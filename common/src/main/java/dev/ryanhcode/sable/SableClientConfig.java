@@ -70,19 +70,19 @@ public final class SableClientConfig {
         boolean reloadShaders = false;
         boolean reloadChunks = false;
 
-        if (SableDynamicDirectionalShading.isEnabled() != SableClientConfig.SUB_LEVEL_DYNAMIC_SHADING.getAsBoolean()) {
-            SableDynamicDirectionalShading.setIsEnabled(SableClientConfig.SUB_LEVEL_DYNAMIC_SHADING.getAsBoolean());
+        if (SableDynamicDirectionalShading.isEnabled() != SableClientConfig.SUB_LEVEL_DYNAMIC_SHADING.get()) {
+            SableDynamicDirectionalShading.setIsEnabled(SableClientConfig.SUB_LEVEL_DYNAMIC_SHADING.get());
             reloadShaders = true;
             reloadChunks = true;
         }
 
-        if (SableSkyLightShadows.isEnabled() != SableClientConfig.SUB_LEVEL_SKYLIGHT_SHADOWS.getAsBoolean()) {
-            SableSkyLightShadows.setIsEnabled(SableClientConfig.SUB_LEVEL_SKYLIGHT_SHADOWS.getAsBoolean());
+        if (SableSkyLightShadows.isEnabled() != SableClientConfig.SUB_LEVEL_SKYLIGHT_SHADOWS.get()) {
+            SableSkyLightShadows.setIsEnabled(SableClientConfig.SUB_LEVEL_SKYLIGHT_SHADOWS.get());
             reloadShaders = true;
         }
 
-        if (WaterOcclusionRenderer.isEnabled() != SableClientConfig.SUB_LEVEL_WATER_OCCLUSION.getAsBoolean()) {
-            WaterOcclusionRenderer.setIsEnabled(SableClientConfig.SUB_LEVEL_WATER_OCCLUSION.getAsBoolean());
+        if (WaterOcclusionRenderer.isEnabled() != SableClientConfig.SUB_LEVEL_WATER_OCCLUSION.get()) {
+            WaterOcclusionRenderer.setIsEnabled(SableClientConfig.SUB_LEVEL_WATER_OCCLUSION.get());
             reloadShaders = true;
         }
 

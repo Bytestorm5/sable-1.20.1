@@ -208,7 +208,7 @@ public class SubLevelAssemblyHelper {
         int blockCount = 0;
         final BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
         while (!frontier.isEmpty()) {
-            final Pair<BlockPos, BlockState> pair = frontier.removeFirst();
+            final Pair<BlockPos, BlockState> pair = frontier.remove(0);
             final BlockPos pos = pair.key();
 
             blockCount++;

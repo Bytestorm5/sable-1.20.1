@@ -131,7 +131,7 @@ public class SableCommand {
             ticketCount += entry.getValue().size();
         }
 
-        final Component dimension = Component.translationArg(ctx.getSource().getLevel().dimension().location());
+        final Component dimension = Component.literal(ctx.getSource().getLevel().dimension().location().toString());
 
         if (ticketCount == 0) {
             source.sendFailure(Component.translatable("commands.sable.forceload.query.none", dimension));

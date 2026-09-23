@@ -61,7 +61,7 @@ public class SubLevelTrackingSystem implements SubLevelObserver {
     }
 
     private boolean shouldLoad(final Player player, final Vector3dc entityPosition) {
-        final double trackingRange = SableConfig.SUB_LEVEL_TRACKING_RANGE.getAsDouble();
+        final double trackingRange = SableConfig.SUB_LEVEL_TRACKING_RANGE.get();
         return entityPosition.distanceSquared(player.getX(), player.getY(), player.getZ()) < trackingRange * trackingRange;
     }
 

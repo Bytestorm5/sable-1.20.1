@@ -113,7 +113,7 @@ public class ClientSableInterpolationState {
 
     public double getInterpolationDelay() {
 //        return 1.5f;
-        return SableClientConfig.INTERPOLATION_DELAY.getAsDouble();
+        return SableClientConfig.INTERPOLATION_DELAY.get();
     }
 
     public void receiveInfo(final int msSinceLast, final int gameTick, final boolean stopped) {

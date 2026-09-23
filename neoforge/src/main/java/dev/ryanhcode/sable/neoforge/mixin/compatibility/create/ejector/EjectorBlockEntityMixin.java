@@ -1,5 +1,6 @@
 package dev.ryanhcode.sable.neoforge.mixin.compatibility.create.ejector;
 
+import dev.ryanhcode.sable.util.SableClipContexts;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.simibubi.create.content.logistics.depot.EjectorBlockEntity;
@@ -120,7 +121,7 @@ public abstract class EjectorBlockEntityMixin extends SmartBlockEntity {
         final ActiveSableCompanion helper = Sable.HELPER;
         final SubLevel containingSubLevel = helper.getContaining(this);
         final BlockPos blockPos = this.getBlockPos();
-        final ClipContext clipContext = new ClipContext(blockPos.getCenter(), Vec3.upFromBottomCenterOf(blockPos, 1.0), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, CollisionContext.empty());
+        final ClipContext clipContext = SableClipContexts.create(blockPos.getCenter(), Vec3.upFromBottomCenterOf(blockPos, 1.0), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, CollisionContext.empty());
         final ClipContextExtension extension = (ClipContextExtension) clipContext;
 
         // Ignore the main world. We only care about sub-levels.

@@ -1,5 +1,6 @@
 package dev.ryanhcode.sable.mixin.clip_overwrite;
 
+import dev.ryanhcode.sable.util.SableClipContexts;
 import dev.ryanhcode.sable.ActiveSableCompanion;
 import dev.ryanhcode.sable.Sable;
 import dev.ryanhcode.sable.api.SubLevelHelper;
@@ -71,7 +72,7 @@ public interface BlockGetterMixin {
             }
 
             final Vector3dc from = pose.transformPosition(JOMLConversion.toJOML(clipContext.getFrom()));
-            clipContext = new ClipContext(JOMLConversion.toMojang(from), clipContext.getTo(), clipContext.block, clipContext.fluid, clipContext.collisionContext);
+            clipContext = SableClipContexts.create(JOMLConversion.toMojang(from), clipContext.getTo(), clipContext.block, clipContext.fluid, clipContext.collisionContext);
         }
 
         final SubLevel toSubLevel = helper.getContaining(level, clipContext.getTo());
@@ -83,7 +84,7 @@ public interface BlockGetterMixin {
             }
 
             final Vector3dc to = pose.transformPosition(JOMLConversion.toJOML(clipContext.getTo()));
-            clipContext = new ClipContext(clipContext.getFrom(), JOMLConversion.toMojang(to), clipContext.block, clipContext.fluid, clipContext.collisionContext);
+            clipContext = SableClipContexts.create(clipContext.getFrom(), JOMLConversion.toMojang(to), clipContext.block, clipContext.fluid, clipContext.collisionContext);
         }
 
         BlockHitResult minResult;
@@ -120,7 +121,7 @@ public interface BlockGetterMixin {
                 continue; // we projected the ray inward, but the start is not in the plot. something is weird.
 
 
-            final ClipContext subClipContext = new ClipContext(JOMLConversion.toMojang(from), JOMLConversion.toMojang(to), clipContext.block, clipContext.fluid, clipContext.collisionContext);
+            final ClipContext subClipContext = SableClipContexts.create(JOMLConversion.toMojang(from), JOMLConversion.toMojang(to), clipContext.block, clipContext.fluid, clipContext.collisionContext);
             final BlockHitResult subResult = originalClip(subLevel.getLevel(), subClipContext);
             final double distance = subResult.getLocation().distanceTo(subClipContext.getFrom());
 

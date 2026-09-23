@@ -1,5 +1,6 @@
 package dev.ryanhcode.sable.mixin.particle;
 
+import dev.ryanhcode.sable.util.SableClipContexts;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import dev.ryanhcode.sable.Sable;
@@ -247,7 +248,7 @@ public abstract class ParticleMixin implements ParticleExtension {
                 last.transformPositionInverse(globalBoundsCenter, localRayStart);
                 pose.transformPositionInverse(globalBoundsCenter, localRayEnd);
 
-                final ClipContext clipContext = new ClipContext(JOMLConversion.toMojang(localRayStart),
+                final ClipContext clipContext = SableClipContexts.create(JOMLConversion.toMojang(localRayStart),
                         JOMLConversion.toMojang(localRayEnd),
                         ClipContext.Block.COLLIDER,
                         ClipContext.Fluid.NONE,
@@ -273,7 +274,7 @@ public abstract class ParticleMixin implements ParticleExtension {
                 pose.transformPositionInverse(pushedPosition, localRayStart);
                 pose.transformPositionInverse(pushedPosition.add(movement, localRayEnd));
 
-                final ClipContext clipContext = new ClipContext(JOMLConversion.toMojang(localRayStart),
+                final ClipContext clipContext = SableClipContexts.create(JOMLConversion.toMojang(localRayStart),
                         JOMLConversion.toMojang(localRayEnd),
                         ClipContext.Block.COLLIDER,
                         ClipContext.Fluid.NONE,

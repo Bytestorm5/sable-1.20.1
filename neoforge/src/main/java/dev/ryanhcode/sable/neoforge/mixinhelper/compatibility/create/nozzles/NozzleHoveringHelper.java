@@ -1,5 +1,6 @@
 package dev.ryanhcode.sable.neoforge.mixinhelper.compatibility.create.nozzles;
 
+import dev.ryanhcode.sable.util.SableClipContexts;
 import com.simibubi.create.AllBlockEntityTypes;
 import com.simibubi.create.content.kinetics.fan.EncasedFanBlock;
 import com.simibubi.create.content.kinetics.fan.EncasedFanBlockEntity;
@@ -40,6 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import net.minecraft.util.Mth;
 public class NozzleHoveringHelper {
 
 	public static List<Couple<Vec3>> gatherRaycastPoints(final BlockState state) {
@@ -112,7 +114,7 @@ public class NozzleHoveringHelper {
 				final Vec3 start = blockCorner.add(rayPoint.getFirst());
 				final Vec3 end = blockCorner.add(rayPoint.getSecond());
 
-				final ClipContext context = new ClipContext(
+				final ClipContext context = SableClipContexts.create(
 						start,
 						end,
 						ClipContext.Block.OUTLINE,
@@ -140,7 +142,7 @@ public class NozzleHoveringHelper {
 				} else {
 					final float curveScaling = 2f; //2 == full power at 1/2 distance, 1 == full power at 0 distance
 
-					inverseHitPercentage = Math.clamp(curveScaling - ((hitDiff.length() / startEndDistance) * curveScaling), 0, 1);
+					inverseHitPercentage = Mth.clamp(curveScaling - ((hitDiff.length() / startEndDistance) * curveScaling), 0, 1);
 				}
 
 				final Vec3 modifiedDiff = hitDiff

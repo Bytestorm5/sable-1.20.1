@@ -100,7 +100,7 @@ public abstract class SodiumWorldRendererMixin {
         final SubLevelRenderDispatcher renderDispatcher = SubLevelRenderDispatcher.get();
 
         final Minecraft minecraft = Minecraft.getInstance();
-        final float partialTicks = minecraft.getTimer().getGameTimeDeltaPartialTick(false);
+        final float partialTicks = minecraft.getFrameTime();
         final List<ClientSubLevel> subLevels = SubLevelContainer.getContainer(this.level).getAllSubLevels();
 
         final Matrix4f modelView = new Matrix4f(matrices.modelView());
