@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import toni.sodiumextras.EmbyTools;
 
-@Mixin(EmbyTools.class)
+@Mixin(value = EmbyTools.class, remap = false)
 public class EmbyToolsMixin {
 
     /**

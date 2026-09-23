@@ -8,6 +8,7 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import dev.ryanhcode.sable.Sable;
 import dev.ryanhcode.sable.api.SubLevelHelper;
 import dev.ryanhcode.sable.companion.math.Pose3dc;
+import dev.ryanhcode.sable.render.SableShaderUniforms;
 import dev.ryanhcode.sable.sublevel.ClientSubLevel;
 import dev.ryanhcode.sable.sublevel.SubLevel;
 import net.minecraft.client.Minecraft;
@@ -59,7 +60,7 @@ public abstract class SimpleCulledRenderRegion {
                 .translate((float) relativePos.x, (float) relativePos.y, (float) relativePos.z)
                 .rotate(globalOrientation);
 
-        shader.setDefaultUniforms(VertexFormat.Mode.QUADS, modelViewMatrix, projectionMatrix, client.getWindow());
+        SableShaderUniforms.setDefaultUniforms(shader, VertexFormat.Mode.QUADS, modelViewMatrix, projectionMatrix, client.getWindow());
         shader.apply();
 
         this.buffer.bind();
@@ -95,13 +96,14 @@ public abstract class SimpleCulledRenderRegion {
 
         builder.buildNoGreedy();
 
-        final BufferBuilder bufferBuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, this.getVertexFormat());
+        final BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
+        bufferBuilder.begin(VertexFormat.Mode.QUADS, this.getVertexFormat());
         builder.render(new Matrix4f(), bufferBuilder);
 
         this.unbuiltData = null;
         this.buffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
         this.buffer.bind();
-        this.buffer.upload(bufferBuilder.buildOrThrow());
+        this.buffer.upload(bufferBuilder.end());
         this.built = true;
     }
 

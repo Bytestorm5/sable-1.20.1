@@ -1,7 +1,7 @@
 package dev.ryanhcode.sable.sublevel.render.fancy;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.vertex.MeshData;
+import com.mojang.blaze3d.vertex.BufferBuilder;
 import dev.ryanhcode.sable.sublevel.render.dispatcher.SubLevelTextureCache;
 import dev.ryanhcode.sable.sublevel.render.fancy.task.FancySubLevelTaskScheduler;
 import dev.ryanhcode.sable.sublevel.render.fancy.task.SubLevelTask;
@@ -161,7 +161,7 @@ public class FancySubLevelSectionCompiler implements SubLevelTask.MeshUploader, 
         private final List<BlockEntity> renderableBlockEntities = Lists.newArrayList();
         private VisibilitySet visibilitySet = new VisibilitySet();
         @Nullable
-        private MeshData.SortState transparencyState;
+        private BufferBuilder.SortState transparencyState;
 
         public static CompiledSection create(final SubLevelMeshBuilder.Results results, final SubLevelTask.MeshUploader meshUploader) {
             try (results) {

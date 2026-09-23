@@ -15,6 +15,7 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
@@ -209,6 +210,11 @@ public class SubLevelEntityShadowRenderer {
 
     private static void shadowVertex(final PoseStack.Pose pose, final VertexConsumer vertexConsumer, final int i, final float f, final float g, final float h, final float j, final float k) {
         final Vector3f vector3f = pose.pose().transformPosition(f, g, h, RENDER_POSITION);
-        vertexConsumer.addVertex(vector3f.x(), vector3f.y(), vector3f.z(), i, j, k, OverlayTexture.NO_OVERLAY, LightTexture.FULL_BRIGHT, 0.0F, 1.0F, 0.0F);
+        // 1.20.1's bulk vertex takes the color as separate float components rather than a packed ARGB int
+        final float alpha = FastColor.ARGB32.alpha(i) / 255.0F;
+        final float red = FastColor.ARGB32.red(i) / 255.0F;
+        final float green = FastColor.ARGB32.green(i) / 255.0F;
+        final float blue = FastColor.ARGB32.blue(i) / 255.0F;
+        vertexConsumer.vertex(vector3f.x(), vector3f.y(), vector3f.z(), red, green, blue, alpha, j, k, OverlayTexture.NO_OVERLAY, LightTexture.FULL_BRIGHT, 0.0F, 1.0F, 0.0F);
     }
 }

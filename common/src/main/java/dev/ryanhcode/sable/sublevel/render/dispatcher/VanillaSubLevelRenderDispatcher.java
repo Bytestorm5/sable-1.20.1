@@ -8,6 +8,7 @@ import dev.ryanhcode.sable.companion.math.BoundingBox3ic;
 import dev.ryanhcode.sable.index.SableTags;
 import dev.ryanhcode.sable.mixinterface.BlockEntityRenderDispatcherExtension;
 import dev.ryanhcode.sable.mixinterface.dynamic_directional_shading.ModelBlockRendererCacheExtension;
+import dev.ryanhcode.sable.render.SableShaderUniforms;
 import dev.ryanhcode.sable.render.sky_light_shadow.SableDynamicSkyLightShadowPreProcessor;
 import dev.ryanhcode.sable.render.sky_light_shadow.SableSkyLightShadows;
 import dev.ryanhcode.sable.sublevel.ClientSubLevel;
@@ -25,7 +26,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.block.ModelBlockRenderer;
 import net.minecraft.client.renderer.chunk.RenderRegionCache;
-import net.minecraft.client.renderer.chunk.SectionRenderDispatcher;
+import net.minecraft.client.renderer.chunk.ChunkRenderDispatcher;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -39,12 +40,11 @@ import org.joml.Vector3f;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.SequencedSet;
 import java.util.function.Consumer;
 
 public class VanillaSubLevelRenderDispatcher implements SubLevelRenderDispatcher {
 
-    private final SequencedSet<RenderType> singleBlockLayers;
+    private final LinkedHashSet<RenderType> singleBlockLayers;
 
     public VanillaSubLevelRenderDispatcher() {
         this.singleBlockLayers = new LinkedHashSet<>();
@@ -123,7 +123,7 @@ public class VanillaSubLevelRenderDispatcher implements SubLevelRenderDispatcher
             return new VanillaSingleSubLevelRenderData(subLevel);
         }
 
-        final SectionRenderDispatcher sectionRenderDispatcher = Minecraft.getInstance().levelRenderer.getSectionRenderDispatcher();
+        final ChunkRenderDispatcher sectionRenderDispatcher = Minecraft.getInstance().levelRenderer.getChunkRenderDispatcher();
         return new VanillaChunkedSubLevelRenderData(subLevel, sectionRenderDispatcher);
     }
 
@@ -150,7 +150,7 @@ public class VanillaSubLevelRenderDispatcher implements SubLevelRenderDispatcher
 
             // We'll render the single block sub-levels in a pass afterward
             if (!(data instanceof final VanillaChunkedSubLevelRenderData chunkedRenderData)) {
-                this.singleBlockLayers.addLast(renderType);
+                this.singleBlockLayers.add(renderType);
                 continue;
             }
 
@@ -177,7 +177,8 @@ public class VanillaSubLevelRenderDispatcher implements SubLevelRenderDispatcher
         final VeilRenderProfiler profiler = VeilRenderProfiler.get();
         profiler.push("sublevel_render_single", RenderProfilerCounter.STANDARD_GEOMETRY);
         for (final RenderType layer : this.singleBlockLayers) {
-            final BufferBuilder consumer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.BLOCK);
+            final BufferBuilder consumer = Tesselator.getInstance().getBuilder();
+            consumer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.BLOCK);
 
             for (final ClientSubLevel sublevel : sublevels) {
                 final SubLevelRenderData data = sublevel.getRenderData();
@@ -189,17 +190,20 @@ public class VanillaSubLevelRenderDispatcher implements SubLevelRenderDispatcher
                 singleRenderData.renderSingleBlock(layer, consumer, modelView, cameraX, cameraY, cameraZ);
             }
 
-            final MeshData meshData = consumer.build();
+            final BufferBuilder.RenderedBuffer meshData = consumer.endOrDiscardIfEmpty();
             if (meshData != null) {
                 // Set up the state so the shader instance is updated
                 layer.setupRenderState();
 
                 final ShaderInstance shader = Objects.requireNonNull(RenderSystem.getShader());
-                shader.setDefaultUniforms(VertexFormat.Mode.QUADS, modelView, projection, Minecraft.getInstance().getWindow());
+                SableShaderUniforms.setDefaultUniforms(shader, VertexFormat.Mode.QUADS, modelView, projection, Minecraft.getInstance().getWindow());
                 shader.apply();
                 setupDynamicEffects(shader, true, true);
 
-                layer.draw(meshData);
+                // 1.20.1 equivalent of 1.21's RenderType#draw(MeshData)
+                layer.setupRenderState();
+                BufferUploader.drawWithShader(meshData);
+                layer.clearRenderState();
 
                 // Match every setup with a clear
                 layer.clearRenderState();
@@ -235,10 +239,11 @@ public class VanillaSubLevelRenderDispatcher implements SubLevelRenderDispatcher
             dispatcher.sable$setCameraPosition(new Vec3(cameraPosition.x - chunkOffset.x(), cameraPosition.y - chunkOffset.y(), cameraPosition.z - chunkOffset.z()));
 
             matrixStack.clear();
-            matrices.mulPose(transformation);
+            matrices.mulPoseMatrix(transformation);
             if (data instanceof final VanillaChunkedSubLevelRenderData chunkedRenderData) {
-                for (final SectionRenderDispatcher.RenderSection renderSection : chunkedRenderData.allRenderSections()) {
-                    final List<BlockEntity> blockEntities = renderSection.getCompiled().getRenderableBlockEntities();
+                for (final ChunkRenderDispatcher.RenderChunk renderSection : chunkedRenderData.allRenderSections()) {
+                    final List<BlockEntity> blockEntities = renderSection.getCompiledChunk().getRenderableBlockEntities();
+
                     if (!blockEntities.isEmpty()) {
                         blockEntityRenderer.renderBlockEntities(blockEntities, matrices, partialTick, -chunkOffset.x, -chunkOffset.y, -chunkOffset.z);
                     }

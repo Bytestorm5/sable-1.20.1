@@ -1,4 +1,4 @@
-package dev.ryanhcode.sable.mixin.compatibility.iris;
+package dev.ryanhcode.sable.mixin.compatibility.oculus;
 
 import com.mojang.blaze3d.shaders.Uniform;
 import dev.ryanhcode.sable.mixinterface.compatibility.iris.ExtendedShaderExtension;
@@ -11,31 +11,32 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 
-@Mixin(ExtendedShader.class)
+/**
+ * Iris compatibility. On Forge 1.20.1 Iris is provided by Oculus (mod id {@code oculus}, still in the
+ * {@code net.irisshaders.iris} package), so this lives in {@code compatibility.oculus} for the mixin plugin's mod id check.
+ */
+@Mixin(value = ExtendedShader.class, remap = false)
 public class ExtendedShaderMixin implements ExtendedShaderExtension {
 
-    @Shadow(remap = false)
+    @Shadow
     @Final
     private Uniform modelViewInverse;
 
-    @Shadow(remap = false)
+    @Shadow
     @Final
     private Uniform normalMatrix;
 
-    @Shadow(remap = false)
-    @Final
+    // Not final in Oculus 1.8.0
+    @Shadow
     private Matrix4f tempMatrix4f;
 
-    @Shadow(remap = false)
-    @Final
+    @Shadow
     private Matrix3f tempMatrix3f;
 
-    @Shadow(remap = false)
-    @Final
+    @Shadow
     private float[] tempFloats;
 
-    @Shadow(remap = false)
-    @Final
+    @Shadow
     private float[] tempFloats2;
 
     @Unique

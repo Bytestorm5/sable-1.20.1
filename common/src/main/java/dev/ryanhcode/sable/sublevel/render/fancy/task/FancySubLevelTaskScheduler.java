@@ -3,7 +3,7 @@ package dev.ryanhcode.sable.sublevel.render.fancy.task;
 import dev.ryanhcode.sable.Sable;
 import dev.ryanhcode.sable.sublevel.render.fancy.FancySubLevelSectionCompiler;
 import dev.ryanhcode.sable.sublevel.render.fancy.SubLevelMeshBuilder;
-import net.minecraft.client.renderer.SectionBufferBuilderPack;
+import net.minecraft.client.renderer.ChunkBufferBuilderPack;
 import net.minecraft.client.renderer.chunk.RenderChunkRegion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,7 +37,9 @@ public class FancySubLevelTaskScheduler {
     }
 
     private void runTask() {
-        try (final SectionBufferBuilderPack pack = new SectionBufferBuilderPack()) {
+        // 1.20.1's ChunkBufferBuilderPack isn't closeable (1.21's SectionBufferBuilderPack is), so it is discarded instead
+        final ChunkBufferBuilderPack pack = new ChunkBufferBuilderPack();
+        try {
             while (true) {
                 final Task task;
 
@@ -65,6 +67,8 @@ public class FancySubLevelTaskScheduler {
                     task.onComplete.run();
                 }
             }
+        } finally {
+            pack.discardAll();
         }
     }
 

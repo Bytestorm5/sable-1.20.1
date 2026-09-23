@@ -36,7 +36,9 @@ public class SableClient {
             registry.addPreprocessor(new FancySubLevelShaderProcessor(), false);
         });
 
-        VeilEventPlatform.INSTANCE.onVeilRenderLevelStage(SableSkyLightShadows::renderShadowMap);
+        // TODO(veil-1.20.1): VeilRenderLevelStageEvent#onRenderLevelStage takes 1.21's net.minecraft.client.DeltaTracker,
+        //  which doesn't exist on 1.20.1. Once the ported Veil passes the partial tick (float) instead, restore:
+        //  VeilEventPlatform.INSTANCE.onVeilRenderLevelStage(SableSkyLightShadows::renderShadowMap);
 
         GIZMO_HANDLER.init();
     }
