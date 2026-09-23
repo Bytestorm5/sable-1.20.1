@@ -12,7 +12,6 @@ import dev.ryanhcode.sable.sublevel.plot.LevelPlot;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleEngine;
-import net.minecraft.client.particle.TerrainParticle;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
@@ -47,8 +46,9 @@ public abstract class ParticleEngineMixin {
         extension.sable$moveWithInheritedVelocity();
     }
 
-    @Redirect(method = "crack", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/particle/TerrainParticle;setPower(F)Lnet/minecraft/client/particle/Particle;"))
-    private Particle sable$addCrackParticle(final TerrainParticle particle, final float v, @Local(argsOnly = true) final BlockPos pos, @Local final BlockState state) {
+    // Forge's TerrainParticle#updateSprite returns Particle, so setPower is called on Particle
+    @Redirect(method = "crack", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/particle/Particle;setPower(F)Lnet/minecraft/client/particle/Particle;"))
+    private Particle sable$addCrackParticle(final Particle particle, final float v, @Local(argsOnly = true) final BlockPos pos, @Local final BlockState state) {
         final Vec3 particlePosition = new Vec3(particle.x, particle.y, particle.z);
 
         final SubLevel subLevel = Sable.HELPER.getContaining(this.level, particlePosition);

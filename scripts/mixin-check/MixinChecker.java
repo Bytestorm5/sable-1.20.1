@@ -133,7 +133,7 @@ public final class MixinChecker {
             this.errors.add(mixinName + ": listed in the mixin config but not compiled");
             return;
         }
-        final AnnotationNode mixinAnnotation = annotation(mixin.invisibleAnnotations, MIXIN);
+        final AnnotationNode mixinAnnotation = annotation(mixin, MIXIN);
         if (mixinAnnotation == null) {
             this.errors.add(mixinName + ": no @Mixin annotation");
             return;
@@ -161,8 +161,8 @@ public final class MixinChecker {
         final String where = simple(mixin.name);
 
         for (final FieldNode field : mixin.fields) {
-            if (annotation(field.visibleAnnotations, SHADOW) != null || annotation(field.invisibleAnnotations, SHADOW) != null) {
-                final String name = stripPrefix(field.name, annotation(field.invisibleAnnotations, SHADOW));
+            if (annotation(field, SHADOW) != null) {
+                final String name = stripPrefix(field.name, annotation(field, SHADOW));
                 if (this.findField(target, name, field.desc) == null) {
                     this.errors.add(where + ": @Shadow field " + name + " " + field.desc + " not found in " + target.name);
                 }
@@ -170,20 +170,20 @@ public final class MixinChecker {
         }
 
         for (final MethodNode method : mixin.methods) {
-            final AnnotationNode shadow = annotation(method.invisibleAnnotations, SHADOW);
+            final AnnotationNode shadow = annotation(method, SHADOW);
             if (shadow != null) {
                 final String name = stripPrefix(method.name, shadow);
                 if (this.findMethod(target, name, method.desc) == null) {
                     this.errors.add(where + ": @Shadow method " + name + method.desc + " not found in " + target.name);
                 }
             }
-            if (annotation(method.invisibleAnnotations, OVERWRITE) != null && this.findMethod(target, method.name, method.desc) == null) {
+            if (annotation(method, OVERWRITE) != null && this.findMethod(target, method.name, method.desc) == null) {
                 this.errors.add(where + ": @Overwrite " + method.name + method.desc + " not found in " + target.name);
             }
             this.checkAccessor(where, target, method);
 
             for (final String injector : INJECTORS) {
-                final AnnotationNode annotation = annotation(method.invisibleAnnotations, injector);
+                final AnnotationNode annotation = annotation(method, injector);
                 if (annotation != null) {
                     this.checkedInjectors++;
                     this.checkInjector(where, target, method, injector, annotation);
@@ -193,7 +193,7 @@ public final class MixinChecker {
     }
 
     private void checkAccessor(final String where, final ClassNode target, final MethodNode method) {
-        final AnnotationNode accessor = annotation(method.invisibleAnnotations, ACCESSOR);
+        final AnnotationNode accessor = annotation(method, ACCESSOR);
         if (accessor != null) {
             String name = (String) value(accessor, "value");
             final Type[] args = Type.getArgumentTypes(method.desc);
@@ -205,7 +205,7 @@ public final class MixinChecker {
                 this.errors.add(where + ": @Accessor field " + name + " " + fieldDesc + " not found in " + target.name);
             }
         }
-        final AnnotationNode invoker = annotation(method.invisibleAnnotations, INVOKER);
+        final AnnotationNode invoker = annotation(method, INVOKER);
         if (invoker != null) {
             String name = (String) value(invoker, "value");
             if (name == null || name.isEmpty()) {
@@ -229,12 +229,12 @@ public final class MixinChecker {
             this.errors.add(where + "." + handler.name + ": @" + kind + " without a method selector");
             return;
         }
+        // Alternative names for the same method (e.g. dev and production lambda names) are fine as long as one matches
         for (final Object selector : selectors) {
-            final List<MethodNode> matches = this.selectMethods(target, (String) selector);
-            if (matches.isEmpty()) {
-                this.errors.add(where + "." + handler.name + ": @" + kind + " target method '" + selector + "' not found in " + target.name);
-            }
-            targetMethods.addAll(matches);
+            targetMethods.addAll(this.selectMethods(target, (String) selector));
+        }
+        if (targetMethods.isEmpty()) {
+            this.errors.add(where + "." + handler.name + ": @" + kind + " target method " + selectors + " not found in " + target.name);
         }
 
         final List<Object> ats = new ArrayList<>(list(annotation, "at"));
@@ -248,8 +248,29 @@ public final class MixinChecker {
             if (injector.equals(INJECT)) {
                 this.checkInjectHandler(label, targetMethod, handler);
             }
-            for (final Object at : ats) {
-                this.checkAt(label, targetMethod, (AnnotationNode) at, injector, handler);
+        }
+
+        // Like Mixin, an injection point only has to match in one of the selected methods
+        for (final Object atObject : ats) {
+            final AnnotationNode at = (AnnotationNode) atObject;
+            int total = 0;
+            int max = 0;
+            for (final MethodNode targetMethod : targetMethods) {
+                final String label = where + "." + handler.name + " -> " + target.name + "." + targetMethod.name + targetMethod.desc;
+                final int found = this.checkAt(label, targetMethod, at, injector, handler);
+                if (found < 0) {
+                    total = -1;
+                    break;
+                }
+                total += found;
+                max = Math.max(max, found);
+            }
+            if (total == 0 && !targetMethods.isEmpty()) {
+                this.errors.add(where + "." + handler.name + ": @At(" + value(at, "value") + ") target " + value(at, "target") + " does not occur in " + target.name + "." + selectors);
+            }
+            final Object ordinal = value(at, "ordinal");
+            if (total > 0 && ordinal != null && (Integer) ordinal >= max && value(at, "slice") == null) {
+                this.errors.add(where + "." + handler.name + ": @At(ordinal = " + ordinal + ") but " + value(at, "target") + " occurs at most " + max + " time(s) in " + target.name + "." + selectors);
             }
         }
     }
@@ -288,15 +309,12 @@ public final class MixinChecker {
         }
     }
 
-    private void checkAt(final String label, final MethodNode target, final AnnotationNode at, final String injector, final MethodNode handler) {
+    private int checkAt(final String label, final MethodNode target, final AnnotationNode at, final String injector, final MethodNode handler) {
         final String value = (String) value(at, "value");
         final String ref = (String) value(at, "target");
         if (value == null || ref == null || ref.isEmpty()) {
-            return;
+            return -1;
         }
-        final Object ordinalValue = value(at, "ordinal");
-        final int ordinal = ordinalValue == null ? -1 : (Integer) ordinalValue;
-        final boolean sliced = value(at, "slice") != null;
 
         int found = 0;
         MethodInsnNode invoke = null;
@@ -305,7 +323,7 @@ public final class MixinChecker {
         switch (value) {
             case "INVOKE", "INVOKE_ASSIGN", "INVOKE_STRING" -> {
                 if (!m.matches()) {
-                    return;
+                    return -1;
                 }
                 for (final AbstractInsnNode insn : target.instructions) {
                     if (insn instanceof final MethodInsnNode call
@@ -319,7 +337,7 @@ public final class MixinChecker {
             }
             case "FIELD" -> {
                 if (!m.matches()) {
-                    return;
+                    return -1;
                 }
                 for (final AbstractInsnNode insn : target.instructions) {
                     if (insn instanceof final FieldInsnNode field
@@ -332,7 +350,9 @@ public final class MixinChecker {
                 }
             }
             case "NEW" -> {
-                final String type = ref.startsWith("L") && ref.endsWith(";") ? ref.substring(1, ref.length() - 1) : ref;
+                // Either the type ("Lpkg/Type;") or a constructor descriptor ("(DDD)Lpkg/Type;")
+                final String type = ref.startsWith("(") ? Type.getReturnType(ref).getInternalName()
+                        : ref.startsWith("L") && ref.endsWith(";") ? ref.substring(1, ref.length() - 1) : ref;
                 for (final AbstractInsnNode insn : target.instructions) {
                     if (insn instanceof final TypeInsnNode typeInsn && insn.getOpcode() == Opcodes.NEW && typeInsn.desc.equals(type)) {
                         found++;
@@ -340,16 +360,8 @@ public final class MixinChecker {
                 }
             }
             default -> {
-                return;
+                return -1;
             }
-        }
-
-        if (found == 0) {
-            this.errors.add(label + ": @At(" + value + ") target " + ref + " does not occur in the target method");
-            return;
-        }
-        if (ordinal >= found && !sliced) {
-            this.errors.add(label + ": @At(" + value + ", ordinal = " + ordinal + ") but " + ref + " occurs only " + found + " time(s)");
         }
 
         if (invoke != null && (injector.equals(REDIRECT) || injector.equals(WRAP_OPERATION))) {
@@ -358,6 +370,7 @@ public final class MixinChecker {
         if (fieldInsn != null && injector.equals(REDIRECT)) {
             this.checkFieldRedirect(label, fieldInsn, handler);
         }
+        return found;
     }
 
     private void checkCallHandler(final String label, final MethodInsnNode call, final MethodNode handler, final boolean wrapOperation) {
@@ -528,6 +541,21 @@ public final class MixinChecker {
         return name.startsWith(p) ? name.substring(p.length()) : name;
     }
 
+    private static AnnotationNode annotation(final ClassNode node, final String desc) {
+        final AnnotationNode found = annotation(node.visibleAnnotations, desc);
+        return found != null ? found : annotation(node.invisibleAnnotations, desc);
+    }
+
+    private static AnnotationNode annotation(final FieldNode node, final String desc) {
+        final AnnotationNode found = annotation(node.visibleAnnotations, desc);
+        return found != null ? found : annotation(node.invisibleAnnotations, desc);
+    }
+
+    private static AnnotationNode annotation(final MethodNode node, final String desc) {
+        final AnnotationNode found = annotation(node.visibleAnnotations, desc);
+        return found != null ? found : annotation(node.invisibleAnnotations, desc);
+    }
+
     private static AnnotationNode annotation(final List<AnnotationNode> annotations, final String desc) {
         if (annotations == null) {
             return null;
@@ -568,8 +596,8 @@ public final class MixinChecker {
         if (name.isEmpty()) {
             return name;
         }
-        if (name.length() > 1 && Character.isUpperCase(name.charAt(1))) {
-            return name; // e.g. getURL -> URL
+        if (name.equals(name.toUpperCase(java.util.Locale.ROOT))) {
+            return name; // Mixin keeps all-caps names, e.g. getURL -> URL
         }
         return Character.toLowerCase(name.charAt(0)) + name.substring(1);
     }

@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(BeltRenderer.class)
 public class BeltRendererMixin {
 
-    @ModifyExpressionValue(method = "renderItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;getPosition()Lnet/minecraft/world/phys/Vec3;"))
+    @ModifyExpressionValue(method = "renderItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;position()Lnet/minecraft/world/phys/Vec3;")) // Create 1.20.1 uses the camera entity's position
     private Vec3 sable$renderViewEntityPosition(final Vec3 original, @Local(argsOnly = true) final BeltBlockEntity be) {
         final ClientSubLevel subLevel = Sable.HELPER.getContainingClient(be);
         if (subLevel != null) {

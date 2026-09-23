@@ -169,8 +169,8 @@ public class SchematicPlacePacketMixin {
         }
     }
 
-    @Inject(method = "handle", at = @At(value = "TAIL"), remap = false)
-    private void sable$postHandle(final ServerPlayer player, final CallbackInfo ci) {
+    @Inject(method = "lambda$handle$2(Lnet/minecraftforge/network/NetworkEvent$Context;)V", at = @At(value = "TAIL"), remap = false)
+    private void sable$postHandle(final NetworkEvent.Context networkContext, final CallbackInfo ci) {
         SubLevelSchematicSerializationContext.setCurrentContext(null);
     }
 

@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(DepotRenderer.class)
 public class DepotRendererMixin {
-    @ModifyExpressionValue(method = "renderItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;getPosition()Lnet/minecraft/world/phys/Vec3;"))
+    @ModifyExpressionValue(method = "renderItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;position()Lnet/minecraft/world/phys/Vec3;")) // Create 1.20.1 uses the camera entity's position
     private static Vec3 sable$renderViewEntityPosition(final Vec3 original, @Local(argsOnly = true) final Vec3 position) {
         final ClientSubLevel subLevel = Sable.HELPER.getContainingClient(position);
         if (subLevel != null) {

@@ -51,9 +51,10 @@ public abstract class LecternControllerBlockEntityMixin extends SmartBlockEntity
         }
     }
 
-    @Redirect(method = "playerInRange", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;distanceToSqr(Lnet/minecraft/world/phys/Vec3;)D"))
-    private static double sable$fixDistanceCheck(final Vec3 a, final Vec3 b, @Local(argsOnly = true) final Level level) {
-        return Sable.HELPER.distanceSquaredWithSubLevels(level, a, b);
+    // Create 1.20.1 measures from the player's position rather than its eye position
+    @Redirect(method = "playerInRange", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;distanceToSqr(Lnet/minecraft/world/phys/Vec3;)D"))
+    private static double sable$fixDistanceCheck(final Player player, final Vec3 b, @Local(argsOnly = true) final Level level) {
+        return Sable.HELPER.distanceSquaredWithSubLevels(level, player.position(), b);
     }
 
     @Override

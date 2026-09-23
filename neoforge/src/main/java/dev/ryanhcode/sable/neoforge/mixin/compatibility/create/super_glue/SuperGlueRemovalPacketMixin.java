@@ -14,7 +14,8 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(SuperGlueRemovalPacket.class)
 public class SuperGlueRemovalPacketMixin {
 
-    @Redirect(method = "handle", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;distanceToSqr(Lnet/minecraft/world/phys/Vec3;)D"))
+    // On 1.20.1 the packet is handled in a lambda enqueued by handle(Context)
+    @Redirect(method = "lambda$handle$0(Lnet/minecraftforge/network/NetworkEvent$Context;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;distanceToSqr(Lnet/minecraft/world/phys/Vec3;)D", remap = true), remap = false)
     private double sable$distanceSquared(final ServerPlayer instance, final Vec3 vec3) {
         return Sable.HELPER.distanceSquaredWithSubLevels(instance.level(), instance.position(), vec3);
     }

@@ -16,8 +16,9 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(PackagePortPlacementPacket.class)
 public class PackagePortPlacementPacketMixin {
 
-    @Redirect(method = "handle", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;closerThan(Lnet/minecraft/core/Position;D)Z"))
-    private boolean sable$handle(final Vec3 instance, final Position position, final double d, @Local(argsOnly = true) final ServerPlayer player) {
+    // On 1.20.1 the packet is handled in a lambda enqueued by handle(Context)
+    @Redirect(method = "lambda$handle$0(Lnet/minecraftforge/network/NetworkEvent$Context;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;closerThan(Lnet/minecraft/core/Position;D)Z", remap = true), remap = false)
+    private boolean sable$handle(final Vec3 instance, final Position position, final double d, @Local final ServerPlayer player) {
         return Sable.HELPER.distanceSquaredWithSubLevels(player.level(), instance, position.x(), position.y(), position.z()) < d * d;
     }
 
