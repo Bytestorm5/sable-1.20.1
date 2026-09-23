@@ -191,8 +191,8 @@ public class EmbeddedPlotLevelAccessor implements CommonLevelAccessor, ServerLev
     }
 
     @Override
-    public void gameEvent(final Holder<GameEvent> holder, final Vec3 vec3, final GameEvent.Context context) {
-        this.level.gameEvent(holder, vec3, context);
+    public void gameEvent(final GameEvent gameEvent, final Vec3 vec3, final GameEvent.Context context) {
+        this.level.gameEvent(gameEvent, vec3, context);
     }
 
     @Override

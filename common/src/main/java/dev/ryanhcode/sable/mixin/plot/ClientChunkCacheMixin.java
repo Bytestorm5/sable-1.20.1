@@ -63,7 +63,7 @@ public abstract class ClientChunkCacheMixin implements DebugChunkProviderAttachm
         return container;
     }
 
-    @Inject(method = "getChunk(IILnet/minecraft/world/level/chunk/status/ChunkStatus;Z)Lnet/minecraft/world/level/chunk/LevelChunk;", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "getChunk(IILnet/minecraft/world/level/chunk/ChunkStatus;Z)Lnet/minecraft/world/level/chunk/LevelChunk;", at = @At("HEAD"), cancellable = true)
     private void getChunk(final int x, final int z, final ChunkStatus status, final boolean create, final CallbackInfoReturnable<LevelChunk> cir) {
         final SubLevelContainer container = this.sable$getPlotContainer();
 
@@ -80,10 +80,10 @@ public abstract class ClientChunkCacheMixin implements DebugChunkProviderAttachm
     }
 
     @Inject(method = "drop", at = @At("HEAD"), cancellable = true)
-    private void drop(final ChunkPos chunkPos, final CallbackInfo ci) {
+    private void drop(final int x, final int z, final CallbackInfo ci) {
         final SubLevelContainer container = this.sable$getPlotContainer();
 
-        if (container.inBounds(chunkPos)) {
+        if (container.inBounds(x, z)) {
             ci.cancel();
             throw new UnsupportedOperationException("Cannot drop chunks in plot");
         }

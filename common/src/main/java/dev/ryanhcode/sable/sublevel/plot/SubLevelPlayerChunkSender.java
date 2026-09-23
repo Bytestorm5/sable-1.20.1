@@ -14,14 +14,15 @@ import java.util.function.Consumer;
 public class SubLevelPlayerChunkSender {
 
     /**
-     * A version of {@link net.minecraft.server.network.PlayerChunkSender} that uses the plots light engine
+     * A version of the chunk sending in {@code ChunkMap#playerLoadedChunk} that uses the plots light engine.
+     * On 1.20.1 chunks are sent directly as {@link ClientboundLevelChunkWithLightPacket}s, without chunk batching.
      */
     public static void sendChunk(final Consumer<Packet<? super ClientGamePacketListener>> listener, final LevelLightEngine lightEngine, final LevelChunk chunk) {
         listener.accept(new ClientboundLevelChunkWithLightPacket(chunk, lightEngine, null, null));
     }
 
     /**
-     * A version of {@link net.minecraft.server.network.PlayerChunkSender} that uses the plots light engine
+     * Sends the debug POI data of a plot chunk, as {@code ChunkMap#playerLoadedChunk} does for normal chunks.
      */
     public static void sendChunkPoiData(final ServerLevel level, final LevelChunk chunk) {
         final ChunkPos chunkPos = chunk.getPos();

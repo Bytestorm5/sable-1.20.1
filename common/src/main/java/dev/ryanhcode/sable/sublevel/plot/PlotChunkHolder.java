@@ -1,5 +1,6 @@
 package dev.ryanhcode.sable.sublevel.plot;
 
+import com.mojang.datafixers.util.Either;
 import dev.ryanhcode.sable.companion.math.BoundingBox3i;
 import dev.ryanhcode.sable.companion.math.BoundingBox3ic;
 import net.minecraft.Util;
@@ -10,6 +11,7 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelHeightAccessor;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.chunk.ChunkStatus;
@@ -42,9 +44,9 @@ public class PlotChunkHolder extends ChunkHolder {
 
         this.chunk = chunk;
         this.heatSections = new HeatDataChunkSection[chunk.getSectionsCount()];
-        this.tickingChunkFuture = CompletableFuture.completedFuture(ChunkResult.of(chunk));
-        this.entityTickingChunkFuture = CompletableFuture.completedFuture(ChunkResult.of(chunk));
-        this.fullChunkFuture = CompletableFuture.completedFuture(ChunkResult.of(chunk));
+        this.tickingChunkFuture = CompletableFuture.completedFuture(Either.left(chunk));
+        this.entityTickingChunkFuture = CompletableFuture.completedFuture(Either.left(chunk));
+        this.fullChunkFuture = CompletableFuture.completedFuture(Either.left(chunk));
 
         if (!this.chunk.isEmpty()) {
             this.buildBoundingBox();
@@ -138,11 +140,6 @@ public class PlotChunkHolder extends ChunkHolder {
 
     }
 
-    @Override
-    public boolean isReadyForSaving() {
-        return false;
-    }
-
     public LevelChunk getChunk() {
         return this.chunk;
     }
@@ -154,9 +151,14 @@ public class PlotChunkHolder extends ChunkHolder {
         return this.boundingBox;
     }
 
+    /**
+     * Plot chunks are never generated or loaded through the chunk map, so we never schedule generation tasks.
+     * On 1.21 this was done by no-op'ing {@code GenerationChunkHolder#rescheduleChunkTask}; 1.20.1 schedules
+     * generation directly from this method, so we instead report the (always present) plot chunk.
+     */
     @Override
-    public void rescheduleChunkTask(final ChunkMap chunkMap, @Nullable final ChunkStatus chunkStatus) {
-        // no-op, don't make generation tasks
+    public CompletableFuture<Either<ChunkAccess, ChunkLoadingFailure>> getOrScheduleFuture(final ChunkStatus status, final ChunkMap chunkMap) {
+        return CompletableFuture.completedFuture(Either.left(this.chunk));
     }
 
     /**
