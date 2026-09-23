@@ -43,6 +43,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BellAttachType;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -310,7 +311,11 @@ public class SubLevelAssemblyHelper {
             boolean moveEntity = false;
 
             if (entity instanceof final HangingEntity hangingEntity) {
-                moveEntity = BlockPos.betweenClosedStream(hangingEntity.calculateSupportBox()).anyMatch(blockPos ->
+                // 1.21's HangingEntity#calculateSupportBox: the bounding box moved half a block into the supporting blocks
+                final AABB supportBox = hangingEntity.getBoundingBox()
+                        .move(Vec3.atLowerCornerOf(hangingEntity.getDirection().getNormal()).scale(-0.5))
+                        .deflate(1.0E-7);
+                moveEntity = BlockPos.betweenClosedStream(supportBox).anyMatch(blockPos ->
                         volume.getOccupied(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
             }
 
