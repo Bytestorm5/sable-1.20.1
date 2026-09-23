@@ -29,7 +29,7 @@ import java.lang.ref.WeakReference;
 @Mixin(AirCurrent.class)
 public abstract class AirCurrentMixin {
 
-    @Shadow
+    @Shadow(remap = false)
     @Final
     public IAirCurrentSource source;
 

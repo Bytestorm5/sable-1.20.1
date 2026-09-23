@@ -1,7 +1,6 @@
 package dev.ryanhcode.sable.neoforge.mixinterface.compatibility.create;
 
 
-import net.minecraft.core.HolderLookup;
 
 public interface StickerBlockEntityExtension {
 
@@ -9,5 +8,5 @@ public interface StickerBlockEntityExtension {
 
     void sable$tickConstraint();
 
-    void sable$saveToContraption(HolderLookup.Provider registries);
+    void sable$saveToContraption();
 }

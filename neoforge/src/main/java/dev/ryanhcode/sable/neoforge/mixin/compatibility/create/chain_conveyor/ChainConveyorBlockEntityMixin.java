@@ -16,13 +16,13 @@ import java.util.Map;
 @Mixin(ChainConveyorBlockEntity.class)
 public abstract class ChainConveyorBlockEntityMixin {
 
-    @Shadow
+    @Shadow(remap = false)
     public Map<BlockPos, ChainConveyorBlockEntity.ConnectionStats> connectionStats;
 
-    @Shadow
+    @Shadow(remap = false)
     Map<BlockPos, List<ChainConveyorPackage>> travellingPackages;
 
-    @Shadow
+    @Shadow(remap = false)
     protected abstract void drop(ChainConveyorPackage box);
 
     @Inject(method = "removeInvalidConnections", at = @At(value = "INVOKE", target = "Ljava/util/Iterator;remove()V"), remap = false)

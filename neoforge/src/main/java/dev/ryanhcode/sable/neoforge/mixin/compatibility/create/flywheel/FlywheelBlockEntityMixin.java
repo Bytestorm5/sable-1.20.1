@@ -6,7 +6,6 @@ import com.simibubi.create.content.kinetics.flywheel.FlywheelBlockEntity;
 import dev.ryanhcode.sable.api.block.BlockEntitySubLevelReactionWheel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -32,12 +31,12 @@ public abstract class FlywheelBlockEntityMixin extends KineticBlockEntity implem
     }
 
     @Inject(method = "write",at = @At("TAIL"), remap = false)
-    public void sable$write(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket, CallbackInfo ci)
+    public void sable$write(CompoundTag compound, boolean clientPacket, CallbackInfo ci)
     {
         compound.putFloat("SmoothedSpeed",sable$smoothedSpeed);
     }
     @Inject(method = "read",at = @At("TAIL"), remap = false)
-    public void sable$read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket, CallbackInfo ci)
+    public void sable$read(CompoundTag compound, boolean clientPacket, CallbackInfo ci)
     {
         sable$smoothedSpeed = compound.getFloat("SmoothedSpeed");
     }

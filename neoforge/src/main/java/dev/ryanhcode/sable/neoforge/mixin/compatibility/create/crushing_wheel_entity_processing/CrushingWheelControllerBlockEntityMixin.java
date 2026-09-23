@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(CrushingWheelControllerBlockEntity.class)
 public abstract class CrushingWheelControllerBlockEntityMixin extends SmartBlockEntity {
 
-    @Shadow
+    @Shadow(remap = false)
     public Entity processingEntity;
     @Unique
     private SubLevel sable$parentSublevel = null;

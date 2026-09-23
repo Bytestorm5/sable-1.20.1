@@ -28,10 +28,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ContraptionVisual.class)
 public abstract class ContraptionVisualMixin extends AbstractEntityVisual<AbstractContraptionEntity> {
 
-    @Shadow
+    @Shadow(remap = false)
     @Final
     protected VisualEmbedding embedding;
-    @Shadow
+    @Shadow(remap = false)
     @Final
     private PoseStack contraptionMatrix;
 

@@ -19,11 +19,11 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(SchematicTransformation.class)
 public abstract class SchematicTransformMixin {
 
-    @Shadow private Vec3 prevChasingPos;
+    @Shadow(remap = false) private Vec3 prevChasingPos;
 
-    @Shadow private Vec3 chasingPos;
+    @Shadow(remap = false) private Vec3 chasingPos;
 
-    @Shadow public abstract BlockPos getAnchor();
+    @Shadow(remap = false) public abstract BlockPos getAnchor();
 
     @WrapOperation(method = "applyTransformations", at = @At(value = "INVOKE", target = "Ldev/engine_room/flywheel/lib/transform/PoseTransformStack;translate(Lnet/minecraft/world/phys/Vec3;)Ldev/engine_room/flywheel/lib/transform/Translate;", ordinal = 0, remap = false), remap = false)
     public Translate<PoseTransformStack> sable$transformFromSublevel(final PoseTransformStack instance, final Vec3 vec3, final Operation<Translate<PoseTransformStack>> original, @Local(argsOnly = true) final Vec3 camera, @Local final float pt, @Local final PoseStack ms) {

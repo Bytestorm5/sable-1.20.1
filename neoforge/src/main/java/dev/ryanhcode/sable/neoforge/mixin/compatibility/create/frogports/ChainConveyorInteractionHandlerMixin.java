@@ -24,10 +24,10 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(ChainConveyorInteractionHandler.class)
 public class ChainConveyorInteractionHandlerMixin {
 
-    @Shadow
+    @Shadow(remap = false)
     public static BlockPos selectedLift;
 
-    @Shadow
+    @Shadow(remap = false)
     public static ChainConveyorShape selectedShape;
 
     @Redirect(method = "clientTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;distanceToSqr(Lnet/minecraft/world/phys/Vec3;)D"))

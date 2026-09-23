@@ -15,9 +15,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ChainPackageInteractionPacket.class)
 public class ChainPackageInteractionPacketMixin {
-    @Shadow @Final private BlockPos selectedConnection;
+    @Shadow(remap = false) @Final private BlockPos selectedConnection;
 
-    @Shadow @Final private float chainPosition;
+    @Shadow(remap = false) @Final private float chainPosition;
 
     @Inject(method = "applySettings(Lnet/minecraft/server/level/ServerPlayer;Lcom/simibubi/create/content/kinetics/chainConveyor/ChainConveyorBlockEntity;)V", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/kinetics/chainConveyor/ChainConveyorBlockEntity;addLoopingPackage(Lcom/simibubi/create/content/kinetics/chainConveyor/ChainConveyorPackage;)Z", remap = false), remap = false)
     private void sable$initialiseLoopingWorldPosition(final ServerPlayer player, final ChainConveyorBlockEntity be, final CallbackInfo ci, @Local(name = "chainConveyorPackage") final ChainConveyorPackage chainConveyorPackage) {

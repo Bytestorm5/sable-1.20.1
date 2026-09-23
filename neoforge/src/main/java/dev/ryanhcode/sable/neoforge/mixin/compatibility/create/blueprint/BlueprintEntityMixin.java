@@ -18,10 +18,10 @@ public abstract class BlueprintEntityMixin extends Entity {
 
 	/**
 	 * @author IThundxr
-	 * @reason Switch to Player#canInteractWithEntity, which is patched by sable.
+	 * @reason Switch to Forge's IForgePlayer#canReach (1.21: Player#canInteractWithEntity), which is patched by sable.
 	 */
 	@Overwrite(remap = false)
 	public boolean canPlayerUse(final Player player) {
-		return player.canInteractWithEntity(this, 8);
+		return player.canReach(this, 8);
 	}
 }

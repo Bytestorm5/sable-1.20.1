@@ -23,7 +23,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(BlockEntityBehaviour.class)
 public abstract class BlockEntityBehaviourMixin {
 
-    @Shadow
+    @Shadow(remap = false)
     public static <T extends BlockEntityBehaviour> T get(final BlockEntity be, final BehaviourType<T> type) {
         return null;
     }

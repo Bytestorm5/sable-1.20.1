@@ -23,7 +23,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Perspective.class)
 public class PerspectiveMixin {
 
-    @Shadow
+    @Shadow(remap = false)
     @Final
     @Mutable
     private static Perspective[] $VALUES;

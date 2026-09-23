@@ -1,9 +1,10 @@
 {
   "replace": false,
   "values": [
-    "#c:storage_blocks",
+    { "id": "#c:storage_blocks", "required": false },
+    { "id": "#forge:storage_blocks", "required": false },
     "#minecraft:anvil",
-    "minecraft:heavy_core"
+    { "id": "minecraft:heavy_core", "required": false }
   ],
   "remove": [
     { "id": "create:cardboard_block", "required": false },

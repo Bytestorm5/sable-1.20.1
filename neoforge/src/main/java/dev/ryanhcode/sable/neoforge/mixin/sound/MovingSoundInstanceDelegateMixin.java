@@ -14,7 +14,7 @@ import java.util.concurrent.CompletableFuture;
 @Mixin(MovingSoundInstanceDelegate.class)
 public abstract class MovingSoundInstanceDelegateMixin implements SoundInstance {
 
-    @Shadow
+    @Shadow(remap = false)
     public SoundInstance instance;
 
     @Override

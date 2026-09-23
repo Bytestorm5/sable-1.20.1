@@ -14,7 +14,7 @@ import snownee.jade.impl.BlockAccessorImpl;
 @Mixin(BlockAccessorImpl.class)
 public class BlockAccessorImplMixin {
 
-    @WrapOperation(method = "lambda$handleRequest$0", at = @At(value = "INVOKE", target = "Lnet/minecraft/core/BlockPos;distSqr(Lnet/minecraft/core/Vec3i;)D"))
+    @WrapOperation(method = "lambda$handleRequest$0", at = @At(value = "INVOKE", target = "Lnet/minecraft/core/BlockPos;distSqr(Lnet/minecraft/core/Vec3i;)D", remap = true), remap = false)
     private static double sable$distSqr(final BlockPos instance, final Vec3i vec3i, final Operation<Double> original, @Local final ServerLevel world) {
         return Sable.HELPER.distanceSquaredWithSubLevels(world, instance.getX(), instance.getY(), instance.getZ(), vec3i.getX() + 0.5, vec3i.getY() + 0.5, vec3i.getZ() + 0.5);
     }

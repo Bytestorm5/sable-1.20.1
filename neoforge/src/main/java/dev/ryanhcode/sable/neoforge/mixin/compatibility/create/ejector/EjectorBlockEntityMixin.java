@@ -45,11 +45,11 @@ public abstract class EjectorBlockEntityMixin extends SmartBlockEntity {
 
     @Unique
     private static final int SUB_LEVEL_SCAN_TIME = 2;
-    @Shadow
+    @Shadow(remap = false)
     EjectorBlockEntity.State state;
-    @Shadow
+    @Shadow(remap = false)
     boolean powered;
-    @Shadow
+    @Shadow(remap = false)
     EntityLauncher launcher;
     @Unique
     private int sable$scanTimer = SUB_LEVEL_SCAN_TIME;
@@ -60,10 +60,10 @@ public abstract class EjectorBlockEntityMixin extends SmartBlockEntity {
         super(type, pos, state);
     }
 
-    @Shadow
+    @Shadow(remap = false)
     public abstract void activate();
 
-    @Shadow
+    @Shadow(remap = false)
     protected abstract Direction getFacing();
 
     @Inject(method = "activateDeferred", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/logistics/depot/EjectorBlockEntity;launchItems()V", remap = false), remap = false)

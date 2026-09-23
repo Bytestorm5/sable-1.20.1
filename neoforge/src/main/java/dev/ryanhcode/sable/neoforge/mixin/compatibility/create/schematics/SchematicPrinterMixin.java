@@ -31,7 +31,7 @@ import java.util.List;
 public class SchematicPrinterMixin implements SchematicPrinterExtension {
 
 
-    @Shadow private SchematicLevel blockReader;
+    @Shadow(remap = false) private SchematicLevel blockReader;
 
     @Inject(method = "loadSchematic", at = @At("TAIL"), remap = false)
     private void sable$loadSchematic(final ItemStack blueprint,

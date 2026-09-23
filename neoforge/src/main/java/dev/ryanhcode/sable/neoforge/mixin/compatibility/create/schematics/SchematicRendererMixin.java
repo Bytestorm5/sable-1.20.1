@@ -31,7 +31,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class SchematicRendererMixin {
 
     @Final
-    @Shadow
+    @Shadow(remap = false)
     private BlockPos anchor;
 
     @SuppressWarnings("removal")

@@ -8,7 +8,7 @@
     "minecraft:diorite_slab",
     "minecraft:andesite_slab",
     "minecraft:cobbled_deepslate_slab",
-    "minecraft:tuff_slab",
+    { "id": "minecraft:tuff_slab", "required": false },
     "minecraft:blackstone_slab"
   ]
 }

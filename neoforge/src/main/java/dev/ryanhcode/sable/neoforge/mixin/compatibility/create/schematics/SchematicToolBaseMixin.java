@@ -24,10 +24,10 @@ import java.util.function.Predicate;
 @Mixin(SchematicToolBase.class)
 public class SchematicToolBaseMixin {
 
-    @Shadow
+    @Shadow(remap = false)
     protected Vec3 chasingSelectedPos;
 
-    @Shadow
+    @Shadow(remap = false)
     protected Vec3 lastChasingSelectedPos;
 
     @Inject(method = "updateSelection", at = @At("TAIL"), remap = false)

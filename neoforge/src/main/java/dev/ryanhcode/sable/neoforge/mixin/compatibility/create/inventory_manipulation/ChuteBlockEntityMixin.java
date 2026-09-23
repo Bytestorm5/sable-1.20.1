@@ -12,7 +12,9 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.capabilities.Capabilities;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import org.joml.Vector3d;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,9 +27,9 @@ public abstract class ChuteBlockEntityMixin extends SmartBlockEntity {
 	}
 
 	@WrapMethod(method = "grabCapability", remap = false)
-	public IItemHandler sable$grabCap(final Direction side, final Operation<IItemHandler> original) {
-		final IItemHandler handler = original.call(side);
-		if (handler != null) {
+	public LazyOptional<IItemHandler> sable$grabCap(final Direction side, final Operation<LazyOptional<IItemHandler>> original) {
+		final LazyOptional<IItemHandler> handler = original.call(side);
+		if (handler.isPresent()) {
 			return handler;
 		}
 
@@ -46,7 +48,7 @@ public abstract class ChuteBlockEntityMixin extends SmartBlockEntity {
 		}
 
 		final Vector3d includSublevelDir = new Vector3d(mut);
-		return helper.runIncludingSubLevels(
+		final LazyOptional<IItemHandler> found = helper.runIncludingSubLevels(
 				level,
 				checkPos.getCenter(),
 				false,
@@ -57,8 +59,14 @@ public abstract class ChuteBlockEntityMixin extends SmartBlockEntity {
 						sublevel.logicalPose().transformNormal(includSublevelDir);
 					}
 
-					return level.getCapability(Capabilities.ItemHandler.BLOCK, pos, Direction.getNearest(includSublevelDir.x, includSublevelDir.y, includSublevelDir.z));
+					final BlockEntity blockEntity = level.getBlockEntity(pos);
+					if (blockEntity == null) {
+						return null;
+					}
+					final LazyOptional<IItemHandler> capability = blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER, Direction.getNearest(includSublevelDir.x, includSublevelDir.y, includSublevelDir.z));
+					return capability.isPresent() ? capability : null;
 				}
 		);
+		return found != null ? found : LazyOptional.empty();
 	}
 }

@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.Unique;
 @Mixin(AllBlockEntityTypes.class)
 public class AllBlockEntityTypesMixin implements RedstoneContactBlockEntityTypeGetter {
 
-    @Shadow @Final private static CreateRegistrate REGISTRATE;
+    @Shadow(remap = false) @Final private static CreateRegistrate REGISTRATE;
     @Unique
     private static final BlockEntityEntry<RedstoneContactBlockEntity> REDSTONE_CONTACT = REGISTRATE
             .blockEntity("redstone_contact", RedstoneContactBlockEntity::new)

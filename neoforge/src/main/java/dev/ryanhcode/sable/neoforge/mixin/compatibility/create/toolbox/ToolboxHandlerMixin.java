@@ -30,7 +30,7 @@ import static com.simibubi.create.content.equipment.toolbox.ToolboxHandler.getMa
 @Mixin(ToolboxHandler.class)
 public abstract class ToolboxHandlerMixin {
 
-    @Shadow
+    @Shadow(remap = false)
     @Final
     public static WorldAttached<WeakHashMap<BlockPos, ToolboxBlockEntity>> toolboxes;
 

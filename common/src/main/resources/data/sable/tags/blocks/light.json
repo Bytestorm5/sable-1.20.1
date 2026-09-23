@@ -9,8 +9,10 @@
     "minecraft:barrel",
     "minecraft:chest",
     "#minecraft:bamboo_blocks",
-    "#c:clusters",
-    "#c:chests/wooden",
+    { "id": "#c:clusters", "required": false },
+    "minecraft:amethyst_cluster",
+    { "id": "#c:chests/wooden", "required": false },
+    { "id": "#forge:chests/wooden", "required": false },
     { "id": "create:belt", "required": false },
     { "id": "create:track", "required": false },
     { "id": "create:nixie_tube", "required": false },
@@ -24,44 +26,32 @@
     { "id": "create:stock_link", "required": false },
     { "id": "create:cardboard_block", "required": false },
     { "id": "create:bound_cardboard_block", "required": false },
-
     { "id": "create:andesite_encased_shaft", "required": false },
     { "id": "create:andesite_encased_cogwheel", "required": false },
     { "id": "create:andesite_encased_large_cogwheel", "required": false },
-
     { "id": "create:brass_encased_shaft", "required": false },
     { "id": "create:brass_encased_cogwheel", "required": false },
     { "id": "create:brass_encased_large_cogwheel", "required": false },
-
     { "id": "create:shaft", "required": false },
     { "id": "create:cogwheel", "required": false },
     { "id": "create:large_cogwheel", "required": false },
-
     { "id": "create:hand_crank", "required": false },
     { "id": "#create:valve_handles", "required": false },
     { "id": "#create:seats", "required": false },
-
     { "id": "farmersdelight:skillet", "required": false },
     { "id": "farmersdelight:cooking_pot", "required": false },
-
     { "id": "decorative_blocks:chain", "required": false },
     { "id": "#decorative_blocks:beams", "required": false },
-
     { "id": "#woodworks:wooden_boards", "required": false },
-
     { "id": "#quark:vertical_slabs", "required": false },
     { "id": "#quark:hollow_logs", "required": false },
-
     { "id": "supplementaries:blackboard", "required": false },
     { "id": "supplementaries:crystal_display", "required": false },
     { "id": "#supplementaries:presents", "required": false },
     { "id": "#supplementaries:trapped_presents", "required": false },
-
     { "id": "#architects_palette:boards", "required": false },
-
     { "id": "#storagedrawers:full_drawers", "required": false },
     { "id": "#storagedrawers:trim", "required": false },
-
     { "id": "#another_furniture:drawers", "required": false }
   ],
   "remove": [

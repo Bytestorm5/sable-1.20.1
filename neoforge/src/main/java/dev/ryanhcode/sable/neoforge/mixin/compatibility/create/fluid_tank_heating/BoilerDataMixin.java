@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(BoilerData.class)
 public class BoilerDataMixin {
 
-    @Shadow
+    @Shadow(remap = false)
     public boolean needsHeatLevelUpdate;
 
     @Unique

@@ -14,27 +14,27 @@ import org.spongepowered.asm.mixin.Unique;
 @Mixin(ExtendedShader.class)
 public class ExtendedShaderMixin implements ExtendedShaderExtension {
 
-    @Shadow
+    @Shadow(remap = false)
     @Final
     private Uniform modelViewInverse;
 
-    @Shadow
+    @Shadow(remap = false)
     @Final
     private Uniform normalMatrix;
 
-    @Shadow
+    @Shadow(remap = false)
     @Final
     private Matrix4f tempMatrix4f;
 
-    @Shadow
+    @Shadow(remap = false)
     @Final
     private Matrix3f tempMatrix3f;
 
-    @Shadow
+    @Shadow(remap = false)
     @Final
     private float[] tempFloats;
 
-    @Shadow
+    @Shadow(remap = false)
     @Final
     private float[] tempFloats2;
 

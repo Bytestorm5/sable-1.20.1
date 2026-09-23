@@ -66,8 +66,8 @@ public class BigOutlinesMixin {
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/world/phys/shapes/VoxelShape;clip(Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/phys/BlockHitResult;"
-            )
-    )
+            , remap = true)
+    , remap = false)
     private static BlockHitResult sable$clipUsingLocalSubLevel(final VoxelShape instance,
                                                                final Vec3 origin,
                                                                final Vec3 target,
@@ -89,8 +89,8 @@ public class BigOutlinesMixin {
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/world/phys/Vec3;distanceToSqr(Lnet/minecraft/world/phys/Vec3;)D"
-            )
-    )
+            , remap = true)
+    , remap = false)
     private static double sable$distanceToWithSubLevel(final Vec3 instance,
                                                        final Vec3 origin,
                                                        final Operation<Double> original) {

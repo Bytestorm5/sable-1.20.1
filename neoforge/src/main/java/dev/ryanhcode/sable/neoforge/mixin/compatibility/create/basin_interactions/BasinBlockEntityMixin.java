@@ -21,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(BasinBlockEntity.class)
 public class BasinBlockEntityMixin extends BlockEntity {
 
-    @Shadow @Nullable private BlazeBurnerBlock.@Nullable HeatLevel cachedHeatLevel;
+    @Shadow(remap = false) @Nullable private BlazeBurnerBlock.@Nullable HeatLevel cachedHeatLevel;
 
     public BasinBlockEntityMixin(final BlockEntityType<?> arg, final BlockPos arg2, final BlockState arg3) {
         super(arg, arg2, arg3);

@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(FrogportBlock.class)
 public class FrogportBlockMixin {
-    @WrapOperation(method = "lambda$setPlacedBy$0", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;position()Lnet/minecraft/world/phys/Vec3;"))
+    @WrapOperation(method = "lambda$setPlacedBy$0", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;position()Lnet/minecraft/world/phys/Vec3;", remap = true), remap = false)
     private static Vec3 sable$projectPlayerPosition(final LivingEntity instance, final Operation<Vec3> original, @Local(argsOnly = true, name = "arg2") final FrogportBlockEntity be) {
         final SubLevel subLevel = Sable.HELPER.getContaining(be);
         if (subLevel == null) {

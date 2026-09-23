@@ -21,17 +21,17 @@ public class LODMixin {
     @Unique
     private static final Vector3d sable$direction = new Vector3d();
 
-    @Shadow
+    @Shadow(remap = false)
     @Final
     @Mutable
     private Vec3 objCenter;
 
-    @Shadow
+    @Shadow(remap = false)
     @Final
     @Mutable
     private double distSq;
 
-    @Shadow
+    @Shadow(remap = false)
     @Final
     private Vec3 cameraPosition;
 
@@ -52,7 +52,7 @@ public class LODMixin {
         return original.call(planeNormal, offset, discRadius, cosTolerance);
     }
 
-    @Inject(method = "<init>(Lnet/minecraft/client/Camera;Lnet/minecraft/world/phys/Vec3;)V", at = @At("TAIL"))
+    @Inject(method = "<init>(Lnet/minecraft/client/Camera;Lnet/minecraft/world/phys/Vec3;)V", at = @At("TAIL"), remap = false)
     private void sable$init(final Camera camera, final Vec3 objCenter, final CallbackInfo ci) {
         final ClientLevel level = Minecraft.getInstance().level;
         this.sable$localPos = objCenter;

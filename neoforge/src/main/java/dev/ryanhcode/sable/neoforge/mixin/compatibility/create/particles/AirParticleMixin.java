@@ -23,13 +23,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(AirParticle.class)
 public abstract class AirParticleMixin extends SimpleAnimatedParticle implements ParticleSubLevelKickable {
 
-    @Shadow
+    @Shadow(remap = false)
     private float twirlAngleOffset;
 
-    @Shadow
+    @Shadow(remap = false)
     private float twirlRadius;
 
-    @Shadow
+    @Shadow(remap = false)
     private float drag;
 
     @Unique
@@ -45,7 +45,7 @@ public abstract class AirParticleMixin extends SimpleAnimatedParticle implements
     @Unique
     private double sable$targetZ;
 
-    @Shadow
+    @Shadow(remap = false)
     private Direction.Axis twirlAxis;
 
     protected AirParticleMixin(final ClientLevel arg, final double d, final double e, final double f, final SpriteSet arg2, final float g) {

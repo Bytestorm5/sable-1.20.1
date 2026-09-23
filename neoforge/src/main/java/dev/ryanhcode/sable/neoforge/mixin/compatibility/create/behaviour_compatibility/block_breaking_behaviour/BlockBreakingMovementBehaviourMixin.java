@@ -30,7 +30,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(BlockBreakingMovementBehaviour.class)
 public abstract class BlockBreakingMovementBehaviourMixin implements MovementBehaviour {
 
-    @Shadow
+    @Shadow(remap = false)
     public abstract boolean canBreak(Level world, BlockPos breakingPos, BlockState state);
 
     @WrapMethod(method = "visitNewPosition", remap = false)
@@ -68,7 +68,7 @@ public abstract class BlockBreakingMovementBehaviourMixin implements MovementBeh
             }
 
             //project our position into the target's plot
-            final SubLevel targetSublevel = Sable.HELPER.getContaining(context.world, NbtUtils.readBlockPos(context.data, "BreakingPos").orElseThrow());
+            final SubLevel targetSublevel = Sable.HELPER.getContaining(context.world, NbtUtils.readBlockPos(context.data.getCompound("BreakingPos")));
             if (targetSublevel != null) {
                 targetSublevel.logicalPose().transformPositionInverse(checkPos);
             }
@@ -95,7 +95,7 @@ public abstract class BlockBreakingMovementBehaviourMixin implements MovementBeh
 
         final Vec3 sublevelLocalCenter = context.contraption.entity.toGlobalVector(context.localPos.getCenter(), 1);
         if (data.contains("ProjectedPos") && Sable.HELPER.distanceSquaredWithSubLevels(context.world, VecHelper.readNBT(data.getList("ProjectedPos", Tag.TAG_DOUBLE)), sublevelLocalCenter) > 2*2) {
-            final BlockPos blockPos = NbtUtils.readBlockPos(data, "BreakingPos").orElse(null);
+            final BlockPos blockPos = data.contains("BreakingPos") ? NbtUtils.readBlockPos(data.getCompound("BreakingPos")) : null;
 
             data.remove("Progress");
             data.remove("TicksUntilNextProgress");

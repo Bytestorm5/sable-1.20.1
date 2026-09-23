@@ -30,10 +30,10 @@ public abstract class LecternControllerBlockEntityMixin extends SmartBlockEntity
         super(type, pos, state);
     }
 
-    @Shadow
+    @Shadow(remap = false)
     protected abstract void stopUsing(Player player);
 
-    @Shadow
+    @Shadow(remap = false)
     private UUID user;
     @Unique
     private boolean sable$noDrop;

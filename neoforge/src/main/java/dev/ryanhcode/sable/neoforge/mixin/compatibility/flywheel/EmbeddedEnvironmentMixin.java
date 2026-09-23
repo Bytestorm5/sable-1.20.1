@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(EmbeddedEnvironment.class)
 public class EmbeddedEnvironmentMixin implements EmbeddedEnvironmentExtension {
 
-    @Shadow
+    @Shadow(remap = false)
     @Final
     private Matrix4f poseComposed;
 

@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(BasinOperatingBlockEntity.class)
 public abstract class BasinOperatingBlockEntityMixin {
-    @Shadow
+    @Shadow(remap = false)
     public DeferralBehaviour basinChecker;
 
     @Unique

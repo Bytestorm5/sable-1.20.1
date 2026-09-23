@@ -85,7 +85,7 @@ public final class AssemblyTest {
                 new Vector3d(min.getX() + (1 + max.getX() - min.getX()) / 2.0,
                         min.getY() + (1 + max.getY() - min.getY()) / 2.0,
                         min.getZ() + (1 + max.getZ() - min.getZ()) / 2.0),
-                helper.getTestRotation().rotation().transformation().getNormalizedRotation(new Quaterniond()));
+                helper.testInfo.getRotation().rotation().transformation().getNormalizedRotation(new Quaterniond()));
         helper.runAtTickTime(10, () -> {
             final Level plot = subLevel.getLevel();
             final BoundingBox3ic sublevelBounds = subLevel.getPlot().getBoundingBox();
@@ -118,7 +118,7 @@ public final class AssemblyTest {
         });
     }
 
-    @GameTest(template = "allblocks", required = false, manualOnly = true, timeoutTicks = 30_000_000)
+    @GameTest(template = "allblocks", required = false, timeoutTicks = 30_000_000)
     public static void testAllBlocks(final GameTestHelper helper) {
         final boolean failOnFirstError = false;
         final boolean fastTest = true;
@@ -235,7 +235,7 @@ public final class AssemblyTest {
                                 new Vector3d(pos.getX() + 0.5,
                                         pos.getY() + 1.0,
                                         pos.getZ() + 0.5),
-                                helper.getTestRotation().rotation().transformation().getNormalizedRotation(new Quaterniond()));
+                                helper.testInfo.getRotation().rotation().transformation().getNormalizedRotation(new Quaterniond()));
 
                         final BlockPos centerBlock = subLevel.getPlot().getCenterBlock();
 
@@ -285,7 +285,7 @@ public final class AssemblyTest {
 
                                     try {
                                         for (int slot = 0; slot < starting.size(); slot++) {
-                                            if (!ItemStack.isSameItemSameComponents(starting.get(slot), inventory.getStackInSlot(slot))) {
+                                            if (!ItemStack.isSameItemSameTags(starting.get(slot), inventory.getStackInSlot(slot))) {
                                                 final String stateString = formatBlockState(state).getString();
                                                 final String expectedStack = starting.get(slot).toString();
                                                 final String foundStack = inventory.getStackInSlot(slot).toString();

@@ -25,7 +25,7 @@ public abstract class BlockBreakingKineticBlockEntityMixin extends BlockEntity {
 		super(pType, pPos, pBlockState);
 	}
 
-	@Shadow
+	@Shadow(remap = false)
 	public abstract boolean canBreak(BlockState stateToBreak, float blockHardness);
 
 	@Redirect(remap = false, method = "tick", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/kinetics/base/BlockBreakingKineticBlockEntity;getBreakingPos()Lnet/minecraft/core/BlockPos;"))

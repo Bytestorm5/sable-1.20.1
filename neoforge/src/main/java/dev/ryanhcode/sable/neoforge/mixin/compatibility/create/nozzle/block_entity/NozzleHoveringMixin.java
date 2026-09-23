@@ -33,8 +33,8 @@ import java.util.List;
 @Mixin(NozzleBlockEntity.class)
 public abstract class NozzleHoveringMixin extends SmartBlockEntity implements BlockEntitySubLevelActor {
 
-	@Shadow private boolean pushing;
-	@Shadow private float range;
+	@Shadow(remap = false) private boolean pushing;
+	@Shadow(remap = false) private float range;
 	@Unique
 	private List<Couple<Vec3>> sable$rayPoints = null;
 

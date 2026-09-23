@@ -18,7 +18,6 @@ import dev.ryanhcode.sable.sublevel.ServerSubLevel;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ClipContext;
@@ -75,10 +74,10 @@ public abstract class StickerBlockEntityMixin extends SmartBlockEntity implement
         super(type, pos, state);
     }
 
-    @Shadow
+    @Shadow(remap = false)
     public abstract boolean isBlockStateExtended();
 
-    @Shadow
+    @Shadow(remap = false)
     public abstract void playSound(boolean attach);
 
     @Override
@@ -258,14 +257,14 @@ public abstract class StickerBlockEntityMixin extends SmartBlockEntity implement
     }
 
     @Override
-    public void sable$saveToContraption(final HolderLookup.Provider registries) {
+    public void sable$saveToContraption() {
         this.sable$doNotSaveConstraint = true;
-        this.saveWithFullMetadata(registries);
+        this.saveWithFullMetadata();
         this.sable$doNotSaveConstraint = false;
     }
 
     @Inject(method = "write", at = @At("TAIL"), remap = false)
-    public void write(final CompoundTag compound, final HolderLookup.Provider registries, final boolean clientPacket, final CallbackInfo ci) {
+    public void write(final CompoundTag compound, final boolean clientPacket, final CallbackInfo ci) {
         if (clientPacket) {
             compound.putBoolean("SableHasConstraint", this.sable$handle != null);
         } else if (this.sable$handle != null && !this.sable$doNotSaveConstraint) {
@@ -293,7 +292,7 @@ public abstract class StickerBlockEntityMixin extends SmartBlockEntity implement
     }
 
     @Inject(method = "read", at = @At("TAIL"), remap = false)
-    public void read(final CompoundTag compound, final HolderLookup.Provider registries, final boolean clientPacket, final CallbackInfo ci) {
+    public void read(final CompoundTag compound, final boolean clientPacket, final CallbackInfo ci) {
         if (clientPacket) {
             this.sable$hasConstraint = compound.getBoolean("SableHasConstraint");
         } else {

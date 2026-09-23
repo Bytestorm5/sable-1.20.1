@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(EngineImpl.class)
 public class EngineImplMixin {
 
-    @Shadow
+    @Shadow(remap = false)
     @Final
     @Mutable
     private LightStorage lightStorage;

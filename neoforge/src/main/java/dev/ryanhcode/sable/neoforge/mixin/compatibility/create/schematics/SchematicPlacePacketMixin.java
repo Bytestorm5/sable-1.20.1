@@ -1,7 +1,6 @@
 package dev.ryanhcode.sable.neoforge.mixin.compatibility.create.schematics;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.content.contraptions.StructureTransform;
 import com.simibubi.create.content.schematics.SchematicItem;
 import com.simibubi.create.content.schematics.SchematicPrinter;
@@ -32,6 +31,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.network.NetworkEvent;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Mirror;
@@ -54,13 +54,16 @@ import java.util.UUID;
 @Mixin(SchematicPlacePacket.class)
 public class SchematicPlacePacketMixin {
 
-    @Shadow @Final private ItemStack stack;
+    @Shadow(remap = false) @Final private ItemStack stack;
 
-    @Inject(method = "handle", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/schematics/SchematicPrinter;loadSchematic(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/level/Level;Z)V", shift = At.Shift.AFTER, remap = false), cancellable = true, remap = false)
-    private void sable$preHandle(final ServerPlayer player,
+    // On 1.20.1 the packet is handled in a lambda enqueued by handle(Context)
+    @Inject(method = "lambda$handle$2(Lnet/minecraftforge/network/NetworkEvent$Context;)V", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/schematics/SchematicPrinter;loadSchematic(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/level/Level;Z)V", shift = At.Shift.AFTER, remap = false), cancellable = true, remap = false)
+    private void sable$preHandle(final NetworkEvent.Context networkContext,
                                  final CallbackInfo ci,
+                                 @Local final ServerPlayer player,
                                  @Local final SchematicPrinter printer) {
-        final Mirror mirror = this.stack.get(AllDataComponents.SCHEMATIC_MIRROR);
+        final CompoundTag stackTag = this.stack.getTag();
+        final Mirror mirror = stackTag != null && stackTag.contains("Mirror") ? Mirror.valueOf(stackTag.getString("Mirror")) : null;
 
         if (mirror != null && mirror != Mirror.NONE) {
             final SchematicLevel schematicLevel = ((SchematicPrinterExtension) printer).sable$getSchematicLevel();
@@ -72,9 +75,10 @@ public class SchematicPlacePacketMixin {
         }
     }
 
-    @Inject(method = "handle", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/infrastructure/config/AllConfigs;server()Lcom/simibubi/create/infrastructure/config/CServer;", remap = false), remap = false)
-    private void sable$handle(final ServerPlayer player,
+    @Inject(method = "lambda$handle$2(Lnet/minecraftforge/network/NetworkEvent$Context;)V", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/infrastructure/config/AllConfigs;server()Lcom/simibubi/create/infrastructure/config/CServer;", remap = false), remap = false)
+    private void sable$handle(final NetworkEvent.Context networkContext,
                               final CallbackInfo ci,
+                              @Local final ServerPlayer player,
                               @Local final Level level,
                               @Local final SchematicPrinter printer
     ) {
@@ -136,7 +140,7 @@ public class SchematicPlacePacketMixin {
             BlockPos.betweenClosedStream(schematicBounds).forEach(block -> {
                 final BlockState state = subSchematicLevel.getBlockState(block);
                 final BlockEntity blockEntity = subSchematicLevel.getBlockEntity(block);
-                final CompoundTag data = BlockHelper.prepareBlockEntityData(level, state, blockEntity);
+                final CompoundTag data = BlockHelper.prepareBlockEntityData(state, blockEntity);
                 BlockHelper.placeSchematicBlock(level, state, centerBlock.offset(block), null, data);
             });
 

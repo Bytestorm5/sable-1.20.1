@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(PackagePortTargetSelectionHandler.class)
 public class PackagePortTargetSelectionHandlerMixin {
-    @Shadow
+    @Shadow(remap = false)
     public static boolean isPostbox;
 
     /**

@@ -22,10 +22,10 @@ import java.util.function.Supplier;
 @Mixin(HosePulleyFluidHandler.class)
 public abstract class HosePulleyFluidHandlerMixin {
 
-	@Shadow
+	@Shadow(remap = false)
 	private FluidDrainingBehaviour drainer;
 
-	@Shadow
+	@Shadow(remap = false)
 	private Supplier<BlockPos> rootPosGetter;
 	@Unique
 	private BlockPos sable$lastValidPos = null;

@@ -20,10 +20,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(PackagePortTarget.ChainConveyorFrogportTarget.class)
 public class PackagePortTargetMixin {
 
-    @Shadow
+    @Shadow(remap = false)
     public float chainPos;
 
-    @Shadow
+    @Shadow(remap = false)
     @Nullable
     public BlockPos connection;
 

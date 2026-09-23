@@ -106,7 +106,7 @@ public class NozzleHoveringHelper {
 			final EncasedFanBlockEntity fbe = be.get();
 			final Vector3d force = new Vector3d();
 
-			final Couple<Vec3> firstRay = rayPoints.getFirst();
+			final Couple<Vec3> firstRay = rayPoints.get(0);
 			final double startEndDistance = firstRay.getSecond().subtract(firstRay.getFirst()).length();
 			final Vec3 blockCorner = Vec3.atLowerCornerOf(blockStart);
 
@@ -226,7 +226,8 @@ public class NozzleHoveringHelper {
 			if (other != null)
 				other.logicalPose().orientation().transformInverse(particleVelocity);
 
-			level.addParticle(ParticleTypes.DUST_PLUME, end.x, end.y, end.z, particleVelocity.x, particleVelocity.y, particleVelocity.z);
+			// 1.20.1 has no dust plume particle (added in 1.20.3); poof is the closest match
+			level.addParticle(ParticleTypes.POOF, end.x, end.y, end.z, particleVelocity.x, particleVelocity.y, particleVelocity.z);
 			if (hitState.is(BlockTags.MINEABLE_WITH_SHOVEL)) {
 				level.addParticle(new BlockParticleOption(ParticleTypes.BLOCK, hitState), end.x, end.y, end.z, particleVelocity.x, particleVelocity.y, particleVelocity.z);
 			} else if (fluid.isSame(Fluids.WATER)) {

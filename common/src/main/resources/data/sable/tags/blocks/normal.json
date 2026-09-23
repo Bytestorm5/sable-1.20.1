@@ -1,6 +1,6 @@
 {
   "replace": false,
   "values": [
-    "#minecraft:shovels"
+    "#sable:normal_slabs"
   ]
 }

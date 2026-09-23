@@ -30,7 +30,7 @@ public record PointHolder(BlockPos pos, ArmInteractionPoint.Mode interactionMode
     }
 
     public static PointHolder deserialize(final CompoundTag tag, final BlockPos anchor) {
-        final Optional<BlockPos> pos = NbtUtils.readBlockPos(tag, "pos");
+        final Optional<BlockPos> pos = tag.contains("pos", Tag.TAG_COMPOUND) ? Optional.of(NbtUtils.readBlockPos(tag.getCompound("pos"))) : Optional.empty();
 
         return pos.map(blockPos -> new PointHolder(blockPos.offset(anchor), NBTHelper.readEnum(tag, "mode", ArmInteractionPoint.Mode.class), new MutableBoolean(false))).orElse(null);
 

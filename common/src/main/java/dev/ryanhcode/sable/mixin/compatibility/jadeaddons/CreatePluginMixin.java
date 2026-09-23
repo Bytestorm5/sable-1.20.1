@@ -14,7 +14,7 @@ import snownee.jade.addon.create.CreatePlugin;
 @Mixin(CreatePlugin.class)
 public class CreatePluginMixin {
 
-	@WrapOperation(method = "lambda$registerClient$1", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;getEyePosition(F)Lnet/minecraft/world/phys/Vec3;"))
+	@WrapOperation(method = "lambda$registerClient$1", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;getEyePosition(F)Lnet/minecraft/world/phys/Vec3;", remap = true), remap = false)
 	private static Vec3 sable$getEyePosition(final Entity instance, final float f, final Operation<Vec3> original, @Local(argsOnly = true) final Entity e) {
 		final ClientSubLevel subLevel = (ClientSubLevel) Sable.HELPER.getContaining(e);
 		if(subLevel != null) {
@@ -23,7 +23,7 @@ public class CreatePluginMixin {
 		return original.call(instance, f);
 	}
 
-	@WrapOperation(method = "lambda$registerClient$1", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;getViewVector(F)Lnet/minecraft/world/phys/Vec3;"))
+	@WrapOperation(method = "lambda$registerClient$1", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;getViewVector(F)Lnet/minecraft/world/phys/Vec3;", remap = true), remap = false)
 	private static Vec3 sable$getViewVector(final Entity instance, final float f, final Operation<Vec3> original, @Local(argsOnly = true) final Entity e) {
 		final ClientSubLevel subLevel = (ClientSubLevel) Sable.HELPER.getContaining(e);
 		if(subLevel != null) {

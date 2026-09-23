@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(TurntableBlock.class)
 public class TurntableBlockMixin {
 
-    @Redirect(method = "lambda$entityInside$0", at = @At(value = "INVOKE", target = "Lnet/createmod/catnip/math/VecHelper;getCenterOf(Lnet/minecraft/core/Vec3i;)Lnet/minecraft/world/phys/Vec3;", remap = false))
+    @Redirect(method = "lambda$entityInside$0", at = @At(value = "INVOKE", target = "Lnet/createmod/catnip/math/VecHelper;getCenterOf(Lnet/minecraft/core/Vec3i;)Lnet/minecraft/world/phys/Vec3;", remap = false), remap = false)
     private static Vec3 sable$fixPos(final Vec3i pos, @Local(argsOnly = true) final TurntableBlockEntity be) {
         final Level level = be.getLevel();
         return JOMLConversion.toMojang(Sable.HELPER.projectOutOfSubLevel(level, JOMLConversion.atCenterOf(pos)));

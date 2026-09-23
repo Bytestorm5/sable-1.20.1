@@ -1,8 +1,10 @@
 {
   "replace": false,
   "values": [
-    "#c:stones",
-    "#c:cobblestones",
+    { "id": "#c:stones", "required": false },
+    { "id": "#forge:stone", "required": false },
+    { "id": "#c:cobblestones", "required": false },
+    { "id": "#forge:cobblestone", "required": false },
     "minecraft:blackstone",
     "minecraft:basalt",
     "minecraft:smooth_basalt",

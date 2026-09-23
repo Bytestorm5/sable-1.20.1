@@ -19,13 +19,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(OpenEndedPipe.class)
 public abstract class OpenEndedPipeMixin {
-    @Shadow
+    @Shadow(remap = false)
     private BlockPos outputPos;
 
-    @Shadow
+    @Shadow(remap = false)
     private Level world;
 
-    @Shadow
+    @Shadow(remap = false)
     public abstract BlockPos getPos();
 
     @Unique

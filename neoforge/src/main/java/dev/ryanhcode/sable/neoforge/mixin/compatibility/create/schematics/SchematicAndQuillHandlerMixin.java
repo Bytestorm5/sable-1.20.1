@@ -30,19 +30,19 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(SchematicAndQuillHandler.class)
 public abstract class SchematicAndQuillHandlerMixin {
 
-    @Shadow
+    @Shadow(remap = false)
     public BlockPos firstPos;
 
-    @Shadow
+    @Shadow(remap = false)
     protected abstract AABB getCurrentSelectionBox();
 
-    @Shadow
+    @Shadow(remap = false)
     protected abstract Outliner outliner();
 
-    @Shadow
+    @Shadow(remap = false)
     private Object outlineSlot;
 
-    @Shadow
+    @Shadow(remap = false)
     public BlockPos secondPos;
 
     @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/core/BlockPos;containing(Lnet/minecraft/core/Position;)Lnet/minecraft/core/BlockPos;"))

@@ -16,7 +16,7 @@ import re
 import sys
 from collections import defaultdict
 
-ERR = re.compile(r"^(/\S+\.java):(\d+): error: Unable to locate obfuscation mapping for @(\w+)")
+ERR = re.compile(r"^(/\S+\.java):(\d+): (?:error|warning): (?:Unable to locate obfuscation mapping for|Unable to determine descriptor for) @(\w+)")
 WARN = re.compile(r"^(/\S+\.java):(\d+): warning: Unable to locate (?:method|field) mapping for @At\((\w+)\.<target>\) '([^']+)'")
 MC_TARGET = re.compile(r'target\s*=\s*"L(net/minecraft/|com/mojang/blaze3d/|com/mojang/math/)')
 

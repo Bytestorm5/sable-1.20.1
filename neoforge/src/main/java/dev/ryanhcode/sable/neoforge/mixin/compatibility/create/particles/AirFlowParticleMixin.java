@@ -25,7 +25,7 @@ public abstract class AirFlowParticleMixin extends SimpleAnimatedParticle {
 
     @Unique
     Vec3 sable$subLevelOrientation;
-    @Shadow
+    @Shadow(remap = false)
     @Final
     private IAirCurrentSource source;
 

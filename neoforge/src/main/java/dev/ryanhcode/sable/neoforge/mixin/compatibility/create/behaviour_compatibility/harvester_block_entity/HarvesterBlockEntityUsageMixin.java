@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(HarvesterMovementBehaviour.class)
 public class HarvesterBlockEntityUsageMixin {
 
-    @WrapOperation(method = "lambda$visitNewPosition$0", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/contraptions/actors/harvester/HarvesterMovementBehaviour;collectOrDropItem(Lcom/simibubi/create/content/contraptions/behaviour/MovementContext;Lnet/minecraft/world/item/ItemStack;)V", remap = false))
+    @WrapOperation(method = "lambda$visitNewPosition$0", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/contraptions/actors/harvester/HarvesterMovementBehaviour;collectOrDropItem(Lcom/simibubi/create/content/contraptions/behaviour/MovementContext;Lnet/minecraft/world/item/ItemStack;)V", remap = false), remap = false)
     public void sable$replaceDropItem(final HarvesterMovementBehaviour instance, final MovementContext movementContext, final ItemStack itemStack, final Operation<Void> original) {
         if (movementContext instanceof DummyMovementContext) {
             HarvesterTicker.dropItem(movementContext.world, itemStack, movementContext.localPos);

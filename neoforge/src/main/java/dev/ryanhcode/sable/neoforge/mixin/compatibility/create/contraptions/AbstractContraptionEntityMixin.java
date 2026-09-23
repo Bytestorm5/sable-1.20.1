@@ -55,7 +55,7 @@ public abstract class AbstractContraptionEntityMixin extends Entity implements K
     private final Object2ObjectMap<BlockPos, BlockSubLevelLiftProvider.LiftProviderContext> sable$liftProviderContexts = new Object2ObjectOpenHashMap<>();
     @Unique
     private final FloatingClusterContainer sable$floatingClusterContainer = new FloatingClusterContainer();
-    @Shadow
+    @Shadow(remap = false)
     protected Contraption contraption;
     @Unique
     private BoundingBox3i sable$localBounds;
@@ -68,13 +68,13 @@ public abstract class AbstractContraptionEntityMixin extends Entity implements K
         super(arg, arg2);
     }
 
-    @Shadow
+    @Shadow(remap = false)
     public abstract Vec3 applyRotation(Vec3 localPos, float partialTicks);
 
-    @Shadow
+    @Shadow(remap = false)
     public abstract Vec3 getPrevAnchorVec();
 
-    @Shadow
+    @Shadow(remap = false)
     public abstract Vec3 getAnchorVec();
 
     @Redirect(method = "moveCollidedEntitiesOnDisassembly", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/contraptions/AbstractContraptionEntity;toLocalVector(Lnet/minecraft/world/phys/Vec3;F)Lnet/minecraft/world/phys/Vec3;", remap = false), remap = false)

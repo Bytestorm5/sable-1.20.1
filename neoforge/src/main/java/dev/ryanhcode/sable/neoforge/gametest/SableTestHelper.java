@@ -40,23 +40,23 @@ public final class SableTestHelper {
     }
 
     public static Vector3d absoluteDirection(final GameTestHelper helper, final Vector3dc localDirection) {
-        return new Vector3d(localDirection).rotateY(-getAngle(helper.getTestRotation()));
+        return new Vector3d(localDirection).rotateY(-getAngle(helper.testInfo.getRotation()));
     }
 
     public static Vector3d localDirection(final GameTestHelper helper, final Vector3dc globalDirection) {
-        return new Vector3d(globalDirection).rotateY(getAngle(helper.getTestRotation()));
+        return new Vector3d(globalDirection).rotateY(getAngle(helper.testInfo.getRotation()));
     }
 
     public static Vector3d absolutePosition(final GameTestHelper helper, final Vector3dc localPosition) {
         final BlockPos origin = helper.testInfo.getStructureBlockPos();
-        final Vector3d pos = localPosition.sub(0.5, 0.5, 0.5, new Vector3d()).rotateY(-getAngle(helper.getTestRotation()));
+        final Vector3d pos = localPosition.sub(0.5, 0.5, 0.5, new Vector3d()).rotateY(-getAngle(helper.testInfo.getRotation()));
         return pos.add(origin.getX() + 0.5, origin.getY() + 0.5, origin.getZ() + 0.5);
     }
 
     public static Vector3d localPosition(final GameTestHelper helper, final Vector3dc globalPosition) {
         final BlockPos origin = helper.testInfo.getStructureBlockPos();
         final Vector3d pos = globalPosition.sub(origin.getX(), origin.getY(), origin.getZ(), new Vector3d());
-        return pos.rotateY(getAngle(helper.getTestRotation()));
+        return pos.rotateY(getAngle(helper.testInfo.getRotation()));
     }
 
     public static double getAngle(final Rotation rotation) {
