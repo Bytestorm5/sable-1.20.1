@@ -1,4 +1,4 @@
-modLoader = "javafml"
+modLoader = "lowcodefml"
 loaderVersion = "${forge_loader_version_range}"
 license = "MIT"
 issueTrackerURL = "https://github.com/ryanhcode/sable/issues"

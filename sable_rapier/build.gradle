@@ -233,6 +233,8 @@ configurations {
 
 dependencies {
     implementation "org.apache.maven:maven-artifact:3.8.5"
+    // Minecraft 1.21 ships lz4-java; 1.20.1 doesn't, so the loader module bundles it
+    implementation "org.lz4:lz4-java:1.8.0"
 
     compileOnly(project(':common')) {
         capabilities {

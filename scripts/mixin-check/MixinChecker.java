@@ -160,6 +160,15 @@ public final class MixinChecker {
     private void checkAgainst(final ClassNode mixin, final ClassNode target) {
         final String where = simple(mixin.name);
 
+        // Mixin 0.8.5 (Forge 1.20.1) rejects interface mixins with non-public methods, including lambdas
+        if ((mixin.access & Opcodes.ACC_INTERFACE) != 0) {
+            for (final MethodNode method : mixin.methods) {
+                if ((method.access & Opcodes.ACC_PUBLIC) == 0 && !method.name.equals("<clinit>")) {
+                    this.errors.add(where + ": interface mixin has non-public method " + method.name + method.desc);
+                }
+            }
+        }
+
         for (final FieldNode field : mixin.fields) {
             if (annotation(field, SHADOW) != null) {
                 final String name = stripPrefix(field.name, annotation(field, SHADOW));

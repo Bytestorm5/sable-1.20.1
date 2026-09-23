@@ -103,6 +103,13 @@ dependencies {
     compileOnly "io.github.spair:imgui-java-binding:1.92.0"
 
     jarJar(runtimeOnly(project(path: ":sable_rapier", configuration: "runtimeElements")))
+    // Used by sable_rapier to unpack its natives; Minecraft 1.21 ships it but 1.20.1 doesn't
+    jarJar(additionalRuntimeClasspath("org.lz4:lz4-java:1.8.0")) {
+        version {
+            strictly "[1.8.0,2.0)"
+            prefer "1.8.0"
+        }
+    }
 }
 
 // Static mixin audit against the real 1.20.1 target classes (scripts/mixin-check/MixinChecker.java):

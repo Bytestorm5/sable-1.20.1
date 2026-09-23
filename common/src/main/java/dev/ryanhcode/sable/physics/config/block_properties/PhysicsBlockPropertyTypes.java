@@ -9,6 +9,9 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 /**
  * All default physics block properties
  */
@@ -16,6 +19,11 @@ public class PhysicsBlockPropertyTypes {
     public static final ResourceKey<Registry<PhysicsBlockPropertyType<?>>> REGISTRY_KEY = ResourceKey.createRegistryKey(Sable.sablePath("physics_block_properties"));
     private static final RegistrationProvider<PhysicsBlockPropertyType<?>> VANILLA_PROVIDER;
     private static final Registry<PhysicsBlockPropertyType<?>> REGISTRY;
+    /**
+     * Registered ids, in registration order. On Forge 1.20.1 the registry itself only exists once registries are
+     * created (after mod construction), so duplicates and indices are tracked here.
+     */
+    private static final Set<ResourceLocation> REGISTERED_IDS = new LinkedHashSet<>();
 
     static {
         VANILLA_PROVIDER = RegistrationProvider.get(REGISTRY_KEY, Sable.MOD_ID);
@@ -67,11 +75,12 @@ public class PhysicsBlockPropertyTypes {
      */
     private static <T> RegistryObject<PhysicsBlockPropertyType<T>> register(final ResourceLocation id, final Codec<T> codec, final T defaultValue) {
         // Throw if the property is already registered
-        if (REGISTRY.containsKey(id)) {
+        if (!REGISTERED_IDS.add(id)) {
             throw new IllegalArgumentException("Duplicate physics block property: %s".formatted(id));
         }
 
-        return VANILLA_PROVIDER.register(id, () -> new PhysicsBlockPropertyType<>(REGISTRY.size(), codec, defaultValue));
+        final int index = REGISTERED_IDS.size() - 1;
+        return VANILLA_PROVIDER.register(id, () -> new PhysicsBlockPropertyType<>(index, codec, defaultValue));
     }
 
     /**
