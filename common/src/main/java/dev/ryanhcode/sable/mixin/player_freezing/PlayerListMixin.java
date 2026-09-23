@@ -1,6 +1,6 @@
 package dev.ryanhcode.sable.mixin.player_freezing;
 
-import dev.ryanhcode.sable.network.tcp.SablePacketManager;
+import foundry.veil.impl.network.VeilPayloadRegistry;
 import dev.ryanhcode.sable.mixinterface.player_freezing.PlayerFreezeExtension;
 import dev.ryanhcode.sable.mixinterface.respawn_point.ServerPlayerRespawnExtension;
 import dev.ryanhcode.sable.network.packets.tcp.ClientboundFreezePlayerPacket;
@@ -24,7 +24,7 @@ public class PlayerListMixin {
             final UUID uuid = extension.sable$getFrozenToSubLevel();
 
             if (uuid != null) {
-                serverPlayer.connection.send(SablePacketManager.toClientbound(new ClientboundFreezePlayerPacket(uuid, extension.sable$getFrozenToSubLevelAnchor())));
+                serverPlayer.connection.send(VeilPayloadRegistry.toClientbound(new ClientboundFreezePlayerPacket(uuid, extension.sable$getFrozenToSubLevelAnchor())));
             }
         }
     }

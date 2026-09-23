@@ -6,7 +6,7 @@ import dev.ryanhcode.sable.companion.math.Pose3d;
 import dev.ryanhcode.sable.companion.math.Pose3dc;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
-import dev.ryanhcode.sable.backport.network.codec.StreamCodec;
+import foundry.veil.backport.network.codec.StreamCodec;
 import org.joml.*;
 
 public class SableBufferUtils {

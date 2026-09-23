@@ -124,12 +124,7 @@ public class FancySubLevelRenderDispatcher implements SubLevelRenderDispatcher {
 
             final ByteBuffer indices = stack.bytes((byte) 0, (byte) 1, (byte) 2, (byte) 2, (byte) 3, (byte) 0);
 
-            // TODO(veil-1.20.1): VertexArray#upload is overloaded with 1.21's MeshData, which can't be resolved on 1.20.1,
-            //  so this is the non-DSA path of VertexArray.upload(vbo, buffer, VertexArray.DrawUsage.STATIC) inlined.
-            //  Switch back to the Veil call once the ported Veil drops the MeshData overloads.
-            glBindBuffer(GL_ARRAY_BUFFER, vbo);
-            glBufferData(GL_ARRAY_BUFFER, buffer, VertexArray.DrawUsage.STATIC.getGlType());
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
+            VertexArray.upload(vbo, buffer, VertexArray.DrawUsage.STATIC);
             this.vertexArray.uploadIndexBuffer(indices, VertexArray.IndexType.BYTE);
         }
 

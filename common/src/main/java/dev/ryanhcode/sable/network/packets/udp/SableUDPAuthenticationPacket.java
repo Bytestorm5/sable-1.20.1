@@ -4,7 +4,7 @@ import dev.ryanhcode.sable.network.udp.SableUDPPacket;
 import dev.ryanhcode.sable.network.udp.SableUDPPacketType;
 import dev.ryanhcode.sable.network.udp.SableUDPServer;
 import net.minecraft.network.FriendlyByteBuf;
-import dev.ryanhcode.sable.backport.network.codec.StreamCodec;
+import foundry.veil.backport.network.codec.StreamCodec;
 import net.minecraft.server.MinecraftServer;
 
 import java.net.InetSocketAddress;

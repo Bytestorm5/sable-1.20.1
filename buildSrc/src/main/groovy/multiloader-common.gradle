@@ -27,6 +27,7 @@ java {
 }
 
 repositories {
+    mavenLocal() // Veil for 1.20.1, see gradle.properties
     mavenCentral()
     exclusiveContent {
         forRepository {

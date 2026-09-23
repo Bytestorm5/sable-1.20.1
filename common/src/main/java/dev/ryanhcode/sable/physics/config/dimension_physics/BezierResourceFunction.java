@@ -5,8 +5,8 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.ryanhcode.sable.util.SableCodecUtil;
 import io.netty.buffer.ByteBuf;
-import dev.ryanhcode.sable.backport.network.codec.ByteBufCodecs;
-import dev.ryanhcode.sable.backport.network.codec.StreamCodec;
+import foundry.veil.backport.network.codec.ByteBufCodecs;
+import foundry.veil.backport.network.codec.StreamCodec;
 
 import java.util.ArrayList;
 import java.util.List;

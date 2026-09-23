@@ -92,20 +92,12 @@ dependencies {
 
     modCompileOnly("maven.modrinth:sodium-extras:$sodiumextras_version") { transitive = false }
 
-    // See gradle.properties: the 1.21.1 build of Veil is a compile-only stand-in until Veil 4.x is ported.
-    if (veil_minecraft_version == minecraft_version) {
-        modImplementation(jarJar("foundry.veil:veil-forge-${project.minecraft_version}:${project.veil_version}")) {
-            exclude group: "maven.modrinth"
-            exclude group: "me.fallenbreath"
-        }
-    } else {
-        compileOnly("foundry.veil:veil-neoforge-${project.veil_minecraft_version}:${project.veil_version}") {
-            transitive = false
-        }
-        compileOnly "io.github.ocelot:glsl-processor:0.2.3"
-        compileOnly "gg.moonflower:molang-compiler:3.1.1.19"
-        compileOnly "io.github.spair:imgui-java-binding:1.92.0"
+    modImplementation(jarJar("foundry.veil:veil-forge-${project.minecraft_version}:${project.veil_version}")) {
+        exclude group: "maven.modrinth"
+        exclude group: "me.fallenbreath"
     }
+    // Veil's ImGui editor API (the ImGuiMC runtime is optional)
+    compileOnly "io.github.spair:imgui-java-binding:1.92.0"
 
     jarJar(runtimeOnly(project(path: ":sable_rapier", configuration: "runtimeElements")))
 }

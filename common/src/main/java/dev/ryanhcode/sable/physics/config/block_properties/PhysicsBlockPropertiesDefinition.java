@@ -4,8 +4,8 @@ import com.mojang.serialization.Codec;
 import dev.ryanhcode.sable.backport.serialization.BackportCodecs;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
-import dev.ryanhcode.sable.backport.network.codec.ByteBufCodecs;
-import dev.ryanhcode.sable.backport.network.codec.StreamCodec;
+import foundry.veil.backport.network.codec.ByteBufCodecs;
+import foundry.veil.backport.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ExtraCodecs;
 

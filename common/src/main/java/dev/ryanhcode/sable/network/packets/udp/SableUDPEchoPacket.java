@@ -5,7 +5,7 @@ import dev.ryanhcode.sable.network.udp.SableUDPPacketType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import dev.ryanhcode.sable.backport.network.codec.StreamCodec;
+import foundry.veil.backport.network.codec.StreamCodec;
 import net.minecraft.world.level.Level;
 
 public record SableUDPEchoPacket(String text) implements SableUDPPacket {

@@ -57,10 +57,8 @@ dependencies {
 
     api(project(':sable_companion'))
 
-    // See gradle.properties: the 1.21.1 build of Veil is a compile-only stand-in until Veil 4.x is ported.
-    compileOnly("foundry.veil:veil-common-${project.veil_minecraft_version}:${project.veil_version}") {
-        transitive = false
-    }
+    compileOnly("foundry.veil:veil-common-${project.minecraft_version}:${project.veil_version}")
+    // Veil common is published without its dependency metadata
     compileOnly "io.github.ocelot:glsl-processor:0.2.3"
     compileOnly "gg.moonflower:molang-compiler:3.1.1.19"
     compileOnly "io.github.spair:imgui-java-binding:1.92.0"

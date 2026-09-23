@@ -1,5 +1,6 @@
 package dev.ryanhcode.sable.network.packets.tcp;
 
+import foundry.veil.backport.network.codec.VanillaStreamCodecs;
 import dev.ryanhcode.sable.Sable;
 import dev.ryanhcode.sable.api.sublevel.ClientSubLevelContainer;
 import dev.ryanhcode.sable.api.sublevel.SubLevelContainer;
@@ -8,26 +9,25 @@ import dev.ryanhcode.sable.network.tcp.SableTCPPacket;
 import dev.ryanhcode.sable.sublevel.ClientSubLevel;
 import dev.ryanhcode.sable.sublevel.SubLevel;
 import dev.ryanhcode.sable.util.SableBufferUtils;
-import dev.ryanhcode.sable.network.tcp.SablePacketContext;
+import foundry.veil.api.network.handler.PacketContext;
 import net.minecraft.network.FriendlyByteBuf;
-import dev.ryanhcode.sable.backport.network.codec.StreamCodec;
-import dev.ryanhcode.sable.backport.network.protocol.common.custom.CustomPacketPayload;
+import foundry.veil.backport.network.codec.StreamCodec;
+import foundry.veil.backport.network.protocol.common.custom.CustomPacketPayload;
 
 import java.util.UUID;
 
-import dev.ryanhcode.sable.backport.network.codec.ByteBufCodecs;
 public record ClientboundRecentlySplitSubLevelPacket(UUID splitSubLevelID, UUID splitFromID, Pose3d pose) implements SableTCPPacket {
     public static Type<ClientboundRecentlySplitSubLevelPacket> TYPE = new Type<>(Sable.sablePath("recently_split_sub_level"));
     public static StreamCodec<FriendlyByteBuf, ClientboundRecentlySplitSubLevelPacket> CODEC = StreamCodec.composite(
-            ByteBufCodecs.UUID,
+            VanillaStreamCodecs.UUID,
             ClientboundRecentlySplitSubLevelPacket::splitSubLevelID,
-            ByteBufCodecs.UUID,
+            VanillaStreamCodecs.UUID,
             ClientboundRecentlySplitSubLevelPacket::splitFromID,
             SableBufferUtils.POSE3D_STREAM_CODEC,
             ClientboundRecentlySplitSubLevelPacket::pose,
             ClientboundRecentlySplitSubLevelPacket::new);
 
-    public void handle(final SablePacketContext context) {
+    public void handle(final PacketContext context) {
         final SubLevelContainer container = SubLevelContainer.getContainer(context.level());
         if (container instanceof final ClientSubLevelContainer clientContainer) {
             final SubLevel subLevel = container.getSubLevel(this.splitSubLevelID);

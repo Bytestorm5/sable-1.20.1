@@ -10,7 +10,7 @@ import io.netty.channel.ChannelFutureListener;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
-import dev.ryanhcode.sable.backport.network.codec.StreamCodec;
+import foundry.veil.backport.network.codec.StreamCodec;
 import net.minecraft.world.level.Level;
 
 import java.net.InetSocketAddress;

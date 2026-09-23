@@ -2,7 +2,8 @@
 """
 Mechanical source rewrites for the 1.21.1 -> 1.20.1 backport.
 
-Rewrites imports of 1.21-only utility types to Sable's backport package and replaces a handful of 1.21 call forms with
+Rewrites imports of 1.21-only utility types to the backports Veil 1.20.1 ships (foundry.veil.backport.*, so that
+payloads and codecs can be handed straight to Veil's VeilPacketManager) and replaces a handful of 1.21 call forms with
 their 1.20.1 equivalents. Idempotent; run from the repository root:
 
     python3 scripts/backport_rewrite.py common/src neoforge/src
@@ -11,7 +12,7 @@ import re
 import sys
 from pathlib import Path
 
-BACKPORT = "dev.ryanhcode.sable.backport"
+BACKPORT = "foundry.veil.backport"
 
 # Fully-qualified 1.21 name -> replacement fully-qualified name
 IMPORTS = {
@@ -21,6 +22,7 @@ IMPORTS = {
     "net.minecraft.network.codec.StreamMemberEncoder": f"{BACKPORT}.network.codec.StreamMemberEncoder",
     "net.minecraft.network.codec.ByteBufCodecs": f"{BACKPORT}.network.codec.ByteBufCodecs",
     "net.minecraft.client.DeltaTracker": f"{BACKPORT}.client.DeltaTracker",
+    "net.minecraft.network.protocol.common.custom.CustomPacketPayload": f"{BACKPORT}.network.protocol.common.custom.CustomPacketPayload",
     # 1.20.1 has no registry-aware buffer; packets use FriendlyByteBuf
     "net.minecraft.network.RegistryFriendlyByteBuf": "net.minecraft.network.FriendlyByteBuf",
     # Moved packages
@@ -76,8 +78,8 @@ EXPRESSIONS = [
     (re.compile(r"\bResourceLocation\.parse\("), "new ResourceLocation("),
     (re.compile(r"\bResourceLocation\.withDefaultNamespace\("), "new ResourceLocation("),
     # Stream codec constants that live on vanilla types in 1.21
-    (re.compile(r"\bUUIDUtil\.STREAM_CODEC\b"), "ByteBufCodecs.UUID"),
-    (re.compile(r"\bResourceLocation\.STREAM_CODEC\b"), "ByteBufCodecs.RESOURCE_LOCATION"),
+    (re.compile(r"\bUUIDUtil\.STREAM_CODEC\b"), "VanillaStreamCodecs.UUID"),
+    (re.compile(r"\bResourceLocation\.STREAM_CODEC\b"), "VanillaStreamCodecs.RESOURCE_LOCATION"),
     # ModConfigSpec values implement BooleanSupplier/IntSupplier/...; ForgeConfigSpec values are plain Suppliers
     (re.compile(r"(Config\.[A-Z0-9_]+)\.getAs(?:Boolean|Int|Double|Long)\(\)"), r"\1.get()"),
     # DataFixerUpper 6 (1.20.1) has no argument-less getOrThrow
@@ -122,8 +124,8 @@ def rewrite(src: str) -> str:
         src = re.sub(old, new, src)
     for pattern, new in EXPRESSIONS:
         src = pattern.sub(new, src)
-    if "ByteBufCodecs." in src and "ByteBufCodecs;" not in src and "package dev.ryanhcode.sable.backport.network.codec;" not in src:
-        src = add_import(src, f"{BACKPORT}.network.codec.ByteBufCodecs")
+    if "VanillaStreamCodecs." in src and "VanillaStreamCodecs;" not in src:
+        src = add_import(src, f"{BACKPORT}.network.codec.VanillaStreamCodecs")
     if "Mth.clamp(" in src and "import net.minecraft.util.Mth;" not in src:
         src = add_import(src, "net.minecraft.util.Mth")
     if src == original:

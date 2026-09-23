@@ -3,8 +3,8 @@ package dev.ryanhcode.sable.physics.floating_block;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
-import dev.ryanhcode.sable.backport.network.codec.ByteBufCodecs;
-import dev.ryanhcode.sable.backport.network.codec.StreamCodec;
+import foundry.veil.backport.network.codec.ByteBufCodecs;
+import foundry.veil.backport.network.codec.StreamCodec;
 
 public record FloatingBlockMaterial(boolean preventSelfLift, boolean scaleWithPressure,boolean scaleWithGravity, double liftStrength,
                                     double transitionSpeed, double slowVerticalFriction, double fastVerticalFriction,

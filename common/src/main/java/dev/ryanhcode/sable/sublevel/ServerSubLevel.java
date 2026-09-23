@@ -1,5 +1,6 @@
 package dev.ryanhcode.sable.sublevel;
 
+import foundry.veil.api.network.VeilPacketManager;
 import dev.ryanhcode.sable.Sable;
 import dev.ryanhcode.sable.SableConfig;
 import dev.ryanhcode.sable.api.block.BlockEntitySubLevelActor;
@@ -28,7 +29,6 @@ import dev.ryanhcode.sable.sublevel.plot.heat.SubLevelHeatMapManager;
 import dev.ryanhcode.sable.sublevel.storage.holding.GlobalSavedSubLevelPointer;
 import dev.ryanhcode.sable.sublevel.system.SubLevelPhysicsSystem;
 import dev.ryanhcode.sable.util.LevelAccelerator;
-import dev.ryanhcode.sable.network.tcp.SablePacketManager;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectCollection;
@@ -155,7 +155,7 @@ public class ServerSubLevel extends SubLevel implements PhysicsPipelineBody {
     /**
      * @return packet sink for all players currently tracking this sub-level
      */
-    public SablePacketManager.PacketSink playerSink() {
+    public VeilPacketManager.PacketSink playerSink() {
         return packet -> {
             for (final UUID uuid : this.trackingPlayers) {
                 final ServerPlayer player = (ServerPlayer) this.getLevel().getPlayerByUUID(uuid);

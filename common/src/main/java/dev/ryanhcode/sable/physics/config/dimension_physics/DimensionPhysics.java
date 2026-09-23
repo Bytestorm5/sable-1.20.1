@@ -1,11 +1,12 @@
 package dev.ryanhcode.sable.physics.config.dimension_physics;
 
+import foundry.veil.backport.network.codec.VanillaStreamCodecs;
 import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
-import dev.ryanhcode.sable.backport.network.codec.ByteBufCodecs;
-import dev.ryanhcode.sable.backport.network.codec.StreamCodec;
+import foundry.veil.backport.network.codec.ByteBufCodecs;
+import foundry.veil.backport.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.Level;
@@ -35,7 +36,7 @@ public record DimensionPhysics(ResourceLocation dimension, int priority, Optiona
 
     public static final StreamCodec<ByteBuf, DimensionPhysics> STREAM_CODEC = StreamCodec.ofMember(
             (dim, buf) -> {
-                ByteBufCodecs.RESOURCE_LOCATION.encode(buf, dim.dimension);
+                VanillaStreamCodecs.RESOURCE_LOCATION.encode(buf, dim.dimension);
                 ByteBufCodecs.INT.encode(buf, dim.priority);
                 ByteBufCodecs.FLOAT.apply(ByteBufCodecs::optional).encode(buf, dim.universalDrag);
                 ByteBufCodecs.VECTOR3F.apply(ByteBufCodecs::optional).encode(buf, dim.baseGravity);
@@ -45,7 +46,7 @@ public record DimensionPhysics(ResourceLocation dimension, int priority, Optiona
                 ByteBufCodecs.BOOL.encode(buf, dim.ignoreChunks);
             },
             buf -> new DimensionPhysics(
-                ByteBufCodecs.RESOURCE_LOCATION.decode(buf),
+                VanillaStreamCodecs.RESOURCE_LOCATION.decode(buf),
                 ByteBufCodecs.INT.decode(buf),
                 ByteBufCodecs.FLOAT.apply(ByteBufCodecs::optional).decode(buf),
                 ByteBufCodecs.VECTOR3F.apply(ByteBufCodecs::optional).decode(buf),

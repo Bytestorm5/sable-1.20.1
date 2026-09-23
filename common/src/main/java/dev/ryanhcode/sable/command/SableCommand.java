@@ -1,5 +1,6 @@
 package dev.ryanhcode.sable.command;
 
+import foundry.veil.api.network.VeilPacketManager;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -18,7 +19,6 @@ import dev.ryanhcode.sable.network.udp.SableUDPServer;
 import dev.ryanhcode.sable.sublevel.ServerSubLevel;
 import dev.ryanhcode.sable.sublevel.storage.holding.GlobalSavedSubLevelPointer;
 import dev.ryanhcode.sable.sublevel.system.SubLevelPhysicsSystem;
-import dev.ryanhcode.sable.network.tcp.SablePacketManager;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
@@ -97,7 +97,7 @@ public class SableCommand {
 
         SableCommandHelper.requireSubLevelPhysicsSystem(ctx).setPaused(true);
 
-        SablePacketManager.player(player).sendPacket(new ClientboundEnterGizmoPacket());
+        VeilPacketManager.player(player).sendPacket(new ClientboundEnterGizmoPacket());
         return 1;
     }
 

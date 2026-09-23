@@ -7,7 +7,7 @@ import dev.ryanhcode.sable.network.packets.udp.SableUDPClientboundKeepAlivePacke
 import dev.ryanhcode.sable.network.packets.udp.SableUDPEchoPacket;
 import dev.ryanhcode.sable.network.packets.udp.SableUDPServerboundAlivePacket;
 import net.minecraft.network.FriendlyByteBuf;
-import dev.ryanhcode.sable.backport.network.codec.StreamCodec;
+import foundry.veil.backport.network.codec.StreamCodec;
 
 public enum SableUDPPacketType {
     PING(SableUDPEchoPacket.CODEC),

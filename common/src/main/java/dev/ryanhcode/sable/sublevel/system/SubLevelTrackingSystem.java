@@ -1,5 +1,7 @@
 package dev.ryanhcode.sable.sublevel.system;
 
+import foundry.veil.api.network.VeilPacketManager;
+import foundry.veil.impl.network.VeilPayloadRegistry;
 import dev.ryanhcode.sable.SableConfig;
 import dev.ryanhcode.sable.api.sublevel.SubLevelContainer;
 import dev.ryanhcode.sable.api.sublevel.SubLevelObserver;
@@ -16,13 +18,12 @@ import dev.ryanhcode.sable.sublevel.plot.LevelPlot;
 import dev.ryanhcode.sable.sublevel.plot.PlotChunkHolder;
 import dev.ryanhcode.sable.sublevel.plot.SubLevelPlayerChunkSender;
 import dev.ryanhcode.sable.sublevel.storage.SubLevelRemovalReason;
-import dev.ryanhcode.sable.network.tcp.SablePacketManager;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.network.protocol.Packet;
-import dev.ryanhcode.sable.backport.network.protocol.common.custom.CustomPacketPayload;
+import foundry.veil.backport.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBundlePacket;
 import net.minecraft.server.level.ServerLevel;
@@ -76,7 +77,7 @@ public class SubLevelTrackingSystem implements SubLevelObserver {
         this.sendRemoval(this.serverWidePlayerSink(serverSubLevel), serverSubLevel);
     }
 
-    public SablePacketManager.PacketSink serverWidePlayerSink(final ServerSubLevel serverSubLevel) {
+    public VeilPacketManager.PacketSink serverWidePlayerSink(final ServerSubLevel serverSubLevel) {
         return packet -> {
             for (final UUID uuid : serverSubLevel.getTrackingPlayers()) {
                 final ServerPlayer player = this.level.getServer().getPlayerList().getPlayer(uuid);
@@ -107,17 +108,17 @@ public class SubLevelTrackingSystem implements SubLevelObserver {
         final Collection<PlotChunkHolder> chunks = plot.getLoadedChunks();
         final ObjectList<Packet<? super ClientGamePacketListener>> packets = new ObjectArrayList<>(3 + chunks.size());
 
-        packets.add(SablePacketManager.toClientbound(new ClientboundStartTrackingSubLevelPacket(l, subLevel.getUniqueId(), subLevel.lastPose(), subLevel.logicalPose(), plot.getBoundingBox(), subLevel.getName(), this.interpolationTick)));
+        packets.add(VeilPayloadRegistry.toClientbound(new ClientboundStartTrackingSubLevelPacket(l, subLevel.getUniqueId(), subLevel.lastPose(), subLevel.logicalPose(), plot.getBoundingBox(), subLevel.getName(), this.interpolationTick)));
 
         if (extraPacket != null) {
-            packets.add(SablePacketManager.toClientbound(extraPacket));
+            packets.add(VeilPayloadRegistry.toClientbound(extraPacket));
         }
 
         for (final PlotChunkHolder chunk : chunks) {
             SubLevelPlayerChunkSender.sendChunk(packets::add, plot.getLightEngine(), chunk.getChunk());
         }
 
-        packets.add(SablePacketManager.toClientbound(new ClientboundFinalizeSubLevelPacket(l)));
+        packets.add(VeilPayloadRegistry.toClientbound(new ClientboundFinalizeSubLevelPacket(l)));
         //noinspection unchecked
         player.connection.send(new ClientboundBundlePacket((Iterable<Packet<ClientGamePacketListener>>) (Iterable<?>) packets));
 
@@ -126,7 +127,7 @@ public class SubLevelTrackingSystem implements SubLevelObserver {
         }
     }
 
-    private void sendRemoval(final SablePacketManager.PacketSink sink, final ServerSubLevel subLevel) {
+    private void sendRemoval(final VeilPacketManager.PacketSink sink, final ServerSubLevel subLevel) {
         final SubLevelContainer container = SubLevelContainer.getContainer(this.level);
         assert container != null;
 
@@ -197,7 +198,7 @@ public class SubLevelTrackingSystem implements SubLevelObserver {
 
                     if (serverWidePlayer != null) {
                         // they are still online, just not in this world
-                        this.sendRemoval(SablePacketManager.player(serverWidePlayer), serverSubLevel);
+                        this.sendRemoval(VeilPacketManager.player(serverWidePlayer), serverSubLevel);
                     }
 
                     iter.remove();
@@ -205,7 +206,7 @@ public class SubLevelTrackingSystem implements SubLevelObserver {
                 }
 
                 if (!this.shouldLoad(player, entityPos)) {
-                    this.sendRemoval(SablePacketManager.player(player), serverSubLevel);
+                    this.sendRemoval(VeilPacketManager.player(player), serverSubLevel);
                     iter.remove();
                 }
             }
@@ -326,11 +327,11 @@ public class SubLevelTrackingSystem implements SubLevelObserver {
 
             if (!movementUpdates.containsKey(uuid)) {
                 if (this.pluginNeededPlayers.contains(uuid)) {
-                    player.connection.send(SablePacketManager.toClientbound(new ClientboundSableSnapshotInfoDualPacket(msSinceLastSend, this.interpolationTick, false)));
+                    player.connection.send(VeilPayloadRegistry.toClientbound(new ClientboundSableSnapshotInfoDualPacket(msSinceLastSend, this.interpolationTick, false)));
                     continue;
                 }
 
-                player.connection.send(SablePacketManager.toClientbound(new ClientboundSableSnapshotInfoDualPacket(msSinceLastSend, this.interpolationTick, true)));
+                player.connection.send(VeilPayloadRegistry.toClientbound(new ClientboundSableSnapshotInfoDualPacket(msSinceLastSend, this.interpolationTick, true)));
 
                 currentlyUpdatingIter.remove();
             }
@@ -352,7 +353,7 @@ public class SubLevelTrackingSystem implements SubLevelObserver {
                 final long l = getSubLevelLong(serverSubLevel, container);
 
                 switch (ticket.type) {
-                    case STOP -> player.connection.send(SablePacketManager.toClientbound(new ClientboundStopMovingSubLevelPacket(l)));
+                    case STOP -> player.connection.send(VeilPayloadRegistry.toClientbound(new ClientboundStopMovingSubLevelPacket(l)));
                     case MOVE -> {
                         final Vector3f linearVelocity = new Vector3f((float) serverSubLevel.latestLinearVelocity.x, (float) serverSubLevel.latestLinearVelocity.y, (float) serverSubLevel.latestLinearVelocity.z);
                         final Vector3f angularVelocity = new Vector3f((float) serverSubLevel.latestAngularVelocity.x, (float) serverSubLevel.latestAngularVelocity.y, (float) serverSubLevel.latestAngularVelocity.z);
@@ -390,8 +391,8 @@ public class SubLevelTrackingSystem implements SubLevelObserver {
 
                     player.connection.send(
                             new ClientboundBundlePacket(List.of(
-                                    SablePacketManager.toClientbound(new ClientboundSableSnapshotInfoDualPacket(msSinceLastSend, this.interpolationTick, false)),
-                                    SablePacketManager.toClientbound(new ClientboundSableSnapshotDualPacket(this.interpolationTick, batch))
+                                    VeilPayloadRegistry.toClientbound(new ClientboundSableSnapshotInfoDualPacket(msSinceLastSend, this.interpolationTick, false)),
+                                    VeilPayloadRegistry.toClientbound(new ClientboundSableSnapshotDualPacket(this.interpolationTick, batch))
                             )));
                 }
             }

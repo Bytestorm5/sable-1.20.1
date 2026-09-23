@@ -1,6 +1,6 @@
 package dev.ryanhcode.sable.mixin.respawn_point;
 
-import dev.ryanhcode.sable.network.tcp.SablePacketManager;
+import foundry.veil.impl.network.VeilPayloadRegistry;
 import dev.ryanhcode.sable.Sable;
 import dev.ryanhcode.sable.api.SubLevelHelper;
 import dev.ryanhcode.sable.companion.math.JOMLConversion;
@@ -144,7 +144,7 @@ public abstract class ServerPlayerMixin implements ServerPlayerRespawnExtension 
 
         if (queuedFreeze != null) {
             ((PlayerFreezeExtension) this).sable$freezeTo(queuedFreeze.first(), queuedFreeze.second());
-            this.connection.send(SablePacketManager.toClientbound(new ClientboundFreezePlayerPacket(queuedFreeze.first(), queuedFreeze.second())));
+            this.connection.send(VeilPayloadRegistry.toClientbound(new ClientboundFreezePlayerPacket(queuedFreeze.first(), queuedFreeze.second())));
         }
     }
 

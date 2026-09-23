@@ -1,9 +1,9 @@
 package dev.ryanhcode.sable.network.tcp;
 
-import dev.ryanhcode.sable.network.tcp.SablePacketContext;
-import dev.ryanhcode.sable.backport.network.protocol.common.custom.CustomPacketPayload;
+import foundry.veil.api.network.handler.PacketContext;
+import foundry.veil.backport.network.protocol.common.custom.CustomPacketPayload;
 
 public interface SableTCPPacket extends CustomPacketPayload {
 
-    void handle(SablePacketContext context);
+    void handle(PacketContext context);
 }

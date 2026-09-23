@@ -1,6 +1,6 @@
 package dev.ryanhcode.sable.network.udp;
 
-import dev.ryanhcode.sable.network.tcp.SablePacketManager;
+import foundry.veil.impl.network.VeilPayloadRegistry;
 import dev.ryanhcode.sable.Sable;
 import dev.ryanhcode.sable.SableClient;
 import dev.ryanhcode.sable.SableConfig;
@@ -161,7 +161,7 @@ public class SableUDPServer {
 
         // Send the token to the client
         if (SableConfig.ATTEMPT_UDP_NETWORKING.get()) {
-            player.connection.send(SablePacketManager.toClientbound(new ClientboundSableUDPActivationPacket(token)));
+            player.connection.send(VeilPayloadRegistry.toClientbound(new ClientboundSableUDPActivationPacket(token)));
         }
     }
 
