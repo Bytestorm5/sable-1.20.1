@@ -42,11 +42,8 @@ public class SubLevelTrackingPointSavedData extends SavedData implements SubLeve
 
     public static SubLevelTrackingPointSavedData getOrLoad(final ServerLevel level) {
         return level.getDataStorage().computeIfAbsent(
-                new Factory<>(
-                        () -> new SubLevelTrackingPointSavedData(level),
-                        (tag, provider) -> SubLevelTrackingPointSavedData.load(level, tag),
-                        null
-                ),
+                tag -> SubLevelTrackingPointSavedData.load(level, tag),
+                () -> new SubLevelTrackingPointSavedData(level),
                 SubLevelTrackingPointSavedData.FILE_ID);
     }
 

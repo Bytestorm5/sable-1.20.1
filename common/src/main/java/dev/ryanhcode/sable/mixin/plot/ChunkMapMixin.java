@@ -1,6 +1,5 @@
 package dev.ryanhcode.sable.mixin.plot;
 
-import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import dev.ryanhcode.sable.api.sublevel.SubLevelContainer;
 import dev.ryanhcode.sable.sublevel.ServerSubLevel;
 import dev.ryanhcode.sable.sublevel.plot.LevelPlot;
@@ -58,19 +57,9 @@ public class ChunkMapMixin {
         return !updatingChunkMap.values().stream().anyMatch(chunkHolder -> !(chunkHolder instanceof PlotChunkHolder));
     }
 
-    @ModifyReturnValue(method = "isChunkTracked", at = @At(value = "RETURN"))
-    private boolean sable$isChunkTracked(boolean original, final ServerPlayer serverPlayer, final int x, final int z) {
-        final SubLevelContainer container = SubLevelContainer.getContainer(this.level);
-        assert container != null;
-
-        final LevelPlot plot = container.getPlot(new ChunkPos(x, z));
-        if (plot != null) {
-            final ServerSubLevel subLevel = (ServerSubLevel) plot.getSubLevel();
-            return subLevel.getTrackingPlayers().contains(serverPlayer.getGameProfile().getId());
-        }
-
-        return original;
-    }
+    // Note: 1.21's ChunkMap#isChunkTracked hook (plot chunks count as tracked by players tracking the owning sub-level)
+    // has no direct target on 1.20.1. Its call sites are covered by #sable$getPlayers above and by
+    // dev.ryanhcode.sable.mixin.plot.TrackedEntityMixin (entity pairing in plot chunks).
 
     @Inject(method = "anyPlayerCloseEnoughForSpawning", at = @At("HEAD"), cancellable = true)
     private void sable$anyPlayerCloseEnoughForSpawning(final ChunkPos chunkPos, final CallbackInfoReturnable<Boolean> cir) {
