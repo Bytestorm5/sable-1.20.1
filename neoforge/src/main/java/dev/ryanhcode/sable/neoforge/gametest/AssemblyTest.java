@@ -29,13 +29,14 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.entity.EntityTypeTest;
-import net.neoforged.neoforge.capabilities.Capabilities;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
@@ -59,6 +60,12 @@ public final class AssemblyTest {
             Direction.WEST,
             Direction.EAST
     };
+
+    @Nullable
+    private static IItemHandler getItemHandler(final Level level, final BlockPos pos, @Nullable final Direction direction) {
+        final BlockEntity blockEntity = level.getBlockEntity(pos);
+        return blockEntity != null ? blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER, direction).orElse(null) : null;
+    }
 
     @GameTest(template = "brittlebreak")
     public static void testBrittleBreaking(final GameTestHelper helper) {
@@ -179,7 +186,7 @@ public final class AssemblyTest {
 
                 boolean hasInventory = false;
                 for (@Nullable final Direction direction : CAPABILITY_DIRECTIONS) {
-                    final IItemHandler inventory = level.getCapability(Capabilities.ItemHandler.BLOCK, pos, state, level.getBlockEntity(pos), direction);
+                    final IItemHandler inventory = getItemHandler(level, pos, direction);
                     if (inventory != null) {
                         hasInventory = true;
                         break;
@@ -207,7 +214,7 @@ public final class AssemblyTest {
 
                     for (int i = 0; i < CAPABILITY_DIRECTIONS.length; i++) {
                         final Direction direction = CAPABILITY_DIRECTIONS[i];
-                        final IItemHandler inventory = level.getCapability(Capabilities.ItemHandler.BLOCK, pos, state, level.getBlockEntity(pos), direction);
+                        final IItemHandler inventory = getItemHandler(level, pos, direction);
 
                         if (inventory != null) {
                             try {
@@ -282,7 +289,7 @@ public final class AssemblyTest {
                         if (!illegalInventories.contains(blockId)) {
                             for (int i = 0; i < CAPABILITY_DIRECTIONS.length; i++) {
                                 final Direction direction = CAPABILITY_DIRECTIONS[i];
-                                final IItemHandler inventory = level.getCapability(Capabilities.ItemHandler.BLOCK, centerBlock, state, level.getBlockEntity(centerBlock), direction);
+                                final IItemHandler inventory = getItemHandler(level, centerBlock, direction);
                                 final NonNullList<ItemStack> starting = startingInventory[i];
 
                                 if (inventory != null) {

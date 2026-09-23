@@ -116,7 +116,9 @@ def main(log_path, path_filter=""):
                 for back in range(0, 4):
                     if line_no - back < 1:
                         break
-                    pos = find_annotation_on_line(src, line_no - back, {extra})
+                    # The AP reports @Invoker problems as @Accessor ones
+                    kinds = {extra, "Invoker"} if extra == "Accessor" else {extra}
+                    pos = find_annotation_on_line(src, line_no - back, kinds)
                     if pos is not None:
                         break
                 if pos is None:

@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(AbstractBellBlock.class)
 public interface AbstractBellBlockAccessor {
 
-    @Invoker
+    @Invoker(remap = false)
     boolean invokeRing(Level world, BlockPos pos, Direction direction, Player player);
 
 }

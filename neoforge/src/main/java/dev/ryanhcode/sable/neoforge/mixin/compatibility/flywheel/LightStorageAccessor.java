@@ -8,10 +8,10 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(LightStorage.class)
 public interface LightStorageAccessor {
 
-    @Accessor
+    @Accessor(remap = false)
     LightDataCollector getCollector();
 
-    @Accessor
+    @Accessor(remap = false)
     void setNeedsLutRebuild(boolean needsLutRebuild);
 
 }

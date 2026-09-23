@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(ChainConveyorShape.class)
 public interface ChainConveyorShapeAccessor {
 
-    @Invoker
+    @Invoker(remap = false)
     void invokeDrawOutline(BlockPos anchor, PoseStack ms, VertexConsumer vb);
 
 }
