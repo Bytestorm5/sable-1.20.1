@@ -16,7 +16,9 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestAssertPosException;
+import net.minecraft.gametest.framework.GameTestGenerator;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.MutableComponent;
@@ -118,7 +120,20 @@ public final class AssemblyTest {
         });
     }
 
-    @GameTest(template = "allblocks", required = false, timeoutTicks = 30_000_000)
+    /**
+     * Assembles every registered block. This takes very long, so it only runs when the
+     * {@code sable.gametest.allBlocks} system property is set (NeoForge marked it {@code manualOnly}, which 1.20.1's
+     * {@link GameTest} lacks).
+     */
+    @GameTestGenerator
+    public static Collection<TestFunction> allBlocksTest() {
+        if (!Boolean.getBoolean("sable.gametest.allBlocks")) {
+            return List.of();
+        }
+        return List.of(new TestFunction("defaultBatch", "assemblytest.testallblocks", Sable.MOD_ID + ":assemblytest.allblocks",
+                30_000_000, 0L, false, AssemblyTest::testAllBlocks));
+    }
+
     public static void testAllBlocks(final GameTestHelper helper) {
         final boolean failOnFirstError = false;
         final boolean fastTest = true;
