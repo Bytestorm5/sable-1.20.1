@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "${neoforge_loader_version_range}"
+loaderVersion = "${forge_loader_version_range}"
 issueTrackerURL = "${issues}"
 license = "${license}"
 
@@ -19,52 +19,35 @@ logoBlur = false
 "mixin.world.chunk_ticking" = false
 "mixin.world.tick_scheduler" = false
 
-[[mixins]]
-config = "sable.mixins.json"
-
-[[mixins]]
-config = "sable-neoforge.mixins.json"
+# Mixin configs are declared through the jar manifest (MixinConfigs) on Forge 1.20.1.
 
 [[dependencies.sable]]
-modId = "neoforge"
-type = "required"
-versionRange = "[${neoforge_version},)"
+modId = "forge"
+mandatory = true
+versionRange = "${forge_version_range}"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.sable]]
 modId = "minecraft"
-type = "required"
+mandatory = true
 versionRange = "${minecraft_version_range}"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.sable]]
 modId = "flywheel"
-type = "optional"
+mandatory = false
 versionRange = "[1.0.6,)"
 ordering = "AFTER"
 side = "CLIENT"
 
 [[dependencies.sable]]
 modId = "create"
-type = "optional"
+mandatory = false
 versionRange = "${create_version_range}"
 ordering = "AFTER"
 side = "CLIENT"
 
-[[dependencies.sable]]
-modId = "sablecompanion"
-type = "incompatible"
-versionRange = "(${sable_companion_version},)"
-reason = "Sable is out of date"
-
-[[dependencies.sable]]
-modId = "sodium"
-type = "incompatible"
-versionRange = "(,${sodium_version})"
-reason = "${mod_name} supports Sodium ${sodium_version} and above"
-
-[[dependencies.sable]]
-modId = "scalablelux"
-type = "incompatible"
+# Forge 1.20.1 has no "incompatible" dependency type, so the NeoForge build's guards against a newer sable-companion,
+# old Sodium versions and ScalableLux are not expressible here.

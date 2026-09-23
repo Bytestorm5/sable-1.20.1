@@ -6,7 +6,7 @@ buildscript {
 
 plugins {
     id 'multiloader-common'
-    id 'net.neoforged.moddev'
+    id 'net.neoforged.moddev.legacyforge'
 }
 
 import net.jpountz.lz4.LZ4FrameOutputStream
@@ -211,8 +211,8 @@ repositories {
     mavenCentral()
 }
 
-neoForge {
-    neoFormVersion = neo_form_version
+legacyForge {
+    mcpVersion = mcp_version
 
     parchment {
         minecraftVersion = parchment_minecraft
@@ -240,7 +240,7 @@ dependencies {
         }
     }
 
-    compileOnly "dev.ryanhcode.sable-companion:sable-companion-common-$minecraft_version:$sable_companion_version"
+    compileOnly(project(":sable_companion"))
 
     testImplementation platform('org.junit:junit-bom:6.0.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'

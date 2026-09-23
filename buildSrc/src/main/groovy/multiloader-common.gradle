@@ -17,13 +17,26 @@ base {
 }
 
 java {
-    toolchain.languageVersion = JavaLanguageVersion.of(java_version)
+    // Compiled by a newer JDK (so it can read the Java 21 class files of the 1.21.1 stand-in dependencies),
+    // targeting the Java version that Minecraft 1.20.1 runs on.
+    toolchain.languageVersion = JavaLanguageVersion.of(java_toolchain_version)
+    // Allow resolving the Java 21 stand-in jars; the release flag below still pins our bytecode to Java 17.
+    disableAutoTargetJvm()
     withSourcesJar()
 //    withJavadocJar()
 }
 
 repositories {
     mavenCentral()
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = 'Forge'
+                url = 'https://maven.minecraftforge.net'
+            }
+        }
+        filter { includeGroupAndSubgroups('net.minecraftforge') }
+    }
     // https://docs.gradle.org/current/userguide/declaring_repositories.html#declaring_content_exclusively_found_in_one_repository
     exclusiveContent {
         forRepository {
@@ -52,6 +65,7 @@ repositories {
         url = 'https://maven.blamejared.com'
     }
 
+    maven { url = "https://maven.ithundxr.dev/mirror" } // Registrate
     maven { url = "https://maven.ithundxr.dev/hidden" } // Registrate
     maven { url = "https://maven.ithundxr.dev/snapshots" } // Registrate
     maven { url = "https://maven.createmod.net" } // Ponder
@@ -97,31 +111,29 @@ repositories {
         url = "https://maven.ryanhcode.dev/releases"
     }
 
-    exclusiveContent { // Sodium
-        forRepository {
-            maven {
-                name "CaffeineMC"
-                url "https://maven.caffeinemc.net/releases" // or /snapshots
-            }
-        }
-        filter {
-            includeGroup("net.caffeinemc")
-        }
+}
+
+// Optional compat targets whose code lives in common. These are Forge 1.20.1 mod jars, so they go through
+// ModDevGradle's remapping configurations (SRG -> Mojang names).
+pluginManager.withPlugin('net.neoforged.moddev.legacyforge') {
+    dependencies {
+        modCompileOnly "maven.modrinth:embeddium:$embeddium_version"
+        modCompileOnly("maven.modrinth:oculus:$oculus_version") { transitive = false }
+        modCompileOnly "maven.modrinth:distanthorizons:$distant_horizons_version"
+        modCompileOnly("cc.tweaked:cc-tweaked-$minecraft_version-forge:$cc_tweaked_version") { transitive = false }
+        modCompileOnly("maven.modrinth:exposure:$exposure_version") { transitive = false }
+        modCompileOnly("maven.modrinth:jade:${project.jade_version}+forge") { transitive = false }
+        modCompileOnly("maven.modrinth:jade-addons-forge:${project.jade_addons_version}+forge") { transitive = false }
+        modCompileOnly("maven.modrinth:moonlight:${project.moonlight_version}-forge") { transitive = false }
+        modCompileOnly("maven.modrinth:shoulder-surfing-reloaded:${minecraft_version}-${project.shouldersurfing_version}+forge") { transitive = false }
     }
 }
 
-dependencies {
-    compileOnly "net.caffeinemc:sodium-neoforge-mod:$sodium_version"
-    compileOnly "maven.modrinth:iris:$iris_version"
-    compileOnly "maven.modrinth:distanthorizons:$distant_horizons_version"
-    compileOnly("cc.tweaked:cc-tweaked-$minecraft_version-forge:$cc_tweaked_version")
-    compileOnly("io.github.mortuusars.exposure:exposure-${minecraft_version}-neoforge:${exposure_version}") { transitive = false }
-    compileOnly("maven.modrinth:jade:${project.jade_version}+neoforge") { transitive = false }
-    compileOnly("maven.modrinth:jade-addons-forge:${project.jade_addons_version}+neoforge") { transitive = false }
-    compileOnly("maven.modrinth:moonlight:${project.moonlight_version}-neoforge")
-    compileOnly("curse.maven:vista-1368607:$vista_version")
-    compileOnly("maven.modrinth:shoulder-surfing-reloaded:${minecraft_version}-${project.shouldersurfing_version}+neoforge") { transitive = false }
+tasks.withType(JavaCompile).configureEach {
+    options.release = java_version as int
+    options.compilerArgs.addAll(['-Xmaxerrs', '100000'])
 }
+
 
 sourcesJar {
     from(rootProject.file('LICENSE.md')) {
@@ -148,12 +160,12 @@ jar {
 }
 
 String createModVersionRange() {
-    def createNeoforgeVersion = create_version.split("-")[0]
-    def parts = createNeoforgeVersion.split("\\.").collect {it.toInteger() }
+    def createForgeVersion = create_version.split("-")[0]
+    def parts = createForgeVersion.split("\\.").collect {it.toInteger() }
     def newMinor = parts[1] + 1
     def upperBounds = "${parts[0]}.$newMinor.0"
-    
-    return "[$createNeoforgeVersion,$upperBounds)"
+
+    return "[$createForgeVersion,$upperBounds)"
 }
 
 processResources {
@@ -163,20 +175,19 @@ processResources {
             'minecraft_version'            : minecraft_version,
             'minecraft_version_range'      : minecraft_version_range,
             'create_version_range'         : createModVersionRange(),
-            'fabric_version'               : fabric_version,
-            'fabric_loader_version'        : fabric_loader_version,
             'mod_name'                     : mod_name,
             'mod_author'                   : mod_author,
             'mod_id'                       : mod_id,
             'license'                      : license,
             'issues'                       : issues,
             'description'                  : project.description,
-            'neoforge_version'             : neoforge_version,
-            'neoforge_loader_version_range': neoforge_loader_version_range,
+            'forge_version'                : forge_version,
+            'forge_version_range'          : forge_version_range,
+            'forge_loader_version_range'   : forge_loader_version_range,
             'credits'                      : credits,
             'java_version'                 : java_version,
             'veil_version'                 : veil_version,
-            'sodium_version'               : sodium_version,
+            'embeddium_version'            : embeddium_version,
             'sable_companion_version'      : sable_companion_version
     ]
 

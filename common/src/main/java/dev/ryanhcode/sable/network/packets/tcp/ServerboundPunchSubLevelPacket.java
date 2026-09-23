@@ -20,8 +20,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
+import dev.ryanhcode.sable.backport.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -44,7 +43,7 @@ import java.util.Objects;
 public record ServerboundPunchSubLevelPacket(BlockPos punchedBlock, Vector3dc localPosition,
                                              Vector3dc direction) implements SableTCPPacket {
     public static final Type<ServerboundPunchSubLevelPacket> TYPE = new Type<>(Sable.sablePath("punch_sub_level"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, ServerboundPunchSubLevelPacket> CODEC = StreamCodec.of((buf, value) -> value.write(buf), ServerboundPunchSubLevelPacket::read);
+    public static final StreamCodec<FriendlyByteBuf, ServerboundPunchSubLevelPacket> CODEC = StreamCodec.of((buf, value) -> value.write(buf), ServerboundPunchSubLevelPacket::read);
 
     private static ServerboundPunchSubLevelPacket read(final FriendlyByteBuf buf) {
         return new ServerboundPunchSubLevelPacket(

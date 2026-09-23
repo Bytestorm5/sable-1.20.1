@@ -9,19 +9,19 @@ import dev.ryanhcode.sable.sublevel.ClientSubLevel;
 import dev.ryanhcode.sable.sublevel.SubLevel;
 import dev.ryanhcode.sable.util.SableBufferUtils;
 import foundry.veil.api.network.handler.PacketContext;
-import net.minecraft.core.UUIDUtil;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.FriendlyByteBuf;
+import dev.ryanhcode.sable.backport.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 import java.util.UUID;
 
+import dev.ryanhcode.sable.backport.network.codec.ByteBufCodecs;
 public record ClientboundRecentlySplitSubLevelPacket(UUID splitSubLevelID, UUID splitFromID, Pose3d pose) implements SableTCPPacket {
     public static Type<ClientboundRecentlySplitSubLevelPacket> TYPE = new Type<>(Sable.sablePath("recently_split_sub_level"));
-    public static StreamCodec<RegistryFriendlyByteBuf, ClientboundRecentlySplitSubLevelPacket> CODEC = StreamCodec.composite(
-            UUIDUtil.STREAM_CODEC,
+    public static StreamCodec<FriendlyByteBuf, ClientboundRecentlySplitSubLevelPacket> CODEC = StreamCodec.composite(
+            ByteBufCodecs.UUID,
             ClientboundRecentlySplitSubLevelPacket::splitSubLevelID,
-            UUIDUtil.STREAM_CODEC,
+            ByteBufCodecs.UUID,
             ClientboundRecentlySplitSubLevelPacket::splitFromID,
             SableBufferUtils.POSE3D_STREAM_CODEC,
             ClientboundRecentlySplitSubLevelPacket::pose,

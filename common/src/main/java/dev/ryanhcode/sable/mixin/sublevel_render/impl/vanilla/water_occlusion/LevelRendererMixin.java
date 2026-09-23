@@ -4,7 +4,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.ryanhcode.sable.SableClient;
 import net.minecraft.client.Camera;
-import net.minecraft.client.DeltaTracker;
+import dev.ryanhcode.sable.backport.client.DeltaTracker;
 import net.minecraft.client.renderer.*;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;

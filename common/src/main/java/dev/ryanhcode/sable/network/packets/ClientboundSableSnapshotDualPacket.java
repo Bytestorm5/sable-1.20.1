@@ -14,8 +14,7 @@ import foundry.veil.api.network.handler.PacketContext;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
+import dev.ryanhcode.sable.backport.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -27,7 +26,7 @@ import java.util.Objects;
 
 public final class ClientboundSableSnapshotDualPacket implements SableUDPPacket, SableTCPPacket {
     public static final Type<ClientboundSableSnapshotDualPacket> TYPE = new Type<>(Sable.sablePath("snapshot_packet"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundSableSnapshotDualPacket> CODEC = StreamCodec.of((buf, value) -> value.encode(buf), ClientboundSableSnapshotDualPacket::new);
+    public static final StreamCodec<FriendlyByteBuf, ClientboundSableSnapshotDualPacket> CODEC = StreamCodec.of((buf, value) -> value.encode(buf), ClientboundSableSnapshotDualPacket::new);
     private final int interpolationTick;
     private final List<Entry> entries;
 

@@ -41,13 +41,19 @@ pluginManagement {
 }
 
 plugins {
-    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.8.0'
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
 }
 
 // This should match the folder name of the project, or else IDEA may complain (see https://youtrack.jetbrains.com/issue/IDEA-317606)
 rootProject.name = 'sable'
 include('common')
-include('fabric')
-include('neoforge')
+// The Fabric module is parked for the 1.20.1 port: Create 6 on 1.20.1 is Forge-only.
+// include('fabric')
+
+// The Forge 1.20.1 loader module keeps its 'neoforge' directory (and dev.ryanhcode.sable.neoforge packages) so
+// dependents such as Simulated can port mechanically.
+include('forge')
+project(':forge').projectDir = file('neoforge')
 
 include 'sable_rapier'
+include 'sable_companion'

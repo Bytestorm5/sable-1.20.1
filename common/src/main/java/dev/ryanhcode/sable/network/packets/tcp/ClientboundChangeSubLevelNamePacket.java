@@ -5,10 +5,9 @@ import dev.ryanhcode.sable.api.sublevel.SubLevelContainer;
 import dev.ryanhcode.sable.network.tcp.SableTCPPacket;
 import dev.ryanhcode.sable.sublevel.SubLevel;
 import foundry.veil.api.network.handler.PacketContext;
-import net.minecraft.core.UUIDUtil;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.FriendlyByteBuf;
+import dev.ryanhcode.sable.backport.network.codec.ByteBufCodecs;
+import dev.ryanhcode.sable.backport.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,8 +16,8 @@ import java.util.UUID;
 
 public record ClientboundChangeSubLevelNamePacket(UUID subLevelID, @Nullable String name) implements SableTCPPacket {
     public static Type<ClientboundChangeSubLevelNamePacket> TYPE = new Type<>(Sable.sablePath("change_sub_level_name"));
-    public static StreamCodec<RegistryFriendlyByteBuf, ClientboundChangeSubLevelNamePacket> CODEC = StreamCodec.composite(
-            UUIDUtil.STREAM_CODEC,
+    public static StreamCodec<FriendlyByteBuf, ClientboundChangeSubLevelNamePacket> CODEC = StreamCodec.composite(
+            ByteBufCodecs.UUID,
             ClientboundChangeSubLevelNamePacket::subLevelID,
             ByteBufCodecs.optional(ByteBufCodecs.STRING_UTF8),
             (packet) -> Optional.ofNullable(packet.name()),

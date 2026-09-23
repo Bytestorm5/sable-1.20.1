@@ -6,8 +6,7 @@ import dev.ryanhcode.sable.network.tcp.SableTCPPacket;
 import dev.ryanhcode.sable.sublevel.storage.SubLevelRemovalReason;
 import foundry.veil.api.network.handler.PacketContext;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
+import dev.ryanhcode.sable.backport.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -15,7 +14,7 @@ import net.minecraft.world.level.Level;
 public record ClientboundStopTrackingSubLevelPacket(long plotCoordinate) implements SableTCPPacket {
 
     public static final Type<ClientboundStopTrackingSubLevelPacket> TYPE = new Type<>(Sable.sablePath("stop_tracking_sub_level"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundStopTrackingSubLevelPacket> CODEC = StreamCodec.of((buf, value) -> value.write(buf), ClientboundStopTrackingSubLevelPacket::read);
+    public static final StreamCodec<FriendlyByteBuf, ClientboundStopTrackingSubLevelPacket> CODEC = StreamCodec.of((buf, value) -> value.write(buf), ClientboundStopTrackingSubLevelPacket::read);
 
     private static ClientboundStopTrackingSubLevelPacket read(final FriendlyByteBuf buf) {
         return new ClientboundStopTrackingSubLevelPacket(buf.readLong());

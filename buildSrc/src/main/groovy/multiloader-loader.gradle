@@ -59,7 +59,7 @@ tasks.named('sourcesJar', Jar) {
 
 publishMods {
     def isFabric = project.name == "fabric"
-    def loaderName = isFabric ? "Fabric" : "NeoForge"
+    def loaderName = isFabric ? "Fabric" : "Forge"
     def changelogFile = rootProject.file("changelog.md")
 
     type = STABLE
@@ -80,7 +80,7 @@ publishMods {
         clientRequired = true
         serverRequired = true
 
-        if (project.name.contains("neoforge")) {
+        if (project.name == "forge") {
             optional("create")
         }
 
@@ -98,7 +98,7 @@ publishMods {
         projectId = "T9PomCSv"
         minecraftVersions.add(minecraft_version)
 
-        if (project.name.contains("neoforge")) {
+        if (project.name == "forge") {
             optional("create")
         }
 

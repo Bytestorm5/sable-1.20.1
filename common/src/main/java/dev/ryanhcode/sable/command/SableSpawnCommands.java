@@ -268,7 +268,7 @@ public class SableSpawnCommands {
         final CommandSourceStack source = ctx.getSource();
         final ServerLevel level = source.getLevel();
 
-        final StructureTemplate template = SchematicLoader.loadSchematic(level, ResourceLocation.fromNamespaceAndPath("sable", StringArgumentType.getString(ctx, "name")));
+        final StructureTemplate template = SchematicLoader.loadSchematic(level, new ResourceLocation("sable", StringArgumentType.getString(ctx, "name")));
 
         if (template == null) {
             source.sendFailure(Component.translatable("commands.sable.place_schematic.failure"));

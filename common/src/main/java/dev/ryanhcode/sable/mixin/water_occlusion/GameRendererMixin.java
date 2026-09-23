@@ -1,7 +1,7 @@
 package dev.ryanhcode.sable.mixin.water_occlusion;
 
 import dev.ryanhcode.sable.SableClient;
-import net.minecraft.client.DeltaTracker;
+import dev.ryanhcode.sable.backport.client.DeltaTracker;
 import net.minecraft.client.renderer.GameRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

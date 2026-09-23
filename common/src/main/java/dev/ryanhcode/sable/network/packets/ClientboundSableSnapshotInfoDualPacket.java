@@ -9,14 +9,13 @@ import dev.ryanhcode.sable.network.udp.SableUDPPacketType;
 import foundry.veil.api.network.handler.PacketContext;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
+import dev.ryanhcode.sable.backport.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.level.Level;
 
 public final class ClientboundSableSnapshotInfoDualPacket implements SableUDPPacket, SableTCPPacket {
     public static final Type<ClientboundSableSnapshotInfoDualPacket> TYPE = new Type<>(Sable.sablePath("snapshot_info_packet"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundSableSnapshotInfoDualPacket> CODEC = StreamCodec.of((buf, value) -> value.encode(buf), ClientboundSableSnapshotInfoDualPacket::new);
+    public static final StreamCodec<FriendlyByteBuf, ClientboundSableSnapshotInfoDualPacket> CODEC = StreamCodec.of((buf, value) -> value.encode(buf), ClientboundSableSnapshotInfoDualPacket::new);
     private final int msSinceLast;
     private final int gameTick;
     private final boolean stopped;

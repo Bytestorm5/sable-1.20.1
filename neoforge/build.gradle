@@ -1,12 +1,12 @@
 plugins {
     id 'me.modmuss50.mod-publish-plugin'
     id 'multiloader-loader'
-    id 'net.neoforged.moddev'
+    id 'net.neoforged.moddev.legacyforge'
 }
 
-neoForge {
-    version = neoforge_version
-    // Automatically enable neoforge AccessTransformers if the file exists
+legacyForge {
+    version = "${minecraft_version}-${forge_version}"
+    // Automatically enable AccessTransformers if the file exists
     def at = project(':common').file('src/main/resources/META-INF/accesstransformer.cfg')
     if (at.exists()) {
         accessTransformers.from(at.absolutePath)
@@ -17,8 +17,10 @@ neoForge {
     }
     runs {
         configureEach {
-            systemProperty("neoforge.enabledGameTestNamespaces", mod_id.toString())
-            ideName = "NeoForge ${it.name.capitalize()} (${project.path})" // Unify the run config names with fabric
+            systemProperty("forge.enabledGameTestNamespaces", mod_id.toString())
+            programArgument("-mixin.config=sable.mixins.json")
+            programArgument("-mixin.config=sable-neoforge.mixins.json")
+            ideName = "Forge ${it.name.capitalize()} (${project.path})"
         }
         client {
             client()
@@ -35,13 +37,13 @@ neoForge {
 
         clientMixinExport {
             client()
-            ideName = "NeoForge Client | Mixin Export (${project.path})"
+            ideName = "Forge Client | Mixin Export (${project.path})"
             systemProperty("mixin.debug.export", "true")
             gameDirectory = project.file("runs/client")
         }
         serverMixinExport {
             server()
-            ideName = "NeoForge Server | Mixin Export (${project.path})"
+            ideName = "Forge Server | Mixin Export (${project.path})"
             systemProperty("mixin.debug.export", "true")
             gameDirectory = project.file("runs/server")
         }
@@ -53,54 +55,56 @@ neoForge {
     }
 }
 
+// Forge 1.20.1 runs on SRG names, so every mixin config needs a refmap. The common sources are compiled in this
+// project, so one refmap covers both configs.
+mixin {
+    add sourceSets.main, "${mod_id}.refmap.json"
+    config "${mod_id}.mixins.json"
+    config "${mod_id}-neoforge.mixins.json"
+}
+
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
     mavenLocal()
-
-    maven {
-        name = 'NeoForged'
-        url = 'https://maven.neoforged.net/releases'
-    }
-
-    maven {
-        name = "Mortuusars Github Maven"
-        url = "https://raw.githubusercontent.com/mortuusars/resources/main/maven/"
-    }
 }
 
 dependencies {
-    jarJar(api("dev.ryanhcode.sable-companion:sable-companion-common-${project.minecraft_version}:[${project.sable_companion_version},)")) {
+    annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
+
+    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixinextras_version}"))
+    implementation(jarJar("io.github.llamalad7:mixinextras-forge:${mixinextras_version}")) {
         version {
-            prefer project.sable_companion_version
+            strictly "[${mixinextras_version},)"
+            prefer mixinextras_version
         }
     }
 
-    compileOnly "maven.modrinth:distanthorizons:$rootProject.distant_horizons_version"
-    compileOnly "maven.modrinth:backpacks-for-dummies:$rootProject.backpacks_for_dummies_version"
+    jarJar(implementation(project(':sable_companion')))
 
-    implementation("com.simibubi.create:create-${minecraft_version}:${create_version}") { transitive = false }
-    implementation("net.createmod.ponder:ponder-neoforge:${ponder_version}+mc${minecraft_version}")
-    compileOnly("dev.engine-room.flywheel:flywheel-neoforge-api-${minecraft_version}:${flywheel_version}")
-    implementation("dev.engine-room.flywheel:flywheel-neoforge-${minecraft_version}:${flywheel_version}")
-    implementation("com.tterrag.registrate:Registrate:${registrate_version}")
+    modCompileOnly "maven.modrinth:distanthorizons:$rootProject.distant_horizons_version"
 
-    compileOnly("maven.modrinth:protomanlys-weather:${pmweather_version}")
-    compileOnly("io.github.mortuusars.exposure:exposure-${minecraft_version}-neoforge:${project.exposure_version}") { transitive = false }
-    compileOnly("maven.modrinth:jade:${project.jade_version}+neoforge") { transitive = false }
-    compileOnly("maven.modrinth:jade-addons-forge:${project.jade_addons_version}+neoforge") { transitive = false }
-    compileOnly("maven.modrinth:shoulder-surfing-reloaded:${minecraft_version}-${project.shouldersurfing_version}+neoforge") { transitive = false }
+    modImplementation("com.simibubi.create:create-${minecraft_version}:${create_version}:slim") { transitive = false }
+    modImplementation("net.createmod.ponder:Ponder-Forge-${minecraft_version}:${ponder_version}")
+    modCompileOnly("dev.engine-room.flywheel:flywheel-forge-api-${minecraft_version}:${flywheel_version}")
+    modRuntimeOnly("dev.engine-room.flywheel:flywheel-forge-${minecraft_version}:${flywheel_version}")
+    modImplementation("com.tterrag.registrate:Registrate:${registrate_version}")
 
-    compileOnly "net.caffeinemc:sodium-neoforge-mod:${sodium_version}"
-    compileOnly("maven.modrinth:iris:$iris_version") { transitive = false }
-    compileOnly("maven.modrinth:sodium-extras:neoforge-${minecraft_version}-$sodiumextras_version") { transitive = false }
+    modCompileOnly("maven.modrinth:sodium-extras:$sodiumextras_version") { transitive = false }
 
-    jarJar(api("foundry.veil:veil-neoforge-${project.minecraft_version}:${project.veil_version}") {
-        exclude group: "maven.modrinth"
-        exclude group: "me.fallenbreath"
-    })
+    // See gradle.properties: the 1.21.1 build of Veil is a compile-only stand-in until Veil 4.x is ported.
+    if (veil_minecraft_version == minecraft_version) {
+        modImplementation(jarJar("foundry.veil:veil-forge-${project.minecraft_version}:${project.veil_version}")) {
+            exclude group: "maven.modrinth"
+            exclude group: "me.fallenbreath"
+        }
+    } else {
+        compileOnly("foundry.veil:veil-neoforge-${project.veil_minecraft_version}:${project.veil_version}") {
+            transitive = false
+        }
+        compileOnly "io.github.ocelot:glsl-processor:0.2.3"
+        compileOnly "gg.moonflower:molang-compiler:3.1.1.19"
+    }
 
     jarJar(runtimeOnly(project(path: ":sable_rapier", configuration: "runtimeElements")))
-
-    compileOnly("foundry.imguimc:imguimc-neoforge-${project.minecraft_version}:${project.imguimc_version}")
 }

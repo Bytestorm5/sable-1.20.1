@@ -13,26 +13,26 @@ import foundry.veil.Veil;
 import foundry.veil.api.client.render.VeilRenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.neoforged.neoforge.common.ModConfigSpec;
+import net.minecraftforge.common.ForgeConfigSpec;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Arrays;
 
 public final class SableClientConfig {
 
-    public static final ModConfigSpec SPEC;
+    public static final ForgeConfigSpec SPEC;
 
-    public static final ModConfigSpec.BooleanValue ATTEMPT_UDP_NETWORKING;
-    public static final ModConfigSpec.BooleanValue SUB_LEVEL_DYNAMIC_SHADING;
-    public static final ModConfigSpec.BooleanValue SUB_LEVEL_WATER_OCCLUSION;
-    public static final ModConfigSpec.BooleanValue SUB_LEVEL_SKYLIGHT_SHADOWS;
-    public static final ModConfigSpec.BooleanValue DEBUG_DRAW_LOADED_CHUNKS;
-    public static final ModConfigSpec.DoubleValue INTERPOLATION_DELAY;
-    public static final ModConfigSpec.EnumValue<SubLevelRenderer.SelectedRenderer> SELECTED_RENDERER;
-    public static final ModConfigSpec.DoubleValue ZOOM_SENSITIVITY;
+    public static final ForgeConfigSpec.BooleanValue ATTEMPT_UDP_NETWORKING;
+    public static final ForgeConfigSpec.BooleanValue SUB_LEVEL_DYNAMIC_SHADING;
+    public static final ForgeConfigSpec.BooleanValue SUB_LEVEL_WATER_OCCLUSION;
+    public static final ForgeConfigSpec.BooleanValue SUB_LEVEL_SKYLIGHT_SHADOWS;
+    public static final ForgeConfigSpec.BooleanValue DEBUG_DRAW_LOADED_CHUNKS;
+    public static final ForgeConfigSpec.DoubleValue INTERPOLATION_DELAY;
+    public static final ForgeConfigSpec.EnumValue<SubLevelRenderer.SelectedRenderer> SELECTED_RENDERER;
+    public static final ForgeConfigSpec.DoubleValue ZOOM_SENSITIVITY;
 
     static {
-        final ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
+        final ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
 
 
         SUB_LEVEL_DYNAMIC_SHADING = builder

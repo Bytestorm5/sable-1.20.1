@@ -7,8 +7,7 @@ import dev.ryanhcode.sable.sublevel.ClientSubLevel;
 import dev.ryanhcode.sable.sublevel.SubLevel;
 import foundry.veil.api.network.handler.PacketContext;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
+import dev.ryanhcode.sable.backport.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -16,7 +15,7 @@ import net.minecraft.world.level.Level;
 public record ClientboundStopMovingSubLevelPacket(long plotCoordinate) implements SableTCPPacket {
 
     public static final Type<ClientboundStopMovingSubLevelPacket> TYPE = new Type<>(Sable.sablePath("stop_moving_sub_level"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundStopMovingSubLevelPacket> CODEC = StreamCodec.of((buf, value) -> value.write(buf), ClientboundStopMovingSubLevelPacket::read);
+    public static final StreamCodec<FriendlyByteBuf, ClientboundStopMovingSubLevelPacket> CODEC = StreamCodec.of((buf, value) -> value.write(buf), ClientboundStopMovingSubLevelPacket::read);
 
     private void write(final FriendlyByteBuf buf) {
         buf.writeLong(this.plotCoordinate);

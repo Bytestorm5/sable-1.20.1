@@ -1,10 +1,11 @@
 plugins {
     id 'multiloader-common'
-    id 'net.neoforged.moddev'
+    id 'net.neoforged.moddev.legacyforge'
 }
 
-neoForge {
-    neoFormVersion = neo_form_version
+legacyForge {
+    // Vanilla 1.20.1 through MCP; common code must not reference Forge.
+    mcpVersion = mcp_version
     // Automatically enable AccessTransformers if the file exists
     def at = file('src/main/resources/META-INF/accesstransformer.cfg')
     if (at.exists()) {
@@ -46,25 +47,26 @@ artifacts {
 }
 
 dependencies {
-    compileOnly "net.fabricmc:sponge-mixin:0.15.2+mixin.0.8.7"
+    compileOnly "org.spongepowered:mixin:$mixin_version"
 
-    // fabric and neoforge both bundle mixinextras, so it is safe to use it in common
-    compileOnly "io.github.llamalad7:mixinextras-common:0.5.3"
-    annotationProcessor "io.github.llamalad7:mixinextras-common:0.5.3"
+    // mixinextras is bundled by the loader module, so it is safe to use it in common
+    compileOnly "io.github.llamalad7:mixinextras-common:$mixinextras_version"
+    annotationProcessor "io.github.llamalad7:mixinextras-common:$mixinextras_version"
 
     implementation "org.apache.maven:maven-artifact:3.8.5"
 
-    api "dev.ryanhcode.sable-companion:sable-companion-common-$minecraft_version:$sable_companion_version"
+    api(project(':sable_companion'))
 
-    implementation("foundry.veil:veil-common-${project.minecraft_version}:${project.veil_version}") {
-        exclude group: "maven.modrinth"
-    }
-    compileOnly("foundry.imguimc:imguimc-common-${project.minecraft_version}:${project.imguimc_version}")
-
-    compileOnly("fuzs.forgeconfigapiport:forgeconfigapiport-fabric:${forgeconfigapiport_version}") {
+    // See gradle.properties: the 1.21.1 build of Veil is a compile-only stand-in until Veil 4.x is ported.
+    compileOnly("foundry.veil:veil-common-${project.veil_minecraft_version}:${project.veil_version}") {
         transitive = false
     }
+    compileOnly "io.github.ocelot:glsl-processor:0.2.3"
+    compileOnly "gg.moonflower:molang-compiler:3.1.1.19"
+    compileOnly "org.ow2.asm:asm-tree:9.5"
 
-    //source: https://github.com/Fuzss/forgeconfigapiport
-    implementation "fuzs.forgeconfigapiport:forgeconfigapiport-common-neoforgeapi:${forgeconfigapiport_version}"
+    // ForgeConfigSpec for common code (Forge provides it at runtime)
+    compileOnly("fuzs.forgeconfigapiport:forgeconfigapiport-common:${forgeconfigapiport_version}") {
+        transitive = false
+    }
 }

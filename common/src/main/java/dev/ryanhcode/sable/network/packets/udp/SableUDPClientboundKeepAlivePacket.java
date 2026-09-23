@@ -9,14 +9,14 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.Connection;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.FriendlyByteBuf;
+import dev.ryanhcode.sable.backport.network.codec.StreamCodec;
 import net.minecraft.world.level.Level;
 
 import java.net.InetSocketAddress;
 
 public record SableUDPClientboundKeepAlivePacket() implements SableUDPPacket {
-    public static final StreamCodec<RegistryFriendlyByteBuf, SableUDPClientboundKeepAlivePacket> CODEC = StreamCodec.of((buf, value) -> {}, buf -> new SableUDPClientboundKeepAlivePacket());
+    public static final StreamCodec<FriendlyByteBuf, SableUDPClientboundKeepAlivePacket> CODEC = StreamCodec.of((buf, value) -> {}, buf -> new SableUDPClientboundKeepAlivePacket());
 
     @Override
     public SableUDPPacketType getType() {

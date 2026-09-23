@@ -123,11 +123,11 @@ public final class AssemblyTest {
         final boolean failOnFirstError = false;
         final boolean fastTest = true;
         final Set<ResourceLocation> skip = Set.of(
-                ResourceLocation.fromNamespaceAndPath("copycats", "wrapped_copycat")
+                new ResourceLocation("copycats", "wrapped_copycat")
         );
         final Set<ResourceLocation> illegalInventories = Set.of(
-                ResourceLocation.fromNamespaceAndPath("create_new_age", "reactor_fuel_acceptor"),
-                ResourceLocation.fromNamespaceAndPath("farmersdelight", "cooking_pot") // Unsure why this failed
+                new ResourceLocation("create_new_age", "reactor_fuel_acceptor"),
+                new ResourceLocation("farmersdelight", "cooking_pot") // Unsure why this failed
         );
 
         final ServerLevel level = helper.getLevel();

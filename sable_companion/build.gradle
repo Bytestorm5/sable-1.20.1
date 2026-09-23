@@ -1,0 +1,70 @@
+plugins {
+    id 'multiloader-common'
+    id 'net.neoforged.moddev.legacyforge'
+}
+
+// sable-companion is only published for 1.21.1 (and for Java 21). Its code only touches vanilla classes that are
+// unchanged on 1.20.1, so it is rebuilt here for 1.20.1 from the published sources jar.
+
+base {
+    archivesName = "sable-companion-${minecraft_version}"
+}
+version = sable_companion_version
+
+legacyForge {
+    mcpVersion = mcp_version
+    parchment {
+        minecraftVersion = parchment_minecraft
+        mappingsVersion = parchment_version
+    }
+}
+
+configurations {
+    companionSources {
+        canBeResolved = true
+        canBeConsumed = false
+        transitive = false
+    }
+}
+
+dependencies {
+    companionSources "dev.ryanhcode.sable-companion:sable-companion-common-1.21.1:${sable_companion_version}:sources"
+}
+
+def unpackedSources = layout.buildDirectory.dir("companion-sources")
+def unpackCompanionSources = tasks.register('unpackCompanionSources', Sync) {
+    from(zipTree(configurations.companionSources.singleFile)) {
+        exclude 'META-INF/MANIFEST.MF', 'META-INF/neoforge.mods.toml'
+    }
+    inputs.property('sourceFilters', 1)
+    // Java 21's SequencedCollection methods don't exist on Java 17
+    filesMatching('**/*.java') {
+        filter { String line -> line.replace('.getFirst()', '.get(0)') }
+    }
+    into unpackedSources
+}
+
+sourceSets.main {
+    java.srcDir(unpackedSources.map { it.dir('.') })
+    resources.srcDir(unpackedSources)
+    resources.exclude('**/*.java')
+}
+tasks.named('compileJava') { dependsOn unpackCompanionSources }
+tasks.named('processResources') { dependsOn unpackCompanionSources }
+tasks.named('sourcesJar') { dependsOn unpackCompanionSources }
+
+processResources {
+    def props = [
+            'version'                   : sable_companion_version,
+            'minecraft_version_range'   : minecraft_version_range,
+            'forge_loader_version_range': forge_loader_version_range,
+    ]
+    inputs.properties(props)
+    filesMatching('META-INF/mods.toml') { expand props }
+}
+
+jar {
+    manifest {
+        attributes('Automatic-Module-Name': 'sablecompanion')
+    }
+}

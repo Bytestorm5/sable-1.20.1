@@ -14,8 +14,7 @@ import dev.ryanhcode.sable.sublevel.ClientSubLevel;
 import dev.ryanhcode.sable.util.SableBufferUtils;
 import foundry.veil.api.network.handler.PacketContext;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
+import dev.ryanhcode.sable.backport.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -28,7 +27,7 @@ public record ClientboundStartTrackingSubLevelPacket(long plotCoordinate, UUID s
 
     public static final Type<ClientboundStartTrackingSubLevelPacket> TYPE = new CustomPacketPayload.Type<>(Sable.sablePath("start_tracking_sub_level"));
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundStartTrackingSubLevelPacket> CODEC = StreamCodec.of((buf, value) ->
+    public static final StreamCodec<FriendlyByteBuf, ClientboundStartTrackingSubLevelPacket> CODEC = StreamCodec.of((buf, value) ->
             value.write(buf), ClientboundStartTrackingSubLevelPacket::read);
 
     private void write(final FriendlyByteBuf buf) {
