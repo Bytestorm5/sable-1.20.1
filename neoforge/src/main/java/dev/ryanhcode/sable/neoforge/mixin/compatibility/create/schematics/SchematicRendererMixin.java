@@ -43,8 +43,9 @@ public class SchematicRendererMixin {
                                  @Local final RandomSource random,
                                  @Local final SchematicLevel mainRenderWorld,
                                  @Local final PoseStack poseStack,
-                                 @Local final BlockPos.MutableBlockPos mutableBlockPos,
                                  @Local final ShadedBlockSbbBuilder sbbBuilder) {
+        // Create 1.20.1's bytecode has two locals that can be typed MutableBlockPos here, so use a scratch position
+        final BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
         for (final SchematicLevelExtension.SchematicSubLevel subLevel : ((SchematicLevelExtension) mainRenderWorld).sable$getSubLevels()) {
             final SchematicLevel renderWorld = subLevel.level();
             final BoundingBox bounds = renderWorld.getBounds();

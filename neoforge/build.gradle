@@ -25,6 +25,10 @@ legacyForge {
         client {
             client()
             gameDirectory = project.file("runs/client")
+            // Run with -PquickPlay=<world> to load straight into a singleplayer world
+            if (project.hasProperty('quickPlay')) {
+                programArguments.addAll('--quickPlaySingleplayer', project.property('quickPlay').toString())
+            }
         }
         server {
             server()
