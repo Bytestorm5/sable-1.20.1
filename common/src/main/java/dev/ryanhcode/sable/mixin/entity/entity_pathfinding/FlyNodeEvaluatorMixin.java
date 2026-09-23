@@ -4,6 +4,7 @@ import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import dev.ryanhcode.sable.Sable;
 import dev.ryanhcode.sable.api.entity.EntitySubLevelUtil;
+import dev.ryanhcode.sable.mixinhelpers.entity.entity_pathfinding.PathfindingMobPositionHelper;
 import dev.ryanhcode.sable.sublevel.SubLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
@@ -57,6 +58,17 @@ public abstract class FlyNodeEvaluatorMixin extends NodeEvaluator {
     }
 
     /**
+     * 1.20.1 has no {@code PathfindingContext}; its {@code mobPosition} (which 1.21 made sub-level local) is read
+     * directly from the mob here.
+     */
+    @Redirect(method = {"getBlockPathType(Lnet/minecraft/world/level/BlockGetter;III)Lnet/minecraft/world/level/pathfinder/BlockPathTypes;",
+            "getBlockPathType(Lnet/minecraft/world/level/BlockGetter;IIILnet/minecraft/world/entity/Mob;)Lnet/minecraft/world/level/pathfinder/BlockPathTypes;"},
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Mob;blockPosition()Lnet/minecraft/core/BlockPos;"))
+    private BlockPos sable$redirectMobPosition(final Mob mob) {
+        return PathfindingMobPositionHelper.getMobPosition(mob);
+    }
+
+    /**
      * @author RyanH
      * @reason Work on sub-levels
      */
@@ -81,9 +93,10 @@ public abstract class FlyNodeEvaluatorMixin extends NodeEvaluator {
                     BlockPos.containing(localMobBounds.maxX, blockY, localMobBounds.minZ),
                     BlockPos.containing(localMobBounds.maxX, blockY, localMobBounds.maxZ));
         } else {
-            final double xSize = Math.max(0.0F, (double) 1.1F - mobBounds.getXsize());
-            final double ySize = Math.max(0.0F, (double) 1.1F - mobBounds.getYsize());
-            final double zSize = Math.max(0.0F, (double) 1.1F - mobBounds.getZsize());
+            // 1.20.1 vanilla inflation (1.21 uses 1.1 - size)
+            final double xSize = Math.max(0.0D, (1.5D - mobBounds.getXsize()) / 2.0D);
+            final double ySize = Math.max(0.0D, (1.5D - mobBounds.getYsize()) / 2.0D);
+            final double zSize = Math.max(0.0D, (1.5D - mobBounds.getZsize()) / 2.0D);
             final AABB localBounds = localMobBounds.inflate(xSize, ySize, zSize);
             return BlockPos.randomBetweenClosed(mob.getRandom(), 10, Mth.floor(localBounds.minX), Mth.floor(localBounds.minY), Mth.floor(localBounds.minZ), Mth.floor(localBounds.maxX), Mth.floor(localBounds.maxY), Mth.floor(localBounds.maxZ));
         }

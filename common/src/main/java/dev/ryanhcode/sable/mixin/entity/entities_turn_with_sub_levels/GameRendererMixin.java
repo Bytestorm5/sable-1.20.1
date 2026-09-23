@@ -4,7 +4,7 @@ import dev.ryanhcode.sable.Sable;
 import dev.ryanhcode.sable.api.entity.EntitySubLevelUtil;
 import dev.ryanhcode.sable.sublevel.ClientSubLevel;
 import dev.ryanhcode.sable.sublevel.SubLevel;
-import foundry.veil.backport.client.DeltaTracker;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
@@ -35,7 +35,7 @@ public class GameRendererMixin {
     private UUID sable$lastSubLevel = null;
 
     @Inject(method = "renderLevel", at = @At("HEAD"))
-    public void renderLevel(final DeltaTracker deltaTracker, final CallbackInfo ci) {
+    public void renderLevel(final float partialTicks, final long finishTimeNano, final PoseStack poseStack, final CallbackInfo ci) {
         final LocalPlayer player = this.minecraft.player;
         final SubLevel standingSubLevel = Sable.HELPER.getTrackingSubLevel(player);
 

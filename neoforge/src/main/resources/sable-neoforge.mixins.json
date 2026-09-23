@@ -12,6 +12,7 @@
     "block_entity_visible.LevelRendererMixin",
     "block_outline_render.LevelRendererMixin",
     "camera_rotation.CameraMixin",
+    "camera_rotation.GameRendererMixin",
     "compatibility.create.behaviour_compatibility.harvester_block_entity.HarvesterRendererMixin",
     "compatibility.create.belt.BeltRendererMixin",
     "compatibility.create.big_outlines_interaction.BigOutlinesMixin",
@@ -164,7 +165,8 @@
     "compatibility.create.vertical_gearbox.VerticalGearboxItemMixin",
     "compatibility.create.zapper.ZapperItemMixin",
     "entities_stick_sublevels.effects.LivingEntityMixin",
-    "entity.entity_swimming.EntityMixin"
+    "entity.entity_swimming.EntityMixin",
+    "interaction_distance.PlayerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

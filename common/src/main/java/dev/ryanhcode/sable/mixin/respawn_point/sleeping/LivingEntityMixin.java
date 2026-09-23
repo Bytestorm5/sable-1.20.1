@@ -30,8 +30,13 @@ public abstract class LivingEntityMixin extends Entity {
         this.setPos(JOMLConversion.toMojang(Sable.HELPER.projectOutOfSubLevel(this.level(), coords)));
     }
 
+    /**
+     * Targets the {@code ifPresent} lambda in {@code stopSleeping}. Lambda names can't be remapped by the refmap on
+     * Forge 1.20.1 (Forge's patches shift the javac lambda numbering), so the dev name ({@code lambda$stopSleeping$11}
+     * in the recompiled Forge jar) and the production SRG name ({@code m_260785_}) are both listed, unmapped.
+     */
     @SuppressWarnings("UnresolvedMixinReference")
-    @Redirect(method = {"method_18404", "lambda$stopSleeping$12"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;setPos(DDD)V"), expect = 1, require = 1)
+    @Redirect(method = {"method_18404", "lambda$stopSleeping$11", "m_260785_"}, remap = false, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;setPos(DDD)V", remap = true), expect = 1, require = 1)
     private void sable$stopSleeping(final LivingEntity instance, final double x, final double y, final double z) {
         final double halfHeight = this.getBoundingBox().getYsize() / 2.0;
 

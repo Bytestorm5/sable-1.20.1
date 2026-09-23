@@ -9,8 +9,8 @@ import dev.ryanhcode.sable.sublevel.ServerSubLevel;
 import dev.ryanhcode.sable.sublevel.SubLevel;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Position;
-import net.minecraft.core.dispenser.BlockSource;
-import net.minecraft.core.dispenser.ProjectileDispenseBehavior;
+import net.minecraft.core.BlockSource;
+import net.minecraft.core.dispenser.AbstractProjectileDispenseBehavior;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Vector3d;
@@ -22,8 +22,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 /**
  * Give projectile behavior on dispensers recoil
  */
-@Mixin(ProjectileDispenseBehavior.class)
-public class ProjectileDispenseBehaviorMixin {
+@Mixin(AbstractProjectileDispenseBehavior.class)
+public class AbstractProjectileDispenseBehaviorMixin {
 
 
     @Inject(method = "execute", at = @At("TAIL"))
@@ -32,7 +32,7 @@ public class ProjectileDispenseBehaviorMixin {
                                    final CallbackInfoReturnable<ItemStack> cir,
                                    @Local final Position position,
                                    @Local final Direction direction){
-        final ServerLevel level = blockSource.level();
+        final ServerLevel level = blockSource.getLevel();
         final SubLevel subLevel = Sable.HELPER.getContaining(level, position);
 
         if (subLevel instanceof final ServerSubLevel serverSubLevel) {

@@ -2,36 +2,33 @@ package dev.ryanhcode.sable.mixin.sculk_vibrations;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.llamalad7.mixinextras.sugar.Local;
-import dev.ryanhcode.sable.Sable;
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.gameevent.BlockPositionSource;
-import net.minecraft.world.level.gameevent.PositionSource;
-import net.minecraft.world.level.gameevent.vibrations.VibrationInfo;
+import dev.ryanhcode.sable.mixinhelpers.sculk_vibrations.GlobalPositionVibrationUser;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.CalibratedSculkSensorBlock;
+import net.minecraft.world.level.block.SculkSensorBlock;
+import net.minecraft.world.level.block.SculkShriekerBlock;
 import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
-import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-import java.util.Optional;
+/**
+ * Makes vibration users on sub-levels use their global position when receiving vibrations.
+ * <p>
+ * 1.21 wrapped {@code getPositionSource()} inside {@code VibrationSystem.Ticker} itself. Forge 1.20.1's Mixin (0.8.5)
+ * can't inject into interfaces, so the calls to {@code Ticker.tick} are wrapped instead, handing it a
+ * {@link GlobalPositionVibrationUser}. The vibration positions themselves are already global, see
+ * {@link VibrationSystemListenerMixin}.
+ *
+ * @see VibrationSystemTickerEntityMixin
+ */
+@Mixin({SculkSensorBlock.class, CalibratedSculkSensorBlock.class, SculkShriekerBlock.class})
+public class VibrationSystemTickerMixin {
 
-@Mixin(VibrationSystem.Ticker.class)
-public interface VibrationSystemTickerMixin {
-
-    @WrapOperation(method = "receiveVibration", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/gameevent/vibrations/VibrationInfo;pos()Lnet/minecraft/world/phys/Vec3;"))
-    private static Vec3 sable$useGlobalPos(final VibrationInfo instance, final Operation<Vec3> original, @Local(argsOnly = true) final ServerLevel level) {
-        return Sable.HELPER.projectOutOfSubLevel(level, original.call(instance));
-    }
-
-    @WrapOperation(method = {"receiveVibration", "lambda$trySelectAndScheduleVibration$0", "method_51408", "tryReloadVibrationParticle"}, expect = 3, require = 3,
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/gameevent/vibrations/VibrationSystem$User;getPositionSource()Lnet/minecraft/world/level/gameevent/PositionSource;"))
-    private static PositionSource sable$useGlobalDestPos(final VibrationSystem.User instance, final Operation<PositionSource> original, @Local(argsOnly = true) final ServerLevel level) {
-        final PositionSource origSource = original.call(instance);
-        final Optional<Vec3> optPos = origSource.getPosition(level);
-        if (optPos.isPresent()) {
-            return new BlockPositionSource(BlockPos.containing(Sable.HELPER.projectOutOfSubLevel(level, optPos.get())));
-        }
-        return origSource;
+    /**
+     * The ticks are in the (static) block entity ticker lambdas returned by {@code getTicker}
+     */
+    @WrapOperation(method = "*", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/gameevent/vibrations/VibrationSystem$Ticker;tick(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/level/gameevent/vibrations/VibrationSystem$Data;Lnet/minecraft/world/level/gameevent/vibrations/VibrationSystem$User;)V"))
+    private static void sable$useGlobalDestPos(final Level level, final VibrationSystem.Data data, final VibrationSystem.User user, final Operation<Void> original) {
+        original.call(level, data, GlobalPositionVibrationUser.wrap(level, user));
     }
 }

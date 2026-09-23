@@ -36,6 +36,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.function.Predicate;
+
 @Mixin(value = Entity.class, priority = 500)
 public abstract class EntityMixin implements IForgeEntity {
 
@@ -58,7 +60,7 @@ public abstract class EntityMixin implements IForgeEntity {
     @Shadow
     public abstract void setDeltaMovement(Vec3 arg);
 
-    @Shadow
+    @Shadow(remap = false)
     protected abstract void setFluidTypeHeight(FluidType type, double height);
 
     @Shadow
@@ -73,15 +75,18 @@ public abstract class EntityMixin implements IForgeEntity {
     @Shadow
     public abstract Vec3 getEyePosition();
 
-    @Shadow
+    @Shadow(remap = false)
     private FluidType forgeFluidTypeOnEyes;
 
     /**
+     * On Forge 1.20.1 the fluid pushing logic lives in the {@link Predicate} overload (the no-argument one delegates to
+     * it), so that is the one overwritten here.
+     *
      * @author RyanH
      * @reason Take into account water on sub-levels.
      */
-    @Overwrite
-    public void updateFluidHeightAndDoFluidPushing() {
+    @Overwrite(remap = false)
+    public void updateFluidHeightAndDoFluidPushing(final Predicate<FluidState> shouldUpdate) {
         if (!this.touchingUnloadedChunk()) {
             final AABB aabb = this.getBoundingBox().deflate(0.001);
             final int i = Mth.floor(aabb.minX);
@@ -100,7 +105,7 @@ public abstract class EntityMixin implements IForgeEntity {
                         blockpos$mutableblockpos.set(l1, i2, j2);
                         final FluidState fluidstate = this.level.getFluidState(blockpos$mutableblockpos);
                         final FluidType fluidType = fluidstate.getFluidType();
-                        if (!fluidType.isAir()) {
+                        if (!fluidType.isAir() && shouldUpdate.test(fluidstate)) {
                             final double d1 = (float) i2 + fluidstate.getHeight(this.level, blockpos$mutableblockpos);
                             if (d1 >= aabb.minY) {
                                 if (interimCalcs == null) {
@@ -166,7 +171,7 @@ public abstract class EntityMixin implements IForgeEntity {
                             final FluidState fluidState = this.level.getFluidState(mutableBlockPos);
                             final FluidType fluidType = fluidState.getFluidType();
 
-                            if (!fluidType.isAir()) {
+                            if (!fluidType.isAir() && shouldUpdate.test(fluidState)) {
                                 final double fluidLevelY = (float) y + fluidState.getHeight(this.level, mutableBlockPos);
 
                                 if (!hasComputedMinYVertex) {
@@ -269,7 +274,7 @@ public abstract class EntityMixin implements IForgeEntity {
 
     @Inject(method = "updateFluidOnEyes", at = @At(value = "TAIL"))
     public void sable$subLevelFluidOnEyes(final CallbackInfo ci) {
-        if (this.forgeFluidTypeOnEyes != ForgeMod.EMPTY_TYPE.value() && this.forgeFluidTypeOnEyes != Fluids.EMPTY.getFluidType()) {
+        if (this.forgeFluidTypeOnEyes != ForgeMod.EMPTY_TYPE.get() && this.forgeFluidTypeOnEyes != Fluids.EMPTY.getFluidType()) {
             return;
         }
 
@@ -287,7 +292,7 @@ public abstract class EntityMixin implements IForgeEntity {
             if (e > localEyePos.y) {
                 this.forgeFluidTypeOnEyes = fluidState.getFluidType();
 
-                if (this.forgeFluidTypeOnEyes != ForgeMod.EMPTY_TYPE.value() && this.forgeFluidTypeOnEyes != Fluids.EMPTY.getFluidType()) {
+                if (this.forgeFluidTypeOnEyes != ForgeMod.EMPTY_TYPE.get() && this.forgeFluidTypeOnEyes != Fluids.EMPTY.getFluidType()) {
                     return;
                 }
             }

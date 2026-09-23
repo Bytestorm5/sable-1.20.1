@@ -3,9 +3,14 @@ package dev.ryanhcode.sable.mixin.compatibility.etched;
 import dev.ryanhcode.sable.sound.MovingSoundInstanceDelegate;
 import dev.ryanhcode.sable.sound.SoundInstanceDelegated;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.Unique;
 
-@Mixin(targets = "gg.moonflower.etched.api.sound.StopListeningSound")
+/**
+ * Etched is not on the compile classpath, so the target is only known by name.
+ */
+@Pseudo
+@Mixin(targets = "gg.moonflower.etched.api.sound.StopListeningSound", remap = false)
 public class StopListeningSoundMixin implements SoundInstanceDelegated {
 
     @Unique

@@ -26,7 +26,6 @@ import org.joml.Vector3d;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Optional;
@@ -53,11 +52,6 @@ public abstract class ServerPlayerMixin implements ServerPlayerRespawnExtension 
     private UUID sable$respawnPoint = null;
     @Unique
     private Pair<UUID, Vector3d> sable$queuedFreeze = null;
-
-    @Shadow
-    public static Optional<ServerPlayer.RespawnPosAngle> findRespawnAndUseSpawnBlock(final ServerLevel serverLevel, final BlockPos blockPos, final float f, final boolean bl, final boolean bl2) {
-        return null;
-    }
 
     @Shadow
     public abstract ServerLevel serverLevel();
@@ -117,11 +111,11 @@ public abstract class ServerPlayerMixin implements ServerPlayerRespawnExtension 
     }
 
     /**
-     * @author RyanH
-     * @reason Respawning on sub-levels
+     * 1.21's {@code ServerPlayer#copyRespawnPosition}, which 1.20.1 doesn't have. Called from
+     * {@link dev.ryanhcode.sable.mixin.respawn_point.PlayerListMixin} when a player respawns.
      */
-    @Overwrite
-    public void copyRespawnPosition(final ServerPlayer serverPlayer) {
+    @Override
+    public void sable$copyRespawnPosition(final ServerPlayer serverPlayer) {
         if (serverPlayer.getRespawnPosition() != null) {
             this.sable$respawnPoint = ((ServerPlayerRespawnExtension) serverPlayer).sable$getRespawnPoint();
             this.respawnPosition = serverPlayer.getRespawnPosition();
@@ -154,30 +148,31 @@ public abstract class ServerPlayerMixin implements ServerPlayerRespawnExtension 
     }
 
     /**
-     * @author RyanH
-     * @reason Respawning on sub-levels
+     * Finds the respawn position from the sub-level respawn tracking point, if there is one.
+     * <p>
+     * On 1.21 this redirected {@code findRespawnAndUseSpawnBlock} in {@code ServerPlayer#findRespawnPositionAndUseSpawnBlock};
+     * 1.20.1 finds the respawn position in {@code PlayerList#respawn}, see {@link dev.ryanhcode.sable.mixin.respawn_point.PlayerListMixin}.
      */
-    @Redirect(method = "findRespawnPositionAndUseSpawnBlock", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;findRespawnAndUseSpawnBlock(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/core/BlockPos;FZZ)Ljava/util/Optional;"))
-    private Optional<ServerPlayer.RespawnPosAngle> sable$findRespawnPosition(final ServerLevel level, final BlockPos blockPos, final float f1, final boolean b1, final boolean b2) {
-        final SubLevelTrackingPointSavedData data = SubLevelTrackingPointSavedData.getOrLoad(level);
-
-        if (this.sable$respawnPoint != null) {
-            final SubLevelTrackingPointSavedData.TakenLoginPoint point = data.take(this.sable$respawnPoint, false);
-
-            if (point == null) {
-                this.sable$respawnPoint = null;
-                return Optional.empty();
-            }
-
-            // TODO: do validation here
-
-            if (point.subLevelId() != null) {
-                this.sable$queuedFreeze = Pair.of(point.subLevelId(), point.localAnchor());
-            }
-
-            return Optional.of(new ServerPlayer.RespawnPosAngle(JOMLConversion.toMojang(point.position()), f1));
+    @Override
+    public @Nullable Optional<Vec3> sable$findSubLevelRespawnPosition(final ServerLevel level) {
+        if (this.sable$respawnPoint == null) {
+            return null;
         }
 
-        return findRespawnAndUseSpawnBlock(level, blockPos, f1, b1, b2);
+        final SubLevelTrackingPointSavedData data = SubLevelTrackingPointSavedData.getOrLoad(level);
+        final SubLevelTrackingPointSavedData.TakenLoginPoint point = data.take(this.sable$respawnPoint, false);
+
+        if (point == null) {
+            this.sable$respawnPoint = null;
+            return Optional.empty();
+        }
+
+        // TODO: do validation here
+
+        if (point.subLevelId() != null) {
+            this.sable$queuedFreeze = Pair.of(point.subLevelId(), point.localAnchor());
+        }
+
+        return Optional.of(JOMLConversion.toMojang(point.position()));
     }
 }

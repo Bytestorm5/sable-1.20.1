@@ -25,7 +25,7 @@ public abstract class CameraStandEntityMixin extends Entity {
 		return Sable.HELPER.projectOutOfSubLevel(this.level(), super.getEyePosition(f));
 	}
 
-	@WrapOperation(method = "isInInteractionRange", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;getEyePosition()Lnet/minecraft/world/phys/Vec3;"))
+	@WrapOperation(method = "isInInteractionRange", remap = false, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;getEyePosition()Lnet/minecraft/world/phys/Vec3;", remap = true))
 	private Vec3 sable$isInInteractionRange(final LivingEntity instance, final Operation<Vec3> original) {
 		final SubLevel subLevel = Sable.HELPER.getContaining(this);
 		if (subLevel != null) {

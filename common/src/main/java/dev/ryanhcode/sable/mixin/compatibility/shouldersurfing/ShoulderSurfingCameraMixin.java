@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(ShoulderSurfingCamera.class)
 public class ShoulderSurfingCameraMixin {
 
-    @Redirect(method = "maxZoom", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;distanceTo(Lnet/minecraft/world/phys/Vec3;)D"))
+    @Redirect(method = "maxZoom", remap = false, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;distanceTo(Lnet/minecraft/world/phys/Vec3;)D", remap = true))
     private static double distanceTo(final Vec3 instance, final Vec3 vec, @Local(argsOnly = true) final BlockGetter level) {
         return level instanceof Level ? Math.sqrt(Sable.HELPER.distanceSquaredWithSubLevels((Level) level, instance, vec)) : instance.distanceTo(vec);
     }
