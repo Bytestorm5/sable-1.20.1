@@ -77,14 +77,17 @@ dependencies {
     annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
 
     compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixinextras_version}"))
-    implementation(jarJar("io.github.llamalad7:mixinextras-forge:${mixinextras_version}")) {
+    implementation "io.github.llamalad7:mixinextras-forge:${mixinextras_version}"
+    jarJar("io.github.llamalad7:mixinextras-forge:${mixinextras_version}") {
         version {
             strictly "[${mixinextras_version},)"
             prefer mixinextras_version
         }
     }
 
-    jarJar(implementation(project(':sable_companion')))
+    // Nested jars must use SRG names in production, so bundle the reobfuscated builds of Sable's own libraries
+    implementation project(':sable_companion')
+    jarJar(project(':sable_companion'))
 
     modCompileOnly "maven.modrinth:distanthorizons:$rootProject.distant_horizons_version"
 
@@ -96,9 +99,12 @@ dependencies {
 
     modCompileOnly("maven.modrinth:sodium-extras:$sodiumextras_version") { transitive = false }
 
-    modImplementation(jarJar("foundry.veil:veil-forge-${project.minecraft_version}:${project.veil_version}")) {
+    modImplementation("foundry.veil:veil-forge-${project.minecraft_version}:${project.veil_version}") {
         exclude group: "maven.modrinth"
         exclude group: "me.fallenbreath"
+    }
+    jarJar("foundry.veil:veil-forge-${project.minecraft_version}:${project.veil_version}") {
+        transitive = false
     }
     // Bundled inside the Veil jar, but not declared in its published metadata
     compileOnly "io.github.ocelot:glsl-processor:0.2.3"
@@ -106,9 +112,11 @@ dependencies {
     // Veil's ImGui editor API (the ImGuiMC runtime is optional)
     compileOnly "io.github.spair:imgui-java-binding:1.92.0"
 
-    jarJar(runtimeOnly(project(path: ":sable_rapier", configuration: "runtimeElements")))
+    runtimeOnly project(path: ":sable_rapier", configuration: "runtimeElements")
+    jarJar(project(":sable_rapier"))
     // Used by sable_rapier to unpack its natives; Minecraft 1.21 ships it but 1.20.1 doesn't
-    jarJar(additionalRuntimeClasspath("org.lz4:lz4-java:1.8.0")) {
+    additionalRuntimeClasspath "org.lz4:lz4-java:1.8.0"
+    jarJar("org.lz4:lz4-java:1.8.0") {
         version {
             strictly "[1.8.0,2.0)"
             prefer "1.8.0"
@@ -135,4 +143,9 @@ tasks.register('checkMixins', JavaExec) {
     classpath = sourceSets.mixinCheck.runtimeClasspath + sourceSets.main.output + sourceSets.main.compileClasspath
     mainClass = 'MixinChecker'
     args = ["${mod_id}.mixins.json", "${mod_id}-neoforge.mixins.json"].collect { layout.buildDirectory.file("resources/main/$it").get().asFile.path }
+}
+
+// Forge 1.20.1 only loads mixin configs listed in the jar manifest
+tasks.named('jar', Jar) {
+    manifest.attributes('MixinConfigs': "${mod_id}.mixins.json,${mod_id}-neoforge.mixins.json")
 }

@@ -15,6 +15,8 @@
 
 <p>Sable is an intrusive library mod for Minecraft that adds my take on interactive moving block structures, called "sub-levels". Sub-levels contain normal Minecraft chunks, entities, and block-entities, but exist at a separate dynamic position and orientation within Minecraft levels. My goal is to maximize compatibility, performance, and immersion of interacting with sub-levels, as simply as possible.</p>
 
+> **1.20.1 port:** this branch targets Minecraft 1.20.1 / Forge. See [PORTING-1.20.1.md](PORTING-1.20.1.md) for how to build it and what changed.
+
 ### Compatibility Warning
 
 Sable is an incredibly intrusive mod. It makes extensive use of mixins, and is prone to extensive compatibility issues
