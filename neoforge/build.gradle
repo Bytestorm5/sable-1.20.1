@@ -104,3 +104,24 @@ dependencies {
 
     jarJar(runtimeOnly(project(path: ":sable_rapier", configuration: "runtimeElements")))
 }
+
+// Static mixin audit against the real 1.20.1 target classes (scripts/mixin-check/MixinChecker.java):
+// ./gradlew :forge:checkMixins
+sourceSets {
+    mixinCheck {
+        java.srcDir rootProject.file('scripts/mixin-check')
+    }
+}
+
+dependencies {
+    mixinCheckImplementation 'org.ow2.asm:asm-tree:9.7'
+}
+
+tasks.register('checkMixins', JavaExec) {
+    group = 'verification'
+    description = 'Checks every mixin target, injector signature and @At target against the classes on the compile classpath'
+    dependsOn 'classes', 'mixinCheckClasses'
+    classpath = sourceSets.mixinCheck.runtimeClasspath + sourceSets.main.output + sourceSets.main.compileClasspath
+    mainClass = 'MixinChecker'
+    args = ["${mod_id}.mixins.json", "${mod_id}-neoforge.mixins.json"].collect { layout.buildDirectory.file("resources/main/$it").get().asFile.path }
+}
