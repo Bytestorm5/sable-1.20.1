@@ -96,6 +96,9 @@ dependencies {
         exclude group: "maven.modrinth"
         exclude group: "me.fallenbreath"
     }
+    // Bundled inside the Veil jar, but not declared in its published metadata
+    compileOnly "io.github.ocelot:glsl-processor:0.2.3"
+    compileOnly "gg.moonflower:molang-compiler:3.1.1.19"
     // Veil's ImGui editor API (the ImGuiMC runtime is optional)
     compileOnly "io.github.spair:imgui-java-binding:1.92.0"
 

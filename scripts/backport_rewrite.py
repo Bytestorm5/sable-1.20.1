@@ -56,6 +56,9 @@ IMPORTS = {
 
 # NeoForge packages that map 1:1 onto Forge packages (same class names)
 PACKAGE_PREFIXES = {
+    # Sable's own shims from earlier revisions of this port, superseded by Veil's
+    "dev.ryanhcode.sable.backport.network.": "foundry.veil.backport.network.",
+    "dev.ryanhcode.sable.backport.client.": "foundry.veil.backport.client.",
     "net.neoforged.fml.": "net.minecraftforge.fml.",
     "net.neoforged.neoforge.event.": "net.minecraftforge.event.",
     "net.neoforged.neoforge.client.event.": "net.minecraftforge.client.event.",
@@ -95,7 +98,7 @@ EXPRESSIONS = [
     (re.compile(r"\bNbtAccounter\.create\("), "new NbtAccounter("),
     # Component helpers added in 1.20.3+
     (re.compile(r"\bComponent\.translationArg\(([^()]*(?:\([^()]*\))*[^()]*)\)"), r"Component.literal(String.valueOf(\1))"),
-    (re.compile(r"\.withColor\((0x[0-9a-fA-F]+|\d+)\)"), r".withStyle(style -> style.withColor(\1))"),
+    (re.compile(r"(?<!componentStyle)\.withColor\((0x[0-9a-fA-F]+|\d+)\)"), r".withStyle(componentStyle -> componentStyle.withColor(\1))"),
 ]
 
 IMPORT_RE = re.compile(r"^import\s+(static\s+)?([\w.$]+)(\.\*)?\s*;\s*$", re.M)
