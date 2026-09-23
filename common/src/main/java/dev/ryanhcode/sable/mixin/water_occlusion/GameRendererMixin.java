@@ -1,7 +1,6 @@
 package dev.ryanhcode.sable.mixin.water_occlusion;
 
 import dev.ryanhcode.sable.SableClient;
-import dev.ryanhcode.sable.backport.client.DeltaTracker;
 import net.minecraft.client.renderer.GameRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -12,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class GameRendererMixin {
 
     @Inject(method = "render", at = @At("HEAD"))
-    public void sable$updateWaterOcclusionManager(final DeltaTracker deltaTracker, final boolean bl, final CallbackInfo ci) {
+    public void sable$updateWaterOcclusionManager(final float partialTicks, final long nanoTime, final boolean renderLevel, final CallbackInfo ci) {
         SableClient.WATER_OCCLUSION_RENDERER.update();
     }
 }

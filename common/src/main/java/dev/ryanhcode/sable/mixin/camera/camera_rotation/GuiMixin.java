@@ -2,14 +2,14 @@ package dev.ryanhcode.sable.mixin.camera.camera_rotation;
 
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import dev.ryanhcode.sable.mixinhelpers.camera.camera_rotation.EntitySubLevelRotationHelper;
 import dev.ryanhcode.sable.sublevel.ClientSubLevel;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.world.entity.Entity;
-import org.joml.Matrix4f;
-import org.joml.Matrix4fStack;
 import org.joml.Quaterniond;
 import org.joml.Quaternionf;
 import org.spongepowered.asm.mixin.Final;
@@ -28,7 +28,7 @@ public class GuiMixin {
 
     @Shadow @Final private Minecraft minecraft;
 
-    @Inject(method = "renderCrosshair", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;getModelViewStack()Lorg/joml/Matrix4fStack;"))
+    @Inject(method = "renderCrosshair", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;getModelViewStack()Lcom/mojang/blaze3d/vertex/PoseStack;"))
     private void sable$onRenderCrosshair(final CallbackInfo ci, @Share("mountedOrientation") final LocalRef<Quaterniond> mountedOrientation) {
         final Camera camera = this.minecraft.gameRenderer.getMainCamera();
         final Entity entity = camera.getEntity();
@@ -38,32 +38,37 @@ public class GuiMixin {
         mountedOrientation.set(ridingOrientation);
     }
 
-    @Redirect(method = "renderCrosshair", at = @At(value = "INVOKE", target = "Lorg/joml/Matrix4fStack;rotateX(F)Lorg/joml/Matrix4f;"))
-    private Matrix4f sable$redirectRotateX(final Matrix4fStack stack, final float angle, @Share("mountedOrientation") final LocalRef<Quaterniond> mountedOrientation) {
+    /**
+     * 1.20.1 rotates the model view {@link PoseStack} with {@code mulPose(Axis.XN.rotationDegrees(xRot))} (ordinal 0)
+     * then {@code mulPose(Axis.YP.rotationDegrees(yRot))} (ordinal 1), where 1.21 used {@code Matrix4fStack#rotateX/Y}.
+     */
+    @Redirect(method = "renderCrosshair", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;mulPose(Lorg/joml/Quaternionf;)V", ordinal = 0))
+    private void sable$redirectRotateX(final PoseStack stack, final Quaternionf rotation, @Share("mountedOrientation") final LocalRef<Quaterniond> mountedOrientation) {
         if (mountedOrientation.get() != null) {
             final float pt = this.minecraft.getFrameTime();
             final Camera camera = this.minecraft.gameRenderer.getMainCamera();
             final Entity entity = camera.getEntity();
 
-            return stack.rotateX(-entity.getViewXRot(pt) * (float) (Math.PI / 180.0));
+            stack.mulPose(Axis.XN.rotationDegrees(entity.getViewXRot(pt)));
+            return;
         }
 
-        return stack.rotateX(angle);
+        stack.mulPose(rotation);
     }
 
-    @Redirect(method = "renderCrosshair", at = @At(value = "INVOKE", target = "Lorg/joml/Matrix4fStack;rotateY(F)Lorg/joml/Matrix4f;"))
-    private Matrix4f sable$redirectRotateY(final Matrix4fStack stack, final float angle, @Share("mountedOrientation") final LocalRef<Quaterniond> mountedOrientation) {
+    @Redirect(method = "renderCrosshair", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;mulPose(Lorg/joml/Quaternionf;)V", ordinal = 1))
+    private void sable$redirectRotateY(final PoseStack stack, final Quaternionf rotation, @Share("mountedOrientation") final LocalRef<Quaterniond> mountedOrientation) {
         if (mountedOrientation.get() != null) {
             final float pt = this.minecraft.getFrameTime();
             final Camera camera = this.minecraft.gameRenderer.getMainCamera();
             final Entity entity = camera.getEntity();
 
-            stack.rotateY(entity.getViewYRot(pt) * (float) (Math.PI / 180.0));
-
-            return stack.rotate(new Quaternionf(mountedOrientation.get()).conjugate());
+            stack.mulPose(Axis.YP.rotationDegrees(entity.getViewYRot(pt)));
+            stack.mulPose(new Quaternionf(mountedOrientation.get()).conjugate());
+            return;
         }
 
-        return stack.rotateY(angle);
+        stack.mulPose(rotation);
     }
 
 }

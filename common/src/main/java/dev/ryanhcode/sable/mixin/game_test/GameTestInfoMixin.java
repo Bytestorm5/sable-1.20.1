@@ -1,6 +1,5 @@
 package dev.ryanhcode.sable.mixin.game_test;
 
-import com.llamalad7.mixinextras.sugar.Local;
 import dev.ryanhcode.sable.companion.math.BoundingBox3d;
 import dev.ryanhcode.sable.api.sublevel.SubLevelContainer;
 import dev.ryanhcode.sable.sublevel.SubLevel;
@@ -8,6 +7,7 @@ import dev.ryanhcode.sable.sublevel.storage.SubLevelRemovalReason;
 import net.minecraft.gametest.framework.GameTestInfo;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.phys.AABB;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,8 +20,28 @@ public abstract class GameTestInfoMixin {
     @Shadow
     public abstract ServerLevel getLevel();
 
-    @Inject(method = "succeed", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;getEntitiesOfClass(Ljava/lang/Class;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;)Ljava/util/List;"))
-    public void removeSublevels(final CallbackInfo ci, @Local final AABB aabb) {
+    @Shadow
+    @Nullable
+    public abstract Throwable getError();
+
+    @Shadow
+    public abstract AABB getStructureBounds();
+
+    /**
+     * 1.21 removes the entities in the structure bounds when a test succeeds, and we removed sub-levels alongside them.
+     * 1.20.1 doesn't clean up entities there, so we remove sub-levels at the end of a successful {@code succeed}.
+     */
+    @Inject(method = "succeed", at = @At("TAIL"))
+    public void removeSublevels(final CallbackInfo ci) {
+        if (this.getError() != null) {
+            return;
+        }
+
+        final AABB aabb = this.getStructureBounds();
+        if (aabb == null) {
+            return;
+        }
+
         final SubLevelContainer container = SubLevelContainer.getContainer(this.getLevel());
         if (container != null) {
             for (final SubLevel subLevel : container.queryIntersecting(new BoundingBox3d(aabb))) {

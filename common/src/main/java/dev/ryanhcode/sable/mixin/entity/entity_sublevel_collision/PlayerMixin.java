@@ -36,9 +36,7 @@ public abstract class PlayerMixin extends LivingEntity {
 
     @Shadow protected abstract boolean isStayingOnGroundSurface();
 
-    @Shadow protected abstract boolean isAboveGround(float f);
-
-    @Shadow protected abstract boolean canFallAtLeast(double d, double e, float f);
+    @Shadow protected abstract boolean isAboveGround();
 
     protected PlayerMixin(final EntityType<? extends LivingEntity> entityType, final Level level) {
         super(entityType, level);
@@ -54,7 +52,7 @@ public abstract class PlayerMixin extends LivingEntity {
                     && !(movement.y > 0.0)
                     && (moverType == MoverType.SELF || moverType == MoverType.PLAYER)
                     && this.isStayingOnGroundSurface()
-                    && this.isAboveGround(maxUpStep)
+                    && this.isAboveGround()
             ) {
                 final Pose3dc pose = trackingSubLevel.lastPose();
 
@@ -126,7 +124,11 @@ public abstract class PlayerMixin extends LivingEntity {
         return CanFallAtleastHelper.canFallAtleastWithSubLevels(this.level(), boundsToCheck) == null;
     }
 
-    @Redirect(method = "canFallAtLeast", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;noCollision(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/AABB;)Z"))
+    /**
+     * 1.20.1 has no {@code canFallAtLeast}; the same "is there ground below" checks are inlined as
+     * {@code noCollision} calls in {@code maybeBackOffFromEdge} and {@code isAboveGround}.
+     */
+    @Redirect(method = {"maybeBackOffFromEdge", "isAboveGround"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;noCollision(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/AABB;)Z"))
     private boolean sable$noCollision(final Level level, final Entity entity, final AABB aabb) {
         final boolean original = level.noCollision(entity, aabb);
 

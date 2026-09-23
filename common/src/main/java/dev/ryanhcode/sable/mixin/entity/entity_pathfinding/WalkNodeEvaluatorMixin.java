@@ -4,6 +4,7 @@ import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import dev.ryanhcode.sable.Sable;
 import dev.ryanhcode.sable.api.entity.EntitySubLevelUtil;
+import dev.ryanhcode.sable.mixinhelpers.entity.entity_pathfinding.PathfindingMobPositionHelper;
 import dev.ryanhcode.sable.sublevel.SubLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
@@ -106,5 +107,15 @@ public abstract class WalkNodeEvaluatorMixin extends NodeEvaluator {
         }
 
         return instance.getBoundingBox();
+    }
+
+    /**
+     * 1.20.1 has no {@code PathfindingContext}; its {@code mobPosition} (which 1.21 made sub-level local) is read
+     * directly from the mob here.
+     */
+    @Redirect(method = "getBlockPathType(Lnet/minecraft/world/level/BlockGetter;IIILnet/minecraft/world/entity/Mob;)Lnet/minecraft/world/level/pathfinder/BlockPathTypes;",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Mob;blockPosition()Lnet/minecraft/core/BlockPos;"))
+    private BlockPos sable$redirectMobPosition(final Mob mob) {
+        return PathfindingMobPositionHelper.getMobPosition(mob);
     }
 }

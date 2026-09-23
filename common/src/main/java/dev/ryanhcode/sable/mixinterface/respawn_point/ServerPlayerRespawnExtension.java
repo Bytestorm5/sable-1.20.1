@@ -1,10 +1,13 @@
 package dev.ryanhcode.sable.mixinterface.respawn_point;
 
 import it.unimi.dsi.fastutil.Pair;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ServerPlayerRespawnExtension {
@@ -13,4 +16,15 @@ public interface ServerPlayerRespawnExtension {
     void sable$takeQueuedFreezeFrom(ServerPlayer oldPlayer);
 
     @Nullable Pair<UUID, Vector3d> sable$getQueuedFreeze();
+
+    /**
+     * Copies the respawn position, including the sub-level respawn point, from another player
+     */
+    void sable$copyRespawnPosition(ServerPlayer from);
+
+    /**
+     * @return {@code null} if the player has no sub-level respawn point, otherwise the position to respawn at
+     * (empty if the respawn point no longer exists)
+     */
+    @Nullable Optional<Vec3> sable$findSubLevelRespawnPosition(ServerLevel level);
 }

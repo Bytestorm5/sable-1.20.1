@@ -15,7 +15,7 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.Leashable;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.phys.AABB;
@@ -149,8 +149,8 @@ public abstract class EntityRendererMixin {
             if (frustum.isVisible(aABB)) {
                 cir.setReturnValue(true);
             } else {
-                if (entity instanceof final Leashable leashable) {
-                    final Entity entity2 = leashable.getLeashHolder();
+                if (entity instanceof final Mob mob) {
+                    final Entity entity2 = mob.getLeashHolder();
                     if (entity2 != null) {
                         cir.setReturnValue(frustum.isVisible(entity2.getBoundingBoxForCulling()));
                         return;

@@ -3,31 +3,40 @@ package dev.ryanhcode.sable.mixin.entity.tamed_teleport;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import dev.ryanhcode.sable.Sable;
-import dev.ryanhcode.sable.api.SubLevelHelper;
-import dev.ryanhcode.sable.api.entity.EntitySubLevelUtil;
-import dev.ryanhcode.sable.companion.math.BoundingBox3d;
 import dev.ryanhcode.sable.api.math.OrientedBoundingBox3d;
+import dev.ryanhcode.sable.companion.math.BoundingBox3d;
 import dev.ryanhcode.sable.sublevel.SubLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.entity.ai.goal.FollowOwnerGoal;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3d;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
-@Mixin(TamableAnimal.class)
-public class TamableAnimalMixin {
+/**
+ * On 1.20.1 the pet teleport logic lives in {@link FollowOwnerGoal} (1.21 moved it to {@code TamableAnimal}).
+ */
+@Mixin(FollowOwnerGoal.class)
+public class FollowOwnerGoalMixin {
 
 	@Unique
 	private static final BoundingBox3d sable$BOX = new BoundingBox3d();
 
-	@WrapOperation(method = "maybeTeleportTo", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/TamableAnimal;canTeleportTo(Lnet/minecraft/core/BlockPos;)Z"))
-	private static boolean sable$blockPosition(final TamableAnimal instance, final BlockPos blockPos, final Operation<Boolean> original) {
+	@Shadow
+	@Final
+	private TamableAnimal tamable;
+
+	@WrapOperation(method = "maybeTeleportTo", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/ai/goal/FollowOwnerGoal;canTeleportTo(Lnet/minecraft/core/BlockPos;)Z"))
+	private boolean sable$blockPosition(final FollowOwnerGoal goal, final BlockPos blockPos, final Operation<Boolean> original) {
+		final TamableAnimal instance = this.tamable;
 		final SubLevel subLevel = Sable.HELPER.getTrackingSubLevel(instance.getOwner());
 		if(subLevel != null) {
 			final BlockPos pos = BlockPos.containing(subLevel.logicalPose().transformPositionInverse(blockPos.getCenter()));
-			if (original.call(instance, pos)) {
+			if (original.call(goal, pos)) {
 				final double dot = subLevel.logicalPose().transformNormal(new Vector3d(0, 1, 0)).dot(OrientedBoundingBox3d.UP);
 
 				if (dot > 0.85) {
@@ -46,7 +55,7 @@ public class TamableAnimalMixin {
             }
         }
 
-		return original.call(instance, blockPos);
+		return original.call(goal, blockPos);
 	}
 
 }

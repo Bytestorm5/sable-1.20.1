@@ -62,7 +62,7 @@ EXPRESSIONS = [
     (re.compile(r"\bNbtAccounter\.create\("), "new NbtAccounter("),
     # Component helpers added in 1.20.3+
     (re.compile(r"\bComponent\.translationArg\(([^()]*(?:\([^()]*\))*[^()]*)\)"), r"Component.literal(String.valueOf(\1))"),
-    (re.compile(r"\.withColor\((0x[0-9a-fA-F]+|\d+)\)"), r".withStyle(style -> style.withColor(\1))"),
+    (re.compile(r"(?<!style)\.withColor\((0x[0-9a-fA-F]+|\d+)\)"), r".withStyle(style -> style.withColor(\1))"),
 ]
 
 IMPORT_RE = re.compile(r"^import\s+(static\s+)?([\w.$]+)(\.\*)?\s*;\s*$", re.M)

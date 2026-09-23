@@ -40,7 +40,7 @@ public abstract class EntityMixin {
 
     @Shadow public abstract double getZ();
 
-    @Inject(method = "updateFluidHeightAndDoFluidPushing", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "updateFluidHeightAndDoFluidPushing(Lnet/minecraft/tags/TagKey;D)Z", at = @At("HEAD"), cancellable = true)
     public void sable$updateFluidHeightAndDoFluidPushing(final TagKey<Fluid> tagKey, final double d, final CallbackInfoReturnable<Boolean> cir) {
         final boolean occluded = this.sable$isOccluded();
 

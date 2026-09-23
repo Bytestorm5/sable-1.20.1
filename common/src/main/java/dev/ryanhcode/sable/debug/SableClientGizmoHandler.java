@@ -40,7 +40,12 @@ public class SableClientGizmoHandler {
     private @Nullable GizmoSelection selection;
 
     public void init() {
-        VeilEventPlatform.INSTANCE.onVeilRenderLevelStage(this::onRenderStage);
+        // TODO(veil-1.20.1): Veil 4.x's VeilRenderLevelStageEvent listener takes net.minecraft.client.DeltaTracker, which
+        //  doesn't exist on 1.20.1, so the listener can't be registered against the 1.21 stand-in jar. The ported Veil
+        //  should hand the listener the 1.20.1 partial tick; register this again as
+        //  (..., partialTick, camera, frustum) -> this.onRenderStage(..., DeltaTracker.of(partialTick), camera, frustum)
+        //  or with the backport DeltaTracker directly if the ported API uses it.
+        // VeilEventPlatform.INSTANCE.onVeilRenderLevelStage(this::onRenderStage);
     }
 
     public static Vec3 getRay(final Matrix4fc projectionMatrix, final float normalizedMouseX, final float normalizedMouseY) {

@@ -20,7 +20,12 @@ import java.util.function.Function;
 @Mixin(EntityType.class)
 public class EntityTypeMixin {
 
-    @Inject(method = {"method_17843", "lambda$loadEntityRecursive$7"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;startRiding(Lnet/minecraft/world/entity/Entity;Z)Z"))
+    /**
+     * Targets the passenger loading lambda in {@code loadEntityRecursive}. The annotation processor can't map lambda
+     * names, so the dev name and the production SRG name ({@code m_185991_}) are both listed, unmapped.
+     */
+    @SuppressWarnings("UnresolvedMixinReference")
+    @Inject(method = {"method_17843", "lambda$loadEntityRecursive$7", "m_185991_"}, remap = false, require = 1, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;startRiding(Lnet/minecraft/world/entity/Entity;Z)Z", remap = true))
     private static void sable$startRidingEntity(final CompoundTag compoundTag,
                                                 final Level level,
                                                 final Function function,

@@ -5,7 +5,7 @@ import dev.ryanhcode.sable.api.SubLevelHelper;
 import dev.ryanhcode.sable.mixinhelpers.camera.new_camera_types.SableCameraTypes;
 import dev.ryanhcode.sable.sublevel.SubLevel;
 import net.minecraft.client.CameraType;
-import dev.ryanhcode.sable.backport.client.DeltaTracker;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.world.entity.Entity;
@@ -22,7 +22,7 @@ public class GameRendererMixin {
     @Shadow @Final private Minecraft minecraft;
 
     @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setup(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/world/entity/Entity;ZZF)V", shift = At.Shift.BEFORE))
-    public void sable$setupCamera(final DeltaTracker deltaTracker, final CallbackInfo ci) {
+    public void sable$setupCamera(final float partialTicks, final long finishTimeNano, final PoseStack poseStack, final CallbackInfo ci) {
         final CameraType cameraType = this.minecraft.options.getCameraType();
 
         if (cameraType == SableCameraTypes.SUB_LEVEL_VIEW || cameraType == SableCameraTypes.SUB_LEVEL_VIEW_UNLOCKED) {

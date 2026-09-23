@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class StructureUtilsMixin {
 
     @Inject(method = "clearSpaceForStructure", at = @At("TAIL"))
-    private static void clearSpaceForStructure(final BoundingBox box, final ServerLevel level, final CallbackInfo ci) {
+    private static void clearSpaceForStructure(final BoundingBox box, final int y, final ServerLevel level, final CallbackInfo ci) {
         final SubLevelContainer container = SubLevelContainer.getContainer(level);
         if (container != null) {
             for (final SubLevel subLevel : container.queryIntersecting(new BoundingBox3d(box))) {
