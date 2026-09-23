@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(CameraPoses.class)
 public class CameraPosesMixin {
 
-	@WrapOperation(method = "applyStand", at = @At(value = "INVOKE", target = "Lio/github/mortuusars/exposure/world/entity/CameraStandEntity;getEyePosition()Lnet/minecraft/world/phys/Vec3;"))
+	@WrapOperation(method = "applyStand", remap = false, at = @At(value = "INVOKE", target = "Lio/github/mortuusars/exposure/world/entity/CameraStandEntity;getEyePosition()Lnet/minecraft/world/phys/Vec3;", remap = true))
 	private Vec3 sable$applyStand(final CameraStandEntity instance, final Operation<Vec3> original) {
 		final Vec3 pos = original.call(instance);
 		return Sable.HELPER.projectOutOfSubLevel(instance.level(), pos);

@@ -18,7 +18,7 @@ import java.util.Optional;
 @Mixin(RayTracing.class)
 public class RayTracingMixin {
 
-	@WrapOperation(method = "getEntityHitResult", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/AABB;clip(Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;)Ljava/util/Optional;"))
+	@WrapOperation(method = "getEntityHitResult", remap = false, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/AABB;clip(Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;)Ljava/util/Optional;", remap = true))
 	private static Optional<Vec3> sable$clip(final AABB aabb, Vec3 start, Vec3 end, final Operation<Optional<Vec3>> original, @Local(argsOnly = true) final Level worldIn) {
 		final ClientSubLevel subLevel = (ClientSubLevel) Sable.HELPER.getContaining(worldIn, aabb.getCenter());
 		if(subLevel != null) {
@@ -31,7 +31,7 @@ public class RayTracingMixin {
 		return original.call(aabb, start, end);
 	}
 
-	@WrapOperation(method = "getEntityHitResult", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;distanceToSqr(Lnet/minecraft/world/phys/Vec3;)D"))
+	@WrapOperation(method = "getEntityHitResult", remap = false, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;distanceToSqr(Lnet/minecraft/world/phys/Vec3;)D", remap = true))
 	private static double sable$distanceToSqr(final Vec3 instance, final Vec3 vec3, final Operation<Double> original, @Local(argsOnly = true) final Level worldIn) {
 		return original.call(instance, Sable.HELPER.projectOutOfSubLevel(worldIn, vec3));
 	}

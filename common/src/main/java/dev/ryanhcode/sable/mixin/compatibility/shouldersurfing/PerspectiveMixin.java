@@ -1,12 +1,9 @@
 package dev.ryanhcode.sable.mixin.compatibility.shouldersurfing;
 
-import com.github.exopandora.shouldersurfing.api.client.IClientConfig;
-import com.github.exopandora.shouldersurfing.api.model.CrosshairVisibility;
-import com.github.exopandora.shouldersurfing.api.model.Perspective;
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.github.exopandora.shouldersurfing.api.client.CrosshairVisibility;
+import com.github.exopandora.shouldersurfing.api.client.Perspective;
+import com.github.exopandora.shouldersurfing.api.config.IPerspectiveConfig;
 import com.llamalad7.mixinextras.lib.apache.commons.ArrayUtils;
-import com.llamalad7.mixinextras.sugar.Local;
 import dev.ryanhcode.sable.mixinhelpers.camera.new_camera_types.SableCameraTypes;
 import dev.ryanhcode.sable.mixinhelpers.compatibility.shouldersurfing.SablePerspectives;
 import net.minecraft.client.CameraType;
@@ -14,13 +11,20 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.gen.Invoker;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(Perspective.class)
+/**
+ * Adds the sub-level camera types to Shoulder Surfing's perspectives.
+ * <p>
+ * Shoulder Surfing 5.x (the 1.20.1 build) moved {@code Perspective} to {@code api.client}, and its {@code next},
+ * {@code isEnabled} and {@code of} switch over the vanilla perspectives' ordinals, which would throw for the added values.
+ * So instead of adjusting the {@code next} local like on 4.x, the sub-level perspectives are handled before the switches run.
+ */
+@Mixin(value = Perspective.class, remap = false)
 public class PerspectiveMixin {
 
     @Shadow
@@ -45,54 +49,48 @@ public class PerspectiveMixin {
     }
 
     @SuppressWarnings("ConstantValue")
-    @WrapOperation(method = "next", at = @At(value = "INVOKE", target = "Lcom/github/exopandora/shouldersurfing/api/client/IClientConfig;replaceDefaultPerspective()Z"))
-    public boolean nextPerspective(final IClientConfig instance, final Operation<Boolean> original) {
-        if ((Object) this == SablePerspectives.SUB_LEVEL_VIEW || (Object) this == SablePerspectives.SUB_LEVEL_VIEW_UNLOCKED) {
-            return false;
-        }
-        return original.call(instance);
-    }
+    @Inject(method = "next", at = @At("HEAD"), cancellable = true)
+    public void sable$next(final IPerspectiveConfig config, final CallbackInfoReturnable<Perspective> cir) {
+        final Object self = this;
 
-    @ModifyVariable(method = "next", at = @At(value = "STORE"), name = "next")
-    public Perspective next(final Perspective next, @Local(argsOnly = true) final IClientConfig config) {
-        if (config.replaceDefaultPerspective()) {
-            if ((Object) this == Perspective.SHOULDER_SURFING) {
-                return SablePerspectives.SUB_LEVEL_VIEW;
+        if (self == SablePerspectives.SUB_LEVEL_VIEW) {
+            cir.setReturnValue(SablePerspectives.SUB_LEVEL_VIEW_UNLOCKED);
+            return;
+        }
+
+        if (self == SablePerspectives.SUB_LEVEL_VIEW_UNLOCKED) {
+            cir.setReturnValue(sable$enabledOrNext(Perspective.THIRD_PERSON_FRONT, config));
+            return;
+        }
+
+        if (config.isThirdPersonReplaced()) {
+            if (self == Perspective.SHOULDER_SURFING) {
+                cir.setReturnValue(SablePerspectives.SUB_LEVEL_VIEW);
             }
         } else {
-            // The normal logic will try to wrap around to our new values, but the next one should be first person
-            if ((Object) this == Perspective.SHOULDER_SURFING) {
-                return Perspective.FIRST_PERSON;
+            // The normal logic would wrap around to our new values, but the next one should be first person
+            if (self == Perspective.SHOULDER_SURFING) {
+                cir.setReturnValue(sable$enabledOrNext(Perspective.FIRST_PERSON, config));
+                return;
             }
 
-            if ((Object) this == Perspective.THIRD_PERSON_BACK) {
-                return SablePerspectives.SUB_LEVEL_VIEW;
+            if (self == Perspective.THIRD_PERSON_BACK) {
+                cir.setReturnValue(SablePerspectives.SUB_LEVEL_VIEW);
             }
         }
-
-        if ((Object) this == SablePerspectives.SUB_LEVEL_VIEW) {
-            return SablePerspectives.SUB_LEVEL_VIEW_UNLOCKED;
-        }
-        if ((Object) this == SablePerspectives.SUB_LEVEL_VIEW_UNLOCKED) {
-            return Perspective.THIRD_PERSON_FRONT;
-        }
-
-        return next;
     }
 
-    @Inject(method = "next", at = @At("TAIL"), cancellable = true)
-    public void getNext(final CallbackInfoReturnable<Perspective> cir, @Local(name = "next") final Perspective next) {
-        if (next == SablePerspectives.SUB_LEVEL_VIEW) {
-            cir.setReturnValue(SablePerspectives.SUB_LEVEL_VIEW);
-        }
-        if (next == SablePerspectives.SUB_LEVEL_VIEW_UNLOCKED) {
-            cir.setReturnValue(SablePerspectives.SUB_LEVEL_VIEW_UNLOCKED);
-        }
+    /**
+     * Mirrors the enabled check vanilla {@code next} does on its result
+     */
+    @Unique
+    private static Perspective sable$enabledOrNext(final Perspective perspective, final IPerspectiveConfig config) {
+        return perspective.isEnabled(config) ? perspective : perspective.next(config);
     }
 
     @SuppressWarnings("ConstantValue")
     @Inject(method = "isEnabled", at = @At("HEAD"), cancellable = true)
-    public void isEnabled(final CallbackInfoReturnable<Boolean> cir) {
+    public void isEnabled(final IPerspectiveConfig config, final CallbackInfoReturnable<Boolean> cir) {
         if ((Object) this == SablePerspectives.SUB_LEVEL_VIEW || (Object) this == SablePerspectives.SUB_LEVEL_VIEW_UNLOCKED) {
             cir.setReturnValue(true);
         }
