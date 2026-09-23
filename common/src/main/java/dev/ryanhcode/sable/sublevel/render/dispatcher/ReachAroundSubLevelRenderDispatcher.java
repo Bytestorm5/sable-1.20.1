@@ -10,30 +10,26 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderBuffers;
-import net.minecraft.client.renderer.SectionBufferBuilderPool;
-import net.minecraft.client.renderer.chunk.SectionRenderDispatcher;
+import net.minecraft.client.renderer.chunk.ChunkRenderDispatcher;
 
 public class ReachAroundSubLevelRenderDispatcher extends VanillaSubLevelRenderDispatcher {
 
-    private SectionBufferBuilderPool sectionBufferPool;
-    private SectionRenderDispatcher sectionRenderDispatcher;
+    private ChunkRenderDispatcher sectionRenderDispatcher;
 
     public ReachAroundSubLevelRenderDispatcher() {
-        final int processors = Runtime.getRuntime().availableProcessors();
-        final int num = Math.max(1, processors / 4);
-        this.sectionBufferPool = SectionBufferBuilderPool.allocate(num);
     }
 
-    private SectionRenderDispatcher getSectionRenderDispatcher(final LevelRenderer levelRenderer, final ClientLevel level) {
+    private ChunkRenderDispatcher getSectionRenderDispatcher(final LevelRenderer levelRenderer, final ClientLevel level) {
         if (this.sectionRenderDispatcher == null) {
             final Minecraft minecraft = Minecraft.getInstance();
             final RenderBuffers renderBuffers = minecraft.renderBuffers();
 
-            this.sectionRenderDispatcher = new SectionRenderDispatcher(
-                    level, levelRenderer, Util.backgroundExecutor(), renderBuffers, minecraft.getBlockRenderer(), minecraft.getBlockEntityRenderDispatcher()
+            // On 1.21 this dispatcher got its own buffer pool of (processors / 4) packs. 1.20.1's ChunkRenderDispatcher
+            // allocates its own pool in the constructor instead; passing is64Bit = false caps it at min(processors, 4)
+            // packs rather than one per processor, keeping the memory overhead of this secondary dispatcher small.
+            this.sectionRenderDispatcher = new ChunkRenderDispatcher(
+                    level, levelRenderer, Util.backgroundExecutor(), false, renderBuffers.fixedBufferPack()
             );
-
-            this.sectionRenderDispatcher.bufferPool = this.sectionBufferPool;
         }
 
         this.sectionRenderDispatcher.setLevel(level);
@@ -57,7 +53,8 @@ public class ReachAroundSubLevelRenderDispatcher extends VanillaSubLevelRenderDi
 
         final Minecraft minecraft = Minecraft.getInstance();
         final LevelRenderer levelRenderer = minecraft.levelRenderer;
-        final SectionRenderDispatcher sectionRenderDispatcher = this.getSectionRenderDispatcher(levelRenderer, subLevel.getLevel());
+        final ChunkRenderDispatcher sectionRenderDispatcher = this.getSectionRenderDispatcher(levelRenderer, subLevel.getLevel());
+
 
         return new VanillaChunkedSubLevelRenderData(subLevel, sectionRenderDispatcher);
     }
@@ -79,7 +76,6 @@ public class ReachAroundSubLevelRenderDispatcher extends VanillaSubLevelRenderDi
         if (this.sectionRenderDispatcher != null) {
             this.sectionRenderDispatcher.dispose();
             this.sectionRenderDispatcher = null;
-            this.sectionBufferPool = null;
         }
 
         super.free();

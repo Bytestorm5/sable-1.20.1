@@ -51,24 +51,24 @@ public class SableChunkDebugRenderer {
             } else {
                 y1 += (10 * ((1 - diff) / 100));
             }
-            builder.addVertex(pose, x, y, z).setColor(red, diff, blue, 0.0F);
+            builder.vertex(pose, x, y, z).color(red, diff, blue, 0.0F).endVertex();
 
-            builder.addVertex(pose, x, y, z).setColor(red, diff, blue, 1.0F);
-            builder.addVertex(pose, x + 16, y, z).setColor(red, diff, blue, 1.0F);
-            builder.addVertex(pose, x + 16, y, z + 16).setColor(red, diff, blue, 1.0F);
-            builder.addVertex(pose, x, y, z + 16).setColor(red, diff, blue, 1.0F);
+            builder.vertex(pose, x, y, z).color(red, diff, blue, 1.0F).endVertex();
+            builder.vertex(pose, x + 16, y, z).color(red, diff, blue, 1.0F).endVertex();
+            builder.vertex(pose, x + 16, y, z + 16).color(red, diff, blue, 1.0F).endVertex();
+            builder.vertex(pose, x, y, z + 16).color(red, diff, blue, 1.0F).endVertex();
 
-            builder.addVertex(pose, x, y, z).setColor(red, diff, blue, 0.0F);
+            builder.vertex(pose, x, y, z).color(red, diff, blue, 0.0F).endVertex();
 
             y = y1;
-            builder.addVertex(pose, x, y, z).setColor(red, diff, blue, 0.0F);
+            builder.vertex(pose, x, y, z).color(red, diff, blue, 0.0F).endVertex();
 
-            builder.addVertex(pose, x, y, z).setColor(red, diff, blue, 1.0F);
-            builder.addVertex(pose, x + 16, y, z).setColor(red, diff, blue, 1.0F);
-            builder.addVertex(pose, x + 16, y, z + 16).setColor(red, diff, blue, 1.0F);
-            builder.addVertex(pose, x, y, z + 16).setColor(red, diff, blue, 1.0F);
+            builder.vertex(pose, x, y, z).color(red, diff, blue, 1.0F).endVertex();
+            builder.vertex(pose, x + 16, y, z).color(red, diff, blue, 1.0F).endVertex();
+            builder.vertex(pose, x + 16, y, z + 16).color(red, diff, blue, 1.0F).endVertex();
+            builder.vertex(pose, x, y, z + 16).color(red, diff, blue, 1.0F).endVertex();
 
-            builder.addVertex(pose, x, y, z).setColor(red, diff, blue, 0.0F);
+            builder.vertex(pose, x, y, z).color(red, diff, blue, 0.0F).endVertex();
         }
 
         final ChunkPos ckPos = entity.chunkPosition();
@@ -79,12 +79,12 @@ public class SableChunkDebugRenderer {
 
         for (int xO = 0; xO < 2; xO++) {
             for (int zO = 0; zO < 2; zO++) {
-                builder.addVertex(pose, x + xO * 16, y, z + zO * 16).setColor(1, 1, 0.0F, 0.0F);
+                builder.vertex(pose, x + xO * 16, y, z + zO * 16).color(1, 1, 0.0F, 0.0F).endVertex();
 
-                builder.addVertex(pose, x + xO * 16, y, z + zO * 16).setColor(1, 1, 0.0F, 1.0F);
-                builder.addVertex(pose, x + xO * 16, y1, z + zO * 16).setColor(1, 1, 0.0F, 1.0F);
+                builder.vertex(pose, x + xO * 16, y, z + zO * 16).color(1, 1, 0.0F, 1.0F).endVertex();
+                builder.vertex(pose, x + xO * 16, y1, z + zO * 16).color(1, 1, 0.0F, 1.0F).endVertex();
 
-                builder.addVertex(pose, x + xO * 16, y1, z + zO * 16).setColor(1, 1, 0.0F, 0.0F);
+                builder.vertex(pose, x + xO * 16, y1, z + zO * 16).color(1, 1, 0.0F, 0.0F).endVertex();
             }
         }
 
@@ -93,15 +93,15 @@ public class SableChunkDebugRenderer {
         y1 = maxBuildHeight;
 
         for (int yO = (int) y; yO <= y1 + 1; yO += 16) {
-            builder.addVertex(pose, x, (float) (yO - camY), z).setColor(0, 0, 1.0F, 0.0F);
+            builder.vertex(pose, x, (float) (yO - camY), z).color(0, 0, 1.0F, 0.0F).endVertex();
 
-            builder.addVertex(pose, x, (float) (yO - camY), z).setColor(0, 0, 1.0F, 1.0F);
-            builder.addVertex(pose, x + 16, (float) (yO - camY), z).setColor(0, 0, 1.0F, 1.0F);
-            builder.addVertex(pose, x + 16, (float) (yO - camY), z + 16).setColor(0, 0, 1.0F, 1.0F);
-            builder.addVertex(pose, x, (float) (yO - camY), z + 16).setColor(0, 0, 1.0F, 1.0F);
-            builder.addVertex(pose, x, (float) (yO - camY), z).setColor(0, 0, 1.0F, 1.0F);
+            builder.vertex(pose, x, (float) (yO - camY), z).color(0, 0, 1.0F, 1.0F).endVertex();
+            builder.vertex(pose, x + 16, (float) (yO - camY), z).color(0, 0, 1.0F, 1.0F).endVertex();
+            builder.vertex(pose, x + 16, (float) (yO - camY), z + 16).color(0, 0, 1.0F, 1.0F).endVertex();
+            builder.vertex(pose, x, (float) (yO - camY), z + 16).color(0, 0, 1.0F, 1.0F).endVertex();
+            builder.vertex(pose, x, (float) (yO - camY), z).color(0, 0, 1.0F, 1.0F).endVertex();
 
-            builder.addVertex(pose, x, (float) (yO - camY), z).setColor(0, 0, 1.0F, 0.0F);
+            builder.vertex(pose, x, (float) (yO - camY), z).color(0, 0, 1.0F, 0.0F).endVertex();
         }
     }
 }

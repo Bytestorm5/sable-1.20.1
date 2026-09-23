@@ -340,45 +340,45 @@ public class SimpleCulledRenderRegionBuilder {
             final int z1 = cube.z + cube.sizeZ;
 
             if (this.shouldFaceRender(cube, Direction.NORTH)) {
-                consumer.addVertex(matrix4f, x0, y0, z0);
-                consumer.addVertex(matrix4f, x0, y1, z0);
-                consumer.addVertex(matrix4f, x1, y1, z0);
-                consumer.addVertex(matrix4f, x1, y0, z0);
+                consumer.vertex(matrix4f, x0, y0, z0).endVertex();
+                consumer.vertex(matrix4f, x0, y1, z0).endVertex();
+                consumer.vertex(matrix4f, x1, y1, z0).endVertex();
+                consumer.vertex(matrix4f, x1, y0, z0).endVertex();
             }
 
             if (this.shouldFaceRender(cube, Direction.EAST)) {
-                consumer.addVertex(matrix4f, x1, y0, z0);
-                consumer.addVertex(matrix4f, x1, y1, z0);
-                consumer.addVertex(matrix4f, x1, y1, z1);
-                consumer.addVertex(matrix4f, x1, y0, z1);
+                consumer.vertex(matrix4f, x1, y0, z0).endVertex();
+                consumer.vertex(matrix4f, x1, y1, z0).endVertex();
+                consumer.vertex(matrix4f, x1, y1, z1).endVertex();
+                consumer.vertex(matrix4f, x1, y0, z1).endVertex();
             }
 
             if (this.shouldFaceRender(cube, Direction.SOUTH)) {
-                consumer.addVertex(matrix4f, x1, y0, z1);
-                consumer.addVertex(matrix4f, x1, y1, z1);
-                consumer.addVertex(matrix4f, x0, y1, z1);
-                consumer.addVertex(matrix4f, x0, y0, z1);
+                consumer.vertex(matrix4f, x1, y0, z1).endVertex();
+                consumer.vertex(matrix4f, x1, y1, z1).endVertex();
+                consumer.vertex(matrix4f, x0, y1, z1).endVertex();
+                consumer.vertex(matrix4f, x0, y0, z1).endVertex();
             }
 
             if (this.shouldFaceRender(cube, Direction.WEST)) {
-                consumer.addVertex(matrix4f, x0, y0, z1);
-                consumer.addVertex(matrix4f, x0, y1, z1);
-                consumer.addVertex(matrix4f, x0, y1, z0);
-                consumer.addVertex(matrix4f, x0, y0, z0);
+                consumer.vertex(matrix4f, x0, y0, z1).endVertex();
+                consumer.vertex(matrix4f, x0, y1, z1).endVertex();
+                consumer.vertex(matrix4f, x0, y1, z0).endVertex();
+                consumer.vertex(matrix4f, x0, y0, z0).endVertex();
             }
 
             if (this.shouldFaceRender(cube, Direction.DOWN)) {
-                consumer.addVertex(matrix4f, x0, y0, z0);
-                consumer.addVertex(matrix4f, x1, y0, z0);
-                consumer.addVertex(matrix4f, x1, y0, z1);
-                consumer.addVertex(matrix4f, x0, y0, z1);
+                consumer.vertex(matrix4f, x0, y0, z0).endVertex();
+                consumer.vertex(matrix4f, x1, y0, z0).endVertex();
+                consumer.vertex(matrix4f, x1, y0, z1).endVertex();
+                consumer.vertex(matrix4f, x0, y0, z1).endVertex();
             }
 
             if (this.shouldFaceRender(cube, Direction.UP)) {
-                consumer.addVertex(matrix4f, x0, y1, z1);
-                consumer.addVertex(matrix4f, x1, y1, z1);
-                consumer.addVertex(matrix4f, x1, y1, z0);
-                consumer.addVertex(matrix4f, x0, y1, z0);
+                consumer.vertex(matrix4f, x0, y1, z1).endVertex();
+                consumer.vertex(matrix4f, x1, y1, z1).endVertex();
+                consumer.vertex(matrix4f, x1, y1, z0).endVertex();
+                consumer.vertex(matrix4f, x0, y1, z0).endVertex();
             }
         }
     }

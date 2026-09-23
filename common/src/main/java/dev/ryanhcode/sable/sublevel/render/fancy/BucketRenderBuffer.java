@@ -29,7 +29,7 @@ public class BucketRenderBuffer implements NativeResource {
     public BucketRenderBuffer(final StagingBuffer stagingBuffer) {
         this.stagingBuffer = stagingBuffer;
         this.buffer = GlStateManager._glGenBuffers();
-        RenderSystem.glBindBuffer(GL_ARRAY_BUFFER, this.buffer);
+        GlStateManager._glBindBuffer(GL_ARRAY_BUFFER, this.buffer);
         glBufferData(GL_ARRAY_BUFFER, DEFAULT_MAX_QUADS * QUAD_SIZE, GL_STREAM_DRAW);
         this.maxSize = DEFAULT_MAX_QUADS;
         this.closedBuckets = new BitSet(this.maxSize);
@@ -38,8 +38,8 @@ public class BucketRenderBuffer implements NativeResource {
 
     private void resize(final int newSize) {
         final int copyDest = GlStateManager._glGenBuffers();
-        RenderSystem.glBindBuffer(GL_COPY_READ_BUFFER, this.buffer);
-        RenderSystem.glBindBuffer(GL_COPY_WRITE_BUFFER, copyDest);
+        GlStateManager._glBindBuffer(GL_COPY_READ_BUFFER, this.buffer);
+        GlStateManager._glBindBuffer(GL_COPY_WRITE_BUFFER, copyDest);
         glBufferData(GL_COPY_WRITE_BUFFER, (long) newSize * QUAD_SIZE, GL_STREAM_DRAW);
         glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0, (long) this.maxSize * QUAD_SIZE);
         RenderSystem.glDeleteBuffers(this.buffer);
@@ -54,7 +54,7 @@ public class BucketRenderBuffer implements NativeResource {
     public void clear() {
         this.size = 0;
         if (this.maxSize > DEFAULT_MAX_QUADS) {
-            RenderSystem.glBindBuffer(GL_ARRAY_BUFFER, this.buffer);
+            GlStateManager._glBindBuffer(GL_ARRAY_BUFFER, this.buffer);
             glBufferData(GL_ARRAY_BUFFER, DEFAULT_MAX_QUADS * QUAD_SIZE, GL_STREAM_DRAW);
             this.maxSize = DEFAULT_MAX_QUADS;
             this.closedBuckets = new BitSet(this.maxSize);

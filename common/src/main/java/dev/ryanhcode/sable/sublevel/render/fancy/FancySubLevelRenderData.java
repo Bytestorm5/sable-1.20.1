@@ -9,7 +9,9 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.Camera;
 import net.minecraft.client.PrioritizeChunkUpdates;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.chunk.RenderChunkRegion;
 import net.minecraft.client.renderer.chunk.RenderRegionCache;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
@@ -176,7 +178,10 @@ public class FancySubLevelRenderData implements SubLevelRenderData {
                     origin.y() << SectionPos.SECTION_BITS,
                     origin.z() << SectionPos.SECTION_BITS);
 
-            this.compiler.getScheduler().scheduleCompile(section, renderRegionCache.createRegion(level, section.getPos()), distanceSq, this.occlusionData::addSection);
+            // Same 1-block padded region 1.20.1's ChunkRenderDispatcher.RenderChunk#createCompileTask builds
+            final BlockPos sectionOrigin = origin.origin();
+            final RenderChunkRegion region = renderRegionCache.createRegion(level, sectionOrigin.offset(-1, -1, -1), sectionOrigin.offset(16, 16, 16), 1);
+            this.compiler.getScheduler().scheduleCompile(section, region, distanceSq, this.occlusionData::addSection);
             section.setNotDirty();
         }
 

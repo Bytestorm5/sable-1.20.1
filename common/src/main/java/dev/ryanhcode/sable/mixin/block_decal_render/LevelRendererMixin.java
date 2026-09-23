@@ -6,7 +6,6 @@ import dev.ryanhcode.sable.Sable;
 import dev.ryanhcode.sable.companion.math.Pose3dc;
 import dev.ryanhcode.sable.sublevel.ClientSubLevel;
 import net.minecraft.client.Camera;
-import dev.ryanhcode.sable.backport.client.DeltaTracker;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -38,8 +37,17 @@ public abstract class LevelRendererMixin {
     @Nullable
     private ClientLevel level;
 
-    @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;last()Lcom/mojang/blaze3d/vertex/PoseStack$Pose;", shift = At.Shift.BEFORE))
-    private void sable$preRenderBlockDamage(final DeltaTracker deltaTracker, final boolean bl, final Camera camera, final GameRenderer gameRenderer, final LightTexture lightTexture, final Matrix4f matrix4f, final Matrix4f matrix4f2, final CallbackInfo ci, @Local(ordinal = 0) final PoseStack ps, @Local(ordinal = 0) final BlockPos pos) {
+    /**
+     * On 1.20.1 the level pose stack is the {@code renderLevel} parameter, and {@code PoseStack#last()} is also called
+     * outside the block damage code (ordinals 0-2 and 5), so only the block entity crumbling (3) and block destroy
+     * progress (4) calls are targeted, matching the two calls 1.21's local pose stack had.
+     */
+    @Inject(method = "renderLevel", at = {
+            @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;last()Lcom/mojang/blaze3d/vertex/PoseStack$Pose;", ordinal = 3, shift = At.Shift.BEFORE),
+            @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;last()Lcom/mojang/blaze3d/vertex/PoseStack$Pose;", ordinal = 4, shift = At.Shift.BEFORE)
+    })
+    private void sable$preRenderBlockDamage(final PoseStack poseStack, final float partialTick, final long finishNanoTime, final boolean renderBlockOutline, final Camera camera, final GameRenderer gameRenderer, final LightTexture lightTexture, final Matrix4f projectionMatrix, final CallbackInfo ci, @Local(ordinal = 0) final BlockPos pos) {
+        final PoseStack ps = poseStack;
 
         final Vec3 plotPos = new Vec3(pos.getX(), pos.getY(), pos.getZ());
         final ClientSubLevel subLevel = (ClientSubLevel) Sable.HELPER.getContaining(this.level, plotPos);

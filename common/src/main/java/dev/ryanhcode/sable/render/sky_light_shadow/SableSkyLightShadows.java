@@ -10,7 +10,6 @@ import foundry.veil.api.client.render.VeilRenderSystem;
 import foundry.veil.api.client.render.framebuffer.AdvancedFbo;
 import foundry.veil.api.event.VeilRenderLevelStageEvent;
 import net.minecraft.client.Camera;
-import dev.ryanhcode.sable.backport.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -46,7 +45,7 @@ public class SableSkyLightShadows {
         SableSkyLightShadows.isEnabled = isEnabled;
     }
 
-    public static void renderShadowMap(final VeilRenderLevelStageEvent.Stage stage, final LevelRenderer levelRenderer, final MultiBufferSource.BufferSource bufferSource, final MatrixStack matrixStack, final Matrix4fc frustumMatrix, final Matrix4fc projectionMatrix, final int renderTick, final DeltaTracker deltaTracker, final Camera camera, final Frustum frustum) {
+    public static void renderShadowMap(final VeilRenderLevelStageEvent.Stage stage, final LevelRenderer levelRenderer, final MultiBufferSource.BufferSource bufferSource, final MatrixStack matrixStack, final Matrix4fc frustumMatrix, final Matrix4fc projectionMatrix, final int renderTick, final float partialTick, final Camera camera, final Frustum frustum) {
         if (!SableSkyLightShadows.isEnabled()) {
             return;
         }
@@ -79,7 +78,9 @@ public class SableSkyLightShadows {
             JOMLConversion.toJOML(shadowCameraPosition, SHADOW_CAMERA_POSITION);
             SHADOW_CAMERA_POSITION.set(Math.floor(SHADOW_CAMERA_POSITION.x), SHADOW_CAMERA_POSITION.y, Math.floor(SHADOW_CAMERA_POSITION.z));
             isRenderingShadowMap = true;
-            VeilLevelPerspectiveRenderer.render(fbo, modelView, PROJECTION_MAT, SHADOW_CAMERA_POSITION, SHADOW_CAMERA_ORIENTATION.identity().rotateX((float) (Math.PI / 2)), SHADOW_VOLUME_SIZE / 16f, deltaTracker, false);
+            // TODO(veil-1.20.1): VeilLevelPerspectiveRenderer#render takes 1.21's net.minecraft.client.DeltaTracker, which
+            //  doesn't exist on 1.20.1. The ported Veil needs an overload taking the partial tick (float) instead; restore:
+            //  VeilLevelPerspectiveRenderer.render(fbo, modelView, PROJECTION_MAT, SHADOW_CAMERA_POSITION, SHADOW_CAMERA_ORIENTATION.identity().rotateX((float) (Math.PI / 2)), SHADOW_VOLUME_SIZE / 16f, partialTick, false);
             isRenderingShadowMap = false;
         }
     }

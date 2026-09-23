@@ -2,11 +2,13 @@ package dev.ryanhcode.sable.mixin.sublevel_render.impl.vanilla;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import dev.ryanhcode.sable.Sable;
 import dev.ryanhcode.sable.api.sublevel.ClientSubLevelContainer;
 import dev.ryanhcode.sable.api.sublevel.SubLevelContainer;
 import dev.ryanhcode.sable.mixinterface.plot.SubLevelContainerHolder;
+import dev.ryanhcode.sable.render.SableShaderUniforms;
 import dev.ryanhcode.sable.sublevel.ClientSubLevel;
 import dev.ryanhcode.sable.sublevel.render.SubLevelRenderData;
 import dev.ryanhcode.sable.sublevel.render.dispatcher.SubLevelRenderDispatcher;
@@ -47,7 +49,7 @@ public abstract class LevelRendererMixin {
     @Final
     private Minecraft minecraft;
 
-    @Inject(method = "compileSections", at = @At("TAIL"))
+    @Inject(method = "compileChunks", at = @At("TAIL"))
     private void sable$compileSections(final Camera camera, final CallbackInfo ci) {
         final Iterable<ClientSubLevel> sublevels = ((ClientSubLevelContainer) ((SubLevelContainerHolder) this.level).sable$getPlotContainer()).getAllSubLevels();
         final RenderRegionCache renderRegionCache = new RenderRegionCache();
@@ -77,7 +79,7 @@ public abstract class LevelRendererMixin {
         profiler.pop();
     }
 
-    @Inject(method = "isSectionCompiled", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "isChunkCompiled", at = @At("HEAD"), cancellable = true)
     private void sable$isSectionCompiled(final BlockPos blockPos, final CallbackInfoReturnable<Boolean> cir) {
         final ClientSubLevelContainer container = SubLevelContainer.getContainer(this.level);
 
@@ -98,14 +100,16 @@ public abstract class LevelRendererMixin {
         }
     }
 
-    @Inject(method = "renderSectionLayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ShaderInstance;clear()V"))
-    public void sable$renderSubLevels(final RenderType renderType, final double x, final double y, final double z, final Matrix4f modelView, final Matrix4f projection, final CallbackInfo ci, @Local ShaderInstance shader) {
+    @Inject(method = "renderChunkLayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ShaderInstance;clear()V"))
+    public void sable$renderSubLevels(final RenderType renderType, final PoseStack poseStack, final double x, final double y, final double z, final Matrix4f projection, final CallbackInfo ci, @Local final ShaderInstance shader) {
+        final Matrix4f modelView = poseStack.last().pose();
         final Iterable<ClientSubLevel> sublevels = ((ClientSubLevelContainer) ((SubLevelContainerHolder) this.level).sable$getPlotContainer()).getAllSubLevels();
         SubLevelRenderDispatcher.get().renderSectionLayer(sublevels, renderType, shader, x, y, z, modelView, projection, Minecraft.getInstance().getFrameTime());
     }
 
-    @Inject(method = "renderSectionLayer", at = @At("TAIL"))
-    public void sable$renderSubLevelLayers(final RenderType renderType, final double x, final double y, final double z, final Matrix4f modelView, final Matrix4f projection, final CallbackInfo ci) {
+    @Inject(method = "renderChunkLayer", at = @At("TAIL"))
+    public void sable$renderSubLevelLayers(final RenderType renderType, final PoseStack poseStack, final double x, final double y, final double z, final Matrix4f projection, final CallbackInfo ci) {
+        final Matrix4f modelView = poseStack.last().pose();
         RenderType unwrappedRenderType = renderType;
         while (unwrappedRenderType instanceof final VeilRenderType.RenderTypeWrapper wrapper) {
             unwrappedRenderType = wrapper.get();
@@ -120,7 +124,7 @@ public abstract class LevelRendererMixin {
         for (final RenderType layer : layered.getLayers()) {
             layer.setupRenderState();
             final ShaderInstance shader = Objects.requireNonNull(RenderSystem.getShader(), "shader");
-            shader.setDefaultUniforms(VertexFormat.Mode.QUADS, modelView, projection, this.minecraft.getWindow());
+            SableShaderUniforms.setDefaultUniforms(shader, VertexFormat.Mode.QUADS, modelView, projection, this.minecraft.getWindow());
             shader.apply();
 
             renderDispatcher.renderSectionLayer(sublevels, renderType, shader, x, y, z, modelView, projection, Minecraft.getInstance().getFrameTime());

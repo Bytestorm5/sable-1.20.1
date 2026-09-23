@@ -1,11 +1,11 @@
 package dev.ryanhcode.sable.mixin.sublevel_render;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import dev.ryanhcode.sable.api.sublevel.ClientSubLevelContainer;
 import dev.ryanhcode.sable.mixinterface.plot.SubLevelContainerHolder;
 import dev.ryanhcode.sable.sublevel.ClientSubLevel;
 import dev.ryanhcode.sable.sublevel.render.dispatcher.SubLevelRenderDispatcher;
 import net.minecraft.client.Camera;
-import dev.ryanhcode.sable.backport.client.DeltaTracker;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -36,10 +36,12 @@ public class LevelRendererMixin {
     }
 
     @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/DimensionSpecialEffects;constantAmbientLight()Z", ordinal = 0, shift = At.Shift.BEFORE))
-    private void sable$renderSingleBlockSubLevels(final DeltaTracker deltaTracker, final boolean bl, final Camera camera, final GameRenderer gameRenderer, final LightTexture lightTexture, final Matrix4f modelView, final Matrix4f projection, final CallbackInfo ci) {
+    private void sable$renderSingleBlockSubLevels(final PoseStack poseStack, final float partialTick, final long finishNanoTime, final boolean renderBlockOutline, final Camera camera, final GameRenderer gameRenderer, final LightTexture lightTexture, final Matrix4f projection, final CallbackInfo ci) {
         final Iterable<ClientSubLevel> sublevels = ((ClientSubLevelContainer) ((SubLevelContainerHolder) this.level).sable$getPlotContainer()).getAllSubLevels();
         final Vec3 cameraPosition = camera.getPosition();
-        SubLevelRenderDispatcher.get().renderAfterSections(sublevels, cameraPosition.x, cameraPosition.y, cameraPosition.z, modelView, projection, deltaTracker.getGameTimeDeltaPartialTick(false));
+        // 1.20.1 passes the view rotation in the pose stack rather than as a separate model view matrix
+        final Matrix4f modelView = new Matrix4f(poseStack.last().pose());
+        SubLevelRenderDispatcher.get().renderAfterSections(sublevels, cameraPosition.x, cameraPosition.y, cameraPosition.z, modelView, projection, partialTick);
     }
 
 }

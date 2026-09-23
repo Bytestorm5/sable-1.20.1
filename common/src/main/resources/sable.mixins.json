@@ -18,7 +18,7 @@
     "clip_overwrite.ClientLevelMixin",
     "clip_overwrite.GameRendererMixin",
     "command.ClientSuggestionProviderMixin",
-    "compatibility.iris.ExtendedShaderMixin",
+    "compatibility.oculus.ExtendedShaderMixin",
     "compatibility.shouldersurfing.ObjectPickerMixin",
     "conduit.ConduitRendererMixin",
     "config.GameRendererAccessor",

@@ -17,49 +17,64 @@ public class SubLevelVertexConsumer implements VertexConsumer {
 
 
     @Override
-    public VertexConsumer addVertex(final float f, final float g, final float h) {
-        this.delegate.addVertex(f, g, h);
+    public VertexConsumer vertex(final double x, final double y, final double z) {
+        this.delegate.vertex(x, y, z);
         return this;
     }
 
     @Override
-    public VertexConsumer setColor(final int i, final int j, final int k, final int l) {
-        this.delegate.setColor(i, j, k, l);
+    public VertexConsumer color(final int i, final int j, final int k, final int l) {
+        this.delegate.color(i, j, k, l);
         return this;
     }
 
     @Override
-    public VertexConsumer setUv(final float f, final float g) {
-        this.delegate.setUv(f, g);
+    public VertexConsumer uv(final float f, final float g) {
+        this.delegate.uv(f, g);
         return this;
     }
 
     @Override
-    public VertexConsumer setUv1(final int i, final int j) {
-        this.delegate.setUv1(i, j);
+    public VertexConsumer overlayCoords(final int i, final int j) {
+        this.delegate.overlayCoords(i, j);
         return this;
     }
 
     @Override
-    public VertexConsumer setUv2(final int i, final int j) {
-        this.delegate.setUv2(i, j);
+    public VertexConsumer uv2(final int i, final int j) {
+        this.delegate.uv2(i, j);
         return this;
     }
 
     @Override
-    public VertexConsumer setNormal(final float pX, final float pY, final float pZ) {
+    public VertexConsumer normal(final float pX, final float pY, final float pZ) {
         if (this.verticalNormal) {
-            this.delegate.setNormal(0f, 1f, 0f);
+            this.delegate.normal(0f, 1f, 0f);
         } else {
-            this.delegate.setNormal(pX, pY, pZ);
+            this.delegate.normal(pX, pY, pZ);
         }
         return this;
     }
 
     @Override
-    public void putBulkData(final PoseStack.Pose pose, final BakedQuad bakedQuad, final float[] fs, final float f, final float g, final float h, final float i, final int[] is, final int j, final boolean bl) {
+    public void endVertex() {
+        this.delegate.endVertex();
+    }
+
+    @Override
+    public void defaultColor(final int r, final int g, final int b, final int a) {
+        this.delegate.defaultColor(r, g, b, a);
+    }
+
+    @Override
+    public void unsetDefaultColor() {
+        this.delegate.unsetDefaultColor();
+    }
+
+    @Override
+    public void putBulkData(final PoseStack.Pose pose, final BakedQuad bakedQuad, final float[] fs, final float f, final float g, final float h, final int[] is, final int j, final boolean bl) {
         this.verticalNormal = !bakedQuad.isShade();
-        VertexConsumer.super.putBulkData(pose, bakedQuad, fs, f, g, h, i, is, j, bl);
+        VertexConsumer.super.putBulkData(pose, bakedQuad, fs, f, g, h, is, j, bl);
         this.verticalNormal = false;
     }
 

@@ -1,7 +1,6 @@
 package dev.ryanhcode.sable.sublevel.render.fancy;
 
-import com.mojang.blaze3d.vertex.ByteBufferBuilder;
-import com.mojang.blaze3d.vertex.MeshData;
+import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.ryanhcode.sable.sublevel.render.dispatcher.SubLevelTextureCache;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -52,7 +51,7 @@ public class SubLevelMeshBuilder {
         this.textureCache = textureCache;
     }
 
-    public Results compile(final Vector3ic origin, final SectionPos sectionPos, final RenderChunkRegion renderChunkRegion, final SectionBufferBuilderPack sectionBufferBuilderPack) {
+    public Results compile(final Vector3ic origin, final SectionPos sectionPos, final RenderChunkRegion renderChunkRegion, final ChunkBufferBuilderPack sectionBufferBuilderPack) {
         final Results results = new Results();
         final BlockPos min = sectionPos.origin();
         final BlockPos max = min.offset(15, 15, 15);
@@ -235,10 +234,10 @@ public class SubLevelMeshBuilder {
         return true;
     }
 
-    private ByteBufferBuilder getOrBeginQuadLayer(final Map<RenderType, ByteBufferBuilder> map, final SectionBufferBuilderPack pack, final RenderType renderType) {
-        ByteBufferBuilder bufferBuilder = map.get(renderType);
+    private BufferBuilder getOrBeginQuadLayer(final Map<RenderType, BufferBuilder> map, final ChunkBufferBuilderPack pack, final RenderType renderType) {
+        BufferBuilder bufferBuilder = map.get(renderType);
         if (bufferBuilder == null) {
-            bufferBuilder = pack.buffer(renderType);
+            bufferBuilder = pack.builder(renderType);
             map.put(renderType, bufferBuilder);
         }
 
@@ -276,14 +275,15 @@ public class SubLevelMeshBuilder {
         public final List<BlockEntity> globalBlockEntities = new ArrayList<>();
         public final List<BlockEntity> blockEntities = new ArrayList<>();
         public final Map<RenderType, QuadMesh> renderedQuadLayers = new Reference2ObjectArrayMap<>();
-        public final Map<RenderType, MeshData> renderedModelLayers = new Reference2ObjectArrayMap<>();
+        public final Map<RenderType, BufferBuilder.RenderedBuffer> renderedModelLayers = new Reference2ObjectArrayMap<>();
         public VisibilitySet visibilitySet = new VisibilitySet();
         @Nullable
-        public MeshData.SortState transparencyState;
+        public BufferBuilder.SortState transparencyState;
 
         @Override
         public void free() {
-            this.renderedModelLayers.values().forEach(MeshData::close);
+            this.renderedModelLayers.values().forEach(BufferBuilder.RenderedBuffer::release);
         }
+
     }
 }

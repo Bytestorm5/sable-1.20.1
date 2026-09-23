@@ -5,8 +5,8 @@ import dev.ryanhcode.sable.api.sublevel.ClientSubLevelContainer;
 import dev.ryanhcode.sable.api.sublevel.SubLevelContainer;
 import dev.ryanhcode.sable.sublevel.ClientSubLevel;
 import dev.ryanhcode.sable.sublevel.render.SubLevelRenderData;
-import net.caffeinemc.mods.sodium.client.render.SodiumWorldRenderer;
-import net.caffeinemc.mods.sodium.client.world.LevelRendererExtension;
+import me.jellysquid.mods.sodium.client.render.SodiumWorldRenderer;
+import me.jellysquid.mods.sodium.client.world.WorldRendererExtended;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.core.BlockPos;
@@ -16,6 +16,10 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
+/**
+ * Embeddium (the Forge 1.20.1 Sodium port) version of the Sodium 0.6 hook. Embeddium overwrites
+ * {@code LevelRenderer#isChunkCompiled} (1.21's {@code isSectionCompiled}), so this overwrites it again at a higher priority.
+ */
 @Mixin(value = LevelRenderer.class, priority = 1002)
 public class LevelRendererMixin {
 
@@ -28,7 +32,7 @@ public class LevelRendererMixin {
      * @reason Sable sodium compatibility
      */
     @Overwrite
-    public boolean isSectionCompiled(final BlockPos pos) {
+    public boolean isChunkCompiled(final BlockPos pos) {
         final ClientSubLevelContainer container = SubLevelContainer.getContainer(this.level);
 
         if (container != null && container.inBounds(pos)) {
@@ -43,7 +47,7 @@ public class LevelRendererMixin {
             }
         }
 
-        final SodiumWorldRenderer sodiumRenderer = ((LevelRendererExtension) this).sodium$getWorldRenderer();
+        final SodiumWorldRenderer sodiumRenderer = ((WorldRendererExtended) this).sodium$getWorldRenderer();
 
         return sodiumRenderer.isSectionReady(pos.getX() >> 4, pos.getY() >> 4, pos.getZ() >> 4);
     }

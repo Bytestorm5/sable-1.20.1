@@ -11,7 +11,6 @@ import dev.ryanhcode.sable.network.client.SubLevelSnapshotInterpolator;
 import dev.ryanhcode.sable.sublevel.ClientSubLevel;
 import dev.ryanhcode.sable.sublevel.SubLevel;
 import net.minecraft.client.Camera;
-import dev.ryanhcode.sable.backport.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.*;
@@ -32,7 +31,7 @@ public class LevelRendererMixin {
     private ClientLevel level;
 
     @Inject(method = "renderLevel", at = @At("TAIL"))
-    private void renderLevel(final DeltaTracker deltaTracker, final boolean bl, final Camera camera, final GameRenderer gameRenderer, final LightTexture lightTexture, final Matrix4f matrix4f, final Matrix4f matrix4f2, final CallbackInfo ci) {
+    private void renderLevel(final PoseStack poseStack, final float partialTick, final long finishNanoTime, final boolean renderBlockOutline, final Camera camera, final GameRenderer gameRenderer, final LightTexture lightTexture, final Matrix4f projectionMatrix, final CallbackInfo ci) {
         final Minecraft minecraft = Minecraft.getInstance();
 
         if (!minecraft.getEntityRenderDispatcher().shouldRenderHitBoxes() || Minecraft.getInstance().showOnlyReducedInfo()) {
@@ -49,7 +48,7 @@ public class LevelRendererMixin {
         final double cz = camera.getPosition().z;
 
         final PoseStack ps = new PoseStack();
-        ps.mulPose(matrix4f);
+        ps.mulPoseMatrix(poseStack.last().pose());
 
         for (final SubLevel subLevel : container.getAllSubLevels()) {
             final BoundingBox3dc bounds = subLevel.boundingBox();
