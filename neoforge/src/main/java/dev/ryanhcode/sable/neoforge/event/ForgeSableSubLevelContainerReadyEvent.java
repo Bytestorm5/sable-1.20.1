@@ -2,7 +2,7 @@ package dev.ryanhcode.sable.neoforge.event;
 
 import dev.ryanhcode.sable.api.sublevel.SubLevelContainer;
 import net.minecraft.world.level.Level;
-import net.neoforged.bus.api.Event;
+import net.minecraftforge.eventbus.api.Event;
 
 /**
  * Fired when Sable has finished initialization for a level and its sub-level container is ready to use.

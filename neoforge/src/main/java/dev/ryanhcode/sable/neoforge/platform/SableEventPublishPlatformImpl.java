@@ -7,7 +7,7 @@ import dev.ryanhcode.sable.neoforge.event.ForgeSableSubLevelContainerReadyEvent;
 import dev.ryanhcode.sable.platform.SableEventPublishPlatform;
 import dev.ryanhcode.sable.sublevel.system.SubLevelPhysicsSystem;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.common.NeoForge;
+import net.minecraftforge.common.MinecraftForge;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
@@ -21,7 +21,7 @@ public class SableEventPublishPlatformImpl implements SableEventPublishPlatform 
      */
     @Override
     public void onSubLevelContainerReady(final Level level, final SubLevelContainer container) {
-        NeoForge.EVENT_BUS.post(new ForgeSableSubLevelContainerReadyEvent(level, container));
+        MinecraftForge.EVENT_BUS.post(new ForgeSableSubLevelContainerReadyEvent(level, container));
     }
 
     /**
@@ -32,7 +32,7 @@ public class SableEventPublishPlatformImpl implements SableEventPublishPlatform 
      */
     @Override
     public void prePhysicsTick(final SubLevelPhysicsSystem physicsSystem, final double timeStep) {
-        NeoForge.EVENT_BUS.post(new ForgeSablePrePhysicsTickEvent(physicsSystem, timeStep));
+        MinecraftForge.EVENT_BUS.post(new ForgeSablePrePhysicsTickEvent(physicsSystem, timeStep));
     }
 
     /**
@@ -43,6 +43,6 @@ public class SableEventPublishPlatformImpl implements SableEventPublishPlatform 
      */
     @Override
     public void postPhysicsTick(final SubLevelPhysicsSystem physicsSystem, final double timeStep) {
-        NeoForge.EVENT_BUS.post(new ForgeSablePostPhysicsTickEvent(physicsSystem, timeStep));
+        MinecraftForge.EVENT_BUS.post(new ForgeSablePostPhysicsTickEvent(physicsSystem, timeStep));
     }
 }

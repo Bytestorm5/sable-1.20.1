@@ -6,11 +6,11 @@ import dev.ryanhcode.sable.api.sublevel.SubLevelContainer;
 import dev.ryanhcode.sable.network.tcp.SableTCPPacket;
 import dev.ryanhcode.sable.network.udp.SableUDPPacket;
 import dev.ryanhcode.sable.network.udp.SableUDPPacketType;
-import foundry.veil.api.network.handler.PacketContext;
+import dev.ryanhcode.sable.network.tcp.SablePacketContext;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
 import dev.ryanhcode.sable.backport.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import dev.ryanhcode.sable.backport.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.level.Level;
 
 public final class ClientboundSableSnapshotInfoDualPacket implements SableUDPPacket, SableTCPPacket {
@@ -31,7 +31,7 @@ public final class ClientboundSableSnapshotInfoDualPacket implements SableUDPPac
     }
 
     @Override
-    public void handle(final PacketContext context) {
+    public void handle(final SablePacketContext context) {
         this.handleClient(context.level());
     }
 

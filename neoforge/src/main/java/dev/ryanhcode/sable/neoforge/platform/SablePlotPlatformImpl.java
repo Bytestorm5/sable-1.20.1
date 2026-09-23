@@ -8,9 +8,9 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.status.ChunkType;
 import net.neoforged.neoforge.attachment.AttachmentHolder;
-import net.neoforged.neoforge.common.NeoForge;
+import net.minecraftforge.common.MinecraftForge;
 import net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager;
-import net.neoforged.neoforge.event.level.ChunkDataEvent;
+import net.minecraftforge.event.level.ChunkDataEvent;
 import org.slf4j.Logger;
 
 @SuppressWarnings("UnstableApiUsage")
@@ -34,7 +34,7 @@ public class SablePlotPlatformImpl implements SablePlotPlatform {
 
     @Override
     public void postLoad(final CompoundTag tag, final LevelChunk chunk) {
-        NeoForge.EVENT_BUS.post(new ChunkDataEvent.Load(chunk, tag, ChunkType.LEVELCHUNK));
+        MinecraftForge.EVENT_BUS.post(new ChunkDataEvent.Load(chunk, tag, ChunkType.LEVELCHUNK));
     }
 
     @Override

@@ -6,28 +6,39 @@ import dev.ryanhcode.sable.SableClientConfig;
 import dev.ryanhcode.sable.neoforge.compatibility.flywheel.FlywheelCompatNeoForge;
 import dev.ryanhcode.sable.physics.config.FloatingBlockMaterialDataHandler;
 import dev.ryanhcode.sable.sublevel.render.dispatcher.SubLevelRenderDispatcher;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.event.config.ModConfigEvent;
-import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
-import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
-import net.neoforged.neoforge.common.NeoForge;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
+import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 
-@Mod(value = Sable.MOD_ID, dist = Dist.CLIENT)
+/**
+ * Client-side initialization, called from {@link SableNeoForge} on the physical client.
+ */
 public final class SableNeoForgeClient {
 
-    public SableNeoForgeClient(final ModContainer modContainer, final IEventBus modBus) {
-        final IEventBus neoBus = NeoForge.EVENT_BUS;
+    private SableNeoForgeClient() {
+    }
+
+    static void init(final IEventBus modBus, final ModLoadingContext modContext) {
+        final IEventBus forgeBus = MinecraftForge.EVENT_BUS;
 
         SableClient.init();
 
-        modContainer.registerConfig(ModConfig.Type.CLIENT, SableClientConfig.SPEC);
-        modBus.<ModConfigEvent.Loading>addListener(event -> SableClientConfig.onUpdate(false));
-        modBus.<ModConfigEvent.Reloading>addListener(event -> SableClientConfig.onUpdate(true));
-        neoBus.<ClientPlayerNetworkEvent.LoggingOut>addListener(event -> {
+        modContext.registerConfig(ModConfig.Type.CLIENT, SableClientConfig.SPEC);
+        modBus.<ModConfigEvent.Loading>addListener(event -> {
+            if (event.getConfig().getSpec() == SableClientConfig.SPEC) {
+                SableClientConfig.onUpdate(false);
+            }
+        });
+        modBus.<ModConfigEvent.Reloading>addListener(event -> {
+            if (event.getConfig().getSpec() == SableClientConfig.SPEC) {
+                SableClientConfig.onUpdate(true);
+            }
+        });
+        forgeBus.<ClientPlayerNetworkEvent.LoggingOut>addListener(event -> {
             if (event.getPlayer() != null) { // LoggingOut may fire when logging in
                 FloatingBlockMaterialDataHandler.clearMaterials();
             }

@@ -1,7 +1,7 @@
 package dev.ryanhcode.sable.neoforge.event;
 
 import dev.ryanhcode.sable.sublevel.system.SubLevelPhysicsSystem;
-import net.neoforged.bus.api.Event;
+import net.minecraftforge.eventbus.api.Event;
 
 /**
  * Fired when Sable's {@link SubLevelPhysicsSystem} is complete with a physics tick.

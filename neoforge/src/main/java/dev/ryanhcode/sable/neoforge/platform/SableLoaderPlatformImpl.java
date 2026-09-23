@@ -1,8 +1,8 @@
 package dev.ryanhcode.sable.neoforge.platform;
 
 import dev.ryanhcode.sable.platform.SableLoaderPlatform;
-import net.neoforged.fml.loading.FMLPaths;
-import net.neoforged.fml.loading.LoadingModList;
+import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraftforge.fml.loading.LoadingModList;
 import java.nio.file.Path;
 
 public class SableLoaderPlatformImpl implements SableLoaderPlatform {

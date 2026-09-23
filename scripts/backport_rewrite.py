@@ -30,6 +30,33 @@ IMPORTS = {
     "net.minecraft.world.level.block.entity.EnchantingTableBlockEntity": "net.minecraft.world.level.block.entity.EnchantmentTableBlockEntity",
     # NeoForge -> Forge
     "net.neoforged.neoforge.common.ModConfigSpec": "net.minecraftforge.common.ForgeConfigSpec",
+    "net.neoforged.neoforge.common.NeoForge": "net.minecraftforge.common.MinecraftForge",
+    "net.neoforged.neoforge.common.NeoForgeMod": "net.minecraftforge.common.ForgeMod",
+    "net.neoforged.neoforge.common.CommonHooks": "net.minecraftforge.common.ForgeHooks",
+    "net.neoforged.neoforge.common.extensions.IEntityExtension": "net.minecraftforge.common.extensions.IForgeEntity",
+    "net.neoforged.bus.api.IEventBus": "net.minecraftforge.eventbus.api.IEventBus",
+    "net.neoforged.bus.api.Event": "net.minecraftforge.eventbus.api.Event",
+    "net.neoforged.bus.api.SubscribeEvent": "net.minecraftforge.eventbus.api.SubscribeEvent",
+    "net.neoforged.bus.api.EventPriority": "net.minecraftforge.eventbus.api.EventPriority",
+    "net.neoforged.api.distmarker.Dist": "net.minecraftforge.api.distmarker.Dist",
+    "net.neoforged.api.distmarker.OnlyIn": "net.minecraftforge.api.distmarker.OnlyIn",
+    "net.neoforged.neoforge.registries.DeferredRegister": "net.minecraftforge.registries.DeferredRegister",
+    "net.neoforged.neoforge.items.IItemHandler": "net.minecraftforge.items.IItemHandler",
+    "net.neoforged.neoforge.items.IItemHandlerModifiable": "net.minecraftforge.items.IItemHandlerModifiable",
+    "net.neoforged.neoforge.fluids.capability.IFluidHandler": "net.minecraftforge.fluids.capability.IFluidHandler",
+    "net.neoforged.neoforge.fluids.FluidType": "net.minecraftforge.fluids.FluidType",
+    "net.neoforged.neoforge.fluids.FluidStack": "net.minecraftforge.fluids.FluidStack",
+    "net.neoforged.neoforge.gametest.GameTestHolder": "net.minecraftforge.gametest.GameTestHolder",
+    "net.neoforged.neoforge.gametest.PrefixGameTestTemplate": "net.minecraftforge.gametest.PrefixGameTestTemplate",
+    "net.neoforged.neoforge.client.model.data.ModelData": "net.minecraftforge.client.model.data.ModelData",
+    "net.neoforged.neoforge.client.ChunkRenderTypeSet": "net.minecraftforge.client.ChunkRenderTypeSet",
+}
+
+# NeoForge packages that map 1:1 onto Forge packages (same class names)
+PACKAGE_PREFIXES = {
+    "net.neoforged.fml.": "net.minecraftforge.fml.",
+    "net.neoforged.neoforge.event.": "net.minecraftforge.event.",
+    "net.neoforged.neoforge.client.event.": "net.minecraftforge.client.event.",
 }
 
 # Simple-name renames that accompany the import rewrites above
@@ -37,6 +64,10 @@ SIMPLE_RENAMES = {
     r"\bRegistryFriendlyByteBuf\b": "FriendlyByteBuf",
     r"\bEnchantingTableBlockEntity\b": "EnchantmentTableBlockEntity",
     r"\bModConfigSpec\b": "ForgeConfigSpec",
+    r"\bNeoForge\.EVENT_BUS\b": "MinecraftForge.EVENT_BUS",
+    r"\bNeoForgeMod\.": "ForgeMod.",
+    r"\bIEntityExtension\b": "IForgeEntity",
+    r"\bCommonHooks\.": "ForgeHooks.",
 }
 
 EXPRESSIONS = [
@@ -85,6 +116,8 @@ def rewrite(src: str) -> str:
     original = src
     for old, new in IMPORTS.items():
         src = re.sub(rf"^import\s+{re.escape(old)}\s*;", f"import {new};", src, flags=re.M)
+    for old, new in PACKAGE_PREFIXES.items():
+        src = re.sub(rf"^import(\s+static)?\s+{re.escape(old)}", lambda m: f"import{m.group(1) or ''} {new}", src, flags=re.M)
     for old, new in SIMPLE_RENAMES.items():
         src = re.sub(old, new, src)
     for pattern, new in EXPRESSIONS:

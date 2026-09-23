@@ -18,7 +18,7 @@ import dev.ryanhcode.sable.network.udp.SableUDPServer;
 import dev.ryanhcode.sable.sublevel.ServerSubLevel;
 import dev.ryanhcode.sable.sublevel.storage.holding.GlobalSavedSubLevelPointer;
 import dev.ryanhcode.sable.sublevel.system.SubLevelPhysicsSystem;
-import foundry.veil.api.network.VeilPacketManager;
+import dev.ryanhcode.sable.network.tcp.SablePacketManager;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
@@ -97,7 +97,7 @@ public class SableCommand {
 
         SableCommandHelper.requireSubLevelPhysicsSystem(ctx).setPaused(true);
 
-        VeilPacketManager.player(player).sendPacket(new ClientboundEnterGizmoPacket());
+        SablePacketManager.player(player).sendPacket(new ClientboundEnterGizmoPacket());
         return 1;
     }
 

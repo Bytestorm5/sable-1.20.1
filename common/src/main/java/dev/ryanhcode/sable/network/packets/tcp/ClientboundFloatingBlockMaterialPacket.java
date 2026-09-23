@@ -4,11 +4,11 @@ import dev.ryanhcode.sable.Sable;
 import dev.ryanhcode.sable.network.tcp.SableTCPPacket;
 import dev.ryanhcode.sable.physics.config.FloatingBlockMaterialDataHandler;
 import dev.ryanhcode.sable.physics.floating_block.FloatingBlockMaterial;
-import foundry.veil.api.network.handler.PacketContext;
+import dev.ryanhcode.sable.network.tcp.SablePacketContext;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import dev.ryanhcode.sable.backport.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import dev.ryanhcode.sable.backport.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 
 import dev.ryanhcode.sable.backport.network.codec.ByteBufCodecs;
@@ -22,7 +22,7 @@ public record ClientboundFloatingBlockMaterialPacket(ResourceLocation name, Floa
     );
 
     @Override
-    public void handle(PacketContext context) {
+    public void handle(SablePacketContext context) {
         Minecraft.getInstance().execute(() -> {
             FloatingBlockMaterialDataHandler.addMaterial(this.name, this.material);
         });

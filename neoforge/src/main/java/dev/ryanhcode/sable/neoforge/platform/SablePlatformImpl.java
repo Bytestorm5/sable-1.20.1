@@ -7,9 +7,9 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.fml.loading.FMLLoader;
-import net.neoforged.fml.loading.LoadingModList;
-import net.neoforged.neoforge.common.CommonHooks;
+import net.minecraftforge.fml.loading.FMLLoader;
+import net.minecraftforge.fml.loading.LoadingModList;
+import net.minecraftforge.common.ForgeHooks;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,6 +27,6 @@ public class SablePlatformImpl implements SablePlatform {
 
     @Override
     public boolean isBlockstateLadder(final BlockState state, final Level level, final BlockPos pos, final LivingEntity entity) {
-        return CommonHooks.isLivingOnLadder(state, level, pos, entity).isPresent();
+        return ForgeHooks.isLivingOnLadder(state, level, pos, entity).isPresent();
     }
 }

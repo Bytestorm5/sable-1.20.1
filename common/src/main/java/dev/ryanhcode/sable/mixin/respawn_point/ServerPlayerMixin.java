@@ -1,5 +1,6 @@
 package dev.ryanhcode.sable.mixin.respawn_point;
 
+import dev.ryanhcode.sable.network.tcp.SablePacketManager;
 import dev.ryanhcode.sable.Sable;
 import dev.ryanhcode.sable.api.SubLevelHelper;
 import dev.ryanhcode.sable.companion.math.JOMLConversion;
@@ -13,7 +14,6 @@ import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -144,7 +144,7 @@ public abstract class ServerPlayerMixin implements ServerPlayerRespawnExtension 
 
         if (queuedFreeze != null) {
             ((PlayerFreezeExtension) this).sable$freezeTo(queuedFreeze.first(), queuedFreeze.second());
-            this.connection.send(new ClientboundCustomPayloadPacket(new ClientboundFreezePlayerPacket(queuedFreeze.first(), queuedFreeze.second())));
+            this.connection.send(SablePacketManager.toClientbound(new ClientboundFreezePlayerPacket(queuedFreeze.first(), queuedFreeze.second())));
         }
     }
 

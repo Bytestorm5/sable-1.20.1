@@ -7,10 +7,10 @@ import dev.ryanhcode.sable.network.tcp.SableTCPPacket;
 import dev.ryanhcode.sable.sublevel.ServerSubLevel;
 import dev.ryanhcode.sable.sublevel.SubLevel;
 import dev.ryanhcode.sable.util.SableBufferUtils;
-import foundry.veil.api.network.handler.PacketContext;
+import dev.ryanhcode.sable.network.tcp.SablePacketContext;
 import net.minecraft.network.FriendlyByteBuf;
 import dev.ryanhcode.sable.backport.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import dev.ryanhcode.sable.backport.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerLevel;
 import org.joml.Vector3d;
 
@@ -45,7 +45,7 @@ public record ServerboundGizmoMoveSubLevelPacket(UUID subLevel, Vector3d positio
     }
 
     @Override
-    public void handle(final PacketContext context) {
+    public void handle(final SablePacketContext context) {
         final ServerLevel level = (ServerLevel) context.level();
 
         final ServerSubLevelContainer container = SubLevelContainer.getContainer(level);

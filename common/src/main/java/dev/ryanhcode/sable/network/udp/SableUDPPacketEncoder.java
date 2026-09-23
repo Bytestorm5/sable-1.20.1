@@ -20,7 +20,7 @@ public class SableUDPPacketEncoder extends MessageToMessageEncoder<AddressedSabl
         try {
             final ByteBuf buf = ctx.alloc().ioBuffer();
             buf.writeByte(packetType.ordinal());
-            packetType.write(new FriendlyByteBuf(buf, null), msg);
+            packetType.write(new FriendlyByteBuf(buf), msg);
 
 //            out.add(new DefaultAddressedEnvelope<ByteBuf, SocketAddress>(buf, envelope.address()));
             out.add(new DatagramPacket(buf, envelope.address()));

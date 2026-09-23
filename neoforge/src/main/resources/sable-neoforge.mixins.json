@@ -61,13 +61,11 @@
     "compatibility.flywheel.RenderDispatcherImplMixin",
     "compatibility.flywheel.ShaderSourcesMixin",
     "compatibility.flywheel.VisualManagerImplMixin",
-    "compatibility.pmweather.RadarRendererMixin",
     "compatibility.sodiumextras.EmbyToolsMixin",
     "dynamic_directional_shading.SectionCompilerMixin",
     "sound.MovingSoundInstanceDelegateMixin"
   ],
   "mixins": [
-    "compatibility.backpacks.BackpackPickupEventsMixin",
     "compatibility.create.airflow.AirCurrentMixin",
     "compatibility.create.airflow.FanProcessingTypeMixin",
     "compatibility.create.basin_interactions.BasinBlockEntityMixin",
@@ -165,9 +163,6 @@
     "compatibility.create.turntable.TurntableBlockMixin",
     "compatibility.create.vertical_gearbox.VerticalGearboxItemMixin",
     "compatibility.create.zapper.ZapperItemMixin",
-    "compatibility.pmweather.AnemometerBlockEntityMixin",
-    "compatibility.pmweather.AnemometerBlockMixin",
-    "compatibility.pmweather.PMWeatherMixin",
     "entities_stick_sublevels.effects.LivingEntityMixin",
     "entity.entity_swimming.EntityMixin"
   ],

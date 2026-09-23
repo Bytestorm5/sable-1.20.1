@@ -1,5 +1,6 @@
 package dev.ryanhcode.sable.network.udp;
 
+import dev.ryanhcode.sable.network.tcp.SablePacketManager;
 import dev.ryanhcode.sable.Sable;
 import dev.ryanhcode.sable.SableClient;
 import dev.ryanhcode.sable.SableConfig;
@@ -14,7 +15,6 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.local.LocalAddress;
 import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.ApiStatus;
@@ -134,7 +134,7 @@ public class SableUDPServer {
      * @param packet the packet to send
      */
     private void sendUDPPacketLocal(final SableUDPPacket packet) {
-        final FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer(), this.server.registryAccess());
+        final FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
         packet.getType().write(buffer, packet);
         final SableUDPPacket decodedPacket = packet.getType().create(buffer);
         SableClient.NETWORK_EVENT_LOOP.tell(() -> decodedPacket.handleClient(SableDistUtil.getClientLevel()));
@@ -161,7 +161,7 @@ public class SableUDPServer {
 
         // Send the token to the client
         if (SableConfig.ATTEMPT_UDP_NETWORKING.get()) {
-            player.connection.send(new ClientboundCustomPayloadPacket(new ClientboundSableUDPActivationPacket(token)));
+            player.connection.send(SablePacketManager.toClientbound(new ClientboundSableUDPActivationPacket(token)));
         }
     }
 

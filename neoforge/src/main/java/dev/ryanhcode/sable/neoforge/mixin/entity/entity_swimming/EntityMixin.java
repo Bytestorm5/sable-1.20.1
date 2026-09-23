@@ -24,9 +24,9 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.NeoForgeMod;
-import net.neoforged.neoforge.common.extensions.IEntityExtension;
-import net.neoforged.neoforge.fluids.FluidType;
+import net.minecraftforge.common.ForgeMod;
+import net.minecraftforge.common.extensions.IForgeEntity;
+import net.minecraftforge.fluids.FluidType;
 import org.joml.Quaterniond;
 import org.joml.Vector3d;
 import org.spongepowered.asm.mixin.Mixin;
@@ -37,7 +37,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = Entity.class, priority = 500)
-public abstract class EntityMixin implements IEntityExtension {
+public abstract class EntityMixin implements IForgeEntity {
 
     @Shadow
     public abstract boolean touchingUnloadedChunk();
@@ -269,7 +269,7 @@ public abstract class EntityMixin implements IEntityExtension {
 
     @Inject(method = "updateFluidOnEyes", at = @At(value = "TAIL"))
     public void sable$subLevelFluidOnEyes(final CallbackInfo ci) {
-        if (this.forgeFluidTypeOnEyes != NeoForgeMod.EMPTY_TYPE.value() && this.forgeFluidTypeOnEyes != Fluids.EMPTY.getFluidType()) {
+        if (this.forgeFluidTypeOnEyes != ForgeMod.EMPTY_TYPE.value() && this.forgeFluidTypeOnEyes != Fluids.EMPTY.getFluidType()) {
             return;
         }
 
@@ -287,7 +287,7 @@ public abstract class EntityMixin implements IEntityExtension {
             if (e > localEyePos.y) {
                 this.forgeFluidTypeOnEyes = fluidState.getFluidType();
 
-                if (this.forgeFluidTypeOnEyes != NeoForgeMod.EMPTY_TYPE.value() && this.forgeFluidTypeOnEyes != Fluids.EMPTY.getFluidType()) {
+                if (this.forgeFluidTypeOnEyes != ForgeMod.EMPTY_TYPE.value() && this.forgeFluidTypeOnEyes != Fluids.EMPTY.getFluidType()) {
                     return;
                 }
             }

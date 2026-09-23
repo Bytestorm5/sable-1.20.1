@@ -10,42 +10,57 @@ import dev.ryanhcode.sable.index.SableAttributes;
 import dev.ryanhcode.sable.physics.config.FloatingBlockMaterialDataHandler;
 import dev.ryanhcode.sable.physics.config.block_properties.PhysicsBlockPropertiesDefinitionLoader;
 import dev.ryanhcode.sable.physics.config.dimension_physics.DimensionPhysicsData;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.CrashReportCallables;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.AddReloadListenerEvent;
-import net.neoforged.neoforge.event.OnDatapackSyncEvent;
-import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.AddReloadListenerEvent;
+import net.minecraftforge.event.OnDatapackSyncEvent;
+import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.CrashReportCallables;
+import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
+
+import java.util.List;
 
 @Mod(Sable.MOD_ID)
 public final class SableNeoForge {
-    public SableNeoForge(final ModContainer modContainer, final IEventBus modBus) {
+    public SableNeoForge() {
+        final IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+        final ModLoadingContext modContext = ModLoadingContext.get();
+
         Sable.init();
 
-        final IEventBus neoBus = NeoForge.EVENT_BUS;
-        neoBus.addListener(this::registerCommand);
-        neoBus.addListener(this::registerReloadListeners);
-        modBus.addListener(this::serverSetup);
-        neoBus.addListener(this::syncDataPack);
+        final IEventBus forgeBus = MinecraftForge.EVENT_BUS;
+        forgeBus.addListener(this::registerCommand);
+        forgeBus.addListener(this::registerReloadListeners);
+        forgeBus.addListener(this::syncDataPack);
+        modBus.addListener(this::addPlayerAttributes);
 
         SubLevelSelectorModifiers.registerModifiers();
 
-        final DeferredRegister<Attribute> attributes = DeferredRegister.create(BuiltInRegistries.ATTRIBUTE, Sable.MOD_ID);
+        final DeferredRegister<Attribute> attributes = DeferredRegister.create(ForgeRegistries.ATTRIBUTES, Sable.MOD_ID);
         SableAttributes.PUNCH_STRENGTH = attributes.register(SableAttributes.PUNCH_STRENGTH_NAME, () -> SableAttributes.PUNCH_STRENGTH_ATTRIBUTE);
         SableAttributes.PUNCH_COOLDOWN = attributes.register(SableAttributes.PUNCH_COOLDOWN_NAME, () -> SableAttributes.PUNCH_COOLDOWN_ATTRIBUTE);
         attributes.register(modBus);
 
-        modContainer.registerConfig(ModConfig.Type.COMMON, SableConfig.SPEC);
-        modContainer.registerConfig(ModConfig.Type.SERVER, SableServerConfig.SPEC);
+        modContext.registerConfig(ModConfig.Type.COMMON, SableConfig.SPEC);
+        modContext.registerConfig(ModConfig.Type.SERVER, SableServerConfig.SPEC);
 
-        CrashReportCallables.registerHeader(Sable::getCrashHeader);
+        CrashReportCallables.registerCrashCallable("Sable", Sable::getCrashHeader);
+
+        // Forge 1.20.1 has no client-only @Mod entrypoints
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            SableNeoForgeClient.init(modBus, modContext);
+        }
     }
 
     public void registerReloadListeners(final AddReloadListenerEvent event) {
@@ -54,8 +69,13 @@ public final class SableNeoForge {
         event.addListener(FloatingBlockMaterialDataHandler.ReloadListener.INSTANCE);
     }
 
-    private void serverSetup(final FMLCommonSetupEvent event) {
-        SableAttributes.register();
+    /**
+     * Forge's way of adding attributes to an existing entity type (NeoForge Sable patched the default supplier in
+     * common setup instead).
+     */
+    private void addPlayerAttributes(final EntityAttributeModificationEvent event) {
+        event.add(EntityType.PLAYER, SableAttributes.PUNCH_STRENGTH.get());
+        event.add(EntityType.PLAYER, SableAttributes.PUNCH_COOLDOWN.get());
     }
 
     private void registerCommand(final RegisterCommandsEvent event) {
@@ -63,6 +83,7 @@ public final class SableNeoForge {
     }
 
     private void syncDataPack(final OnDatapackSyncEvent event) {
-        SableCommonEvents.syncDataPacket(packet -> event.getRelevantPlayers().forEach(player -> player.connection.send(packet)));
+        final List<ServerPlayer> players = event.getPlayer() != null ? List.of(event.getPlayer()) : event.getPlayerList().getPlayers();
+        SableCommonEvents.syncDataPacket(packet -> players.forEach(player -> player.connection.send(packet)));
     }
 }

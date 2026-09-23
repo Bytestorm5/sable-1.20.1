@@ -64,7 +64,8 @@ public class ClientSableInterpolationState {
             return;
         }
 
-        final float rate = this.minecraft.level.tickRateManager().tickrate();
+        // 1.20.1 has no tick rate manager: the game always runs at 20 ticks per second
+        final float rate = 20.0f;
         final float expectedMsBetween = 1000.0f / rate;
 
         if (!this.stopped) {
