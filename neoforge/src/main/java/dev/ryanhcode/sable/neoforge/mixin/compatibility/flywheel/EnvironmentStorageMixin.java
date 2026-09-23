@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 @Mixin(EnvironmentStorage.class)
 public class EnvironmentStorageMixin {
 
-    @ModifyArg(method = "<init>", at = @At(value = "INVOKE", target = "Ldev/engine_room/flywheel/backend/engine/CpuArena;<init>(JI)V"), index = 0)
+    @ModifyArg(method = "<init>", at = @At(value = "INVOKE", target = "Ldev/engine_room/flywheel/backend/engine/CpuArena;<init>(JI)V", remap = false), index = 0)
     private long sable$overrideMatrixSize(final long elementSizeBytes) {
         return SableFlywheelMatrixBuffer.INFO_SIZE_BYTES;
     }

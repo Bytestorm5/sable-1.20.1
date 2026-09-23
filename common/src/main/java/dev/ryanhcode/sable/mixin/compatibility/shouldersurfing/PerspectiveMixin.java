@@ -45,7 +45,7 @@ public class PerspectiveMixin {
     }
 
     @SuppressWarnings("ConstantValue")
-    @WrapOperation(method = "next", at = @At(value = "INVOKE", target = "Lcom/github/exopandora/shouldersurfing/api/client/IClientConfig;replaceDefaultPerspective()Z"))
+    @WrapOperation(method = "next", at = @At(value = "INVOKE", target = "Lcom/github/exopandora/shouldersurfing/api/client/IClientConfig;replaceDefaultPerspective()Z", remap = false), remap = false)
     public boolean nextPerspective(final IClientConfig instance, final Operation<Boolean> original) {
         if ((Object) this == SablePerspectives.SUB_LEVEL_VIEW || (Object) this == SablePerspectives.SUB_LEVEL_VIEW_UNLOCKED) {
             return false;
@@ -53,7 +53,7 @@ public class PerspectiveMixin {
         return original.call(instance);
     }
 
-    @ModifyVariable(method = "next", at = @At(value = "STORE"), name = "next")
+    @ModifyVariable(method = "next", at = @At(value = "STORE"), name = "next", remap = false)
     public Perspective next(final Perspective next, @Local(argsOnly = true) final IClientConfig config) {
         if (config.replaceDefaultPerspective()) {
             if ((Object) this == Perspective.SHOULDER_SURFING) {
@@ -80,7 +80,7 @@ public class PerspectiveMixin {
         return next;
     }
 
-    @Inject(method = "next", at = @At("TAIL"), cancellable = true)
+    @Inject(method = "next", at = @At("TAIL"), cancellable = true, remap = false)
     public void getNext(final CallbackInfoReturnable<Perspective> cir, @Local(name = "next") final Perspective next) {
         if (next == SablePerspectives.SUB_LEVEL_VIEW) {
             cir.setReturnValue(SablePerspectives.SUB_LEVEL_VIEW);
@@ -91,14 +91,14 @@ public class PerspectiveMixin {
     }
 
     @SuppressWarnings("ConstantValue")
-    @Inject(method = "isEnabled", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "isEnabled", at = @At("HEAD"), cancellable = true, remap = false)
     public void isEnabled(final CallbackInfoReturnable<Boolean> cir) {
         if ((Object) this == SablePerspectives.SUB_LEVEL_VIEW || (Object) this == SablePerspectives.SUB_LEVEL_VIEW_UNLOCKED) {
             cir.setReturnValue(true);
         }
     }
 
-    @Inject(method = "of", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "of", at = @At("HEAD"), cancellable = true, remap = false)
     private static void of(final CameraType cameraType, final boolean shoulderSurfing, final CallbackInfoReturnable<Perspective> cir) {
         if (cameraType == SableCameraTypes.SUB_LEVEL_VIEW) {
             cir.setReturnValue(SablePerspectives.SUB_LEVEL_VIEW);

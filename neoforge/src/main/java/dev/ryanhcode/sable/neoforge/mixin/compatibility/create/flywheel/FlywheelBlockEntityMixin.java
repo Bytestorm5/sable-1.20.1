@@ -25,18 +25,18 @@ public abstract class FlywheelBlockEntityMixin extends KineticBlockEntity implem
         super(arg, arg2, arg3);
     }
 
-    @Inject(method = "tick",at = @At("HEAD"))
+    @Inject(method = "tick",at = @At("HEAD"), remap = false)
     public void sable$tick(CallbackInfo ci)
     {
         sable$smoothedSpeed += (speed - sable$smoothedSpeed) / 32f;
     }
 
-    @Inject(method = "write",at = @At("TAIL"))
+    @Inject(method = "write",at = @At("TAIL"), remap = false)
     public void sable$write(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket, CallbackInfo ci)
     {
         compound.putFloat("SmoothedSpeed",sable$smoothedSpeed);
     }
-    @Inject(method = "read",at = @At("TAIL"))
+    @Inject(method = "read",at = @At("TAIL"), remap = false)
     public void sable$read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket, CallbackInfo ci)
     {
         sable$smoothedSpeed = compound.getFloat("SmoothedSpeed");
@@ -47,7 +47,7 @@ public abstract class FlywheelBlockEntityMixin extends KineticBlockEntity implem
         Direction.Axis axis = ((IRotate) getBlockState()
                 .getBlock()).getRotationAxis(getBlockState());
         Direction dir = Direction.get(Direction.AxisDirection.NEGATIVE,axis);
-        float angularSpeed = sable$smoothedSpeed * (float)Math.TAU / 60f;
+        float angularSpeed = sable$smoothedSpeed * (float)(Math.PI * 2) / 60f;
         v.set(dir.getStepX(),dir.getStepY(),dir.getStepZ()).mul(angularSpeed);
     }
 }

@@ -35,7 +35,7 @@ public class TrackBlockOutlineMixin {
     /**
      * Translating the render of curve sections, rotation is not needed
      * */
-    @WrapOperation(method = "drawCurveSelection", at = @At(value = "INVOKE", target = "Ldev/engine_room/flywheel/lib/transform/PoseTransformStack;translate(DDD)Ldev/engine_room/flywheel/lib/transform/Translate;", ordinal = 0))
+    @WrapOperation(method = "drawCurveSelection", at = @At(value = "INVOKE", target = "Ldev/engine_room/flywheel/lib/transform/PoseTransformStack;translate(DDD)Ldev/engine_room/flywheel/lib/transform/Translate;", ordinal = 0, remap = false), remap = false)
     private static Translate<?> sable$translateCurveFactoringSubLevels(final PoseTransformStack ms,
                                                                        final double x,
                                                                        final double y,
@@ -95,14 +95,14 @@ public class TrackBlockOutlineMixin {
     /**
      * Provides the subLevel to the other 2 redirects so that the curve can translate its bounds and position to world space
      */
-    @Inject(method = "pickCurves", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/trains/track/BezierConnection;isPrimary()Z"))
+    @Inject(method = "pickCurves", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/trains/track/BezierConnection;isPrimary()Z", remap = false), remap = false)
     private static void sable$findBlockEntitySubLevel(final CallbackInfo ci,
                                                       @Share("currentBlockEntitySubLevel") final LocalRef<ClientSubLevel> subLevel,
                                                       @Local(name = "be") final TrackBlockEntity be) {
         subLevel.set((ClientSubLevel) Sable.HELPER.getContaining(be));
     }
 
-    @Redirect(method = "pickCurves", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/trains/track/BezierConnection;getBounds()Lnet/minecraft/world/phys/AABB;"))
+    @Redirect(method = "pickCurves", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/trains/track/BezierConnection;getBounds()Lnet/minecraft/world/phys/AABB;", remap = false), remap = false)
     private static AABB sable$getWorldSpaceBounds(final BezierConnection instance,
                                                   @Share("currentBlockEntitySubLevel") final LocalRef<ClientSubLevel> subLevel,
                                                   @Local(name = "bc") final BezierConnection bc) {

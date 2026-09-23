@@ -25,7 +25,7 @@ public abstract class ChainConveyorBlockEntityMixin extends SmartBlockEntity {
         super(type, pos, state);
     }
 
-    @WrapOperation(method = "exportToPort", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/logistics/packagePort/frogport/FrogportBlockEntity;isBackedUp()Z"))
+    @WrapOperation(method = "exportToPort", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/logistics/packagePort/frogport/FrogportBlockEntity;isBackedUp()Z", remap = false), remap = false)
     public boolean sable$testSublevelDistance(final FrogportBlockEntity instance, final Operation<Boolean> original, @Local(argsOnly = true) final ChainConveyorPackage chainPackage) {
         final Vec3 packagePos = chainPackage.worldPosition;
         if (packagePos == null) {
@@ -38,7 +38,7 @@ public abstract class ChainConveyorBlockEntityMixin extends SmartBlockEntity {
         return original.call(instance) || Sable.HELPER.distanceSquaredWithSubLevels(instance.getLevel(), packagePos, frogPos) > maxRange * maxRange;
     }
 
-    @WrapOperation(method = "tick", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/kinetics/chainConveyor/ChainConveyorBlockEntity;notifyPortToAnticipate(Lnet/minecraft/core/BlockPos;)V"))
+    @WrapOperation(method = "tick", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/kinetics/chainConveyor/ChainConveyorBlockEntity;notifyPortToAnticipate(Lnet/minecraft/core/BlockPos;)V", remap = false), remap = false)
     public void sable$testSublevelDistance1(final ChainConveyorBlockEntity instance, final BlockPos blockPos, final Operation<Void> original, @Local(name = "portEntry") final Map.Entry<BlockPos, ChainConveyorBlockEntity.ConnectedPort> entry, @Local final ChainConveyorPackage chainPackage) {
         final Vec3 packagePos = chainPackage.worldPosition;
         if (packagePos == null) {

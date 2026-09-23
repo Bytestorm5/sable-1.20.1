@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(TrackTargetingClient.class)
 public class TrackTargetingClientMixin {
 
-    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Ldev/engine_room/flywheel/lib/transform/PoseTransformStack;translate(Lnet/minecraft/world/phys/Vec3;)Ldev/engine_room/flywheel/lib/transform/Translate;"))
+    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Ldev/engine_room/flywheel/lib/transform/PoseTransformStack;translate(Lnet/minecraft/world/phys/Vec3;)Ldev/engine_room/flywheel/lib/transform/Translate;", remap = false), remap = false)
     private static Translate sable$manipulateMatrixStack(final PoseTransformStack instance,
                                                          final Vec3 vec3,
                                                          @Local(ordinal = 0) final Minecraft minecraft, @Local(ordinal = 0) final BlockPos pos,

@@ -18,7 +18,7 @@ public abstract class MechanicalArmBlockEntity extends SmartBlockEntity {
         super(type, pos, state);
     }
 
-    @Inject(method = "isAreaActuallyLoaded", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "isAreaActuallyLoaded", at = @At("HEAD"), cancellable = true, remap = false)
     private void sable$forceMechArmsLoad(final BlockPos center, final int range, final CallbackInfoReturnable<Boolean> cir) {
         if (Sable.HELPER.getContaining(this.getLevel(), center) != null) {
             cir.setReturnValue(true);

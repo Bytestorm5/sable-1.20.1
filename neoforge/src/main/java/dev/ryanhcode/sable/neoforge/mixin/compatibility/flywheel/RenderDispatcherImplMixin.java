@@ -17,7 +17,7 @@ public class RenderDispatcherImplMixin {
 
     @Shadow @Final private VisualizationManagerImpl this$0;
 
-    @Inject(method = "onStartLevelRender", at = @At("HEAD"))
+    @Inject(method = "onStartLevelRender", at = @At("HEAD"), remap = false)
     private void sable$onStartLevelRender(final RenderContext ctx, final CallbackInfo ci) {
         FlywheelCompatNeoForge.preVisualizationFrame(ctx.level(), ctx.partialTick());
         ((BlockEntityStorageExtension) ((VisualManagerImpl) this.this$0.blockEntities()).getStorage())

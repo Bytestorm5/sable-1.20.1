@@ -61,7 +61,7 @@ public class ChainConveyorInteractionHandlerMixin {
      * @author RyanH
      * @reason Take sub-levels into account
      */
-    @Overwrite
+    @Overwrite(remap = false)
     public static void drawCustomBlockSelection(final PoseStack ms, final MultiBufferSource buffer, final Vec3 camera) {
         if (selectedLift == null || selectedShape == null)
             return;

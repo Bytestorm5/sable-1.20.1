@@ -21,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(ZapperItem.class)
 public class ZapperItemMixin {
 
-    @Inject(method = "use", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/equipment/zapper/ShootableGadgetItemMethods;applyCooldown(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/InteractionHand;Ljava/util/function/Predicate;I)V"))
+    @Inject(method = "use", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/equipment/zapper/ShootableGadgetItemMethods;applyCooldown(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/InteractionHand;Ljava/util/function/Predicate;I)V", remap = false))
     private void sable$projectTargetPos(final Level world, final Player player, final InteractionHand hand, final CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir, @Local final LocalRef<BlockHitResult> raytrace) {
         final BlockHitResult blockHitResult = raytrace.get();
 

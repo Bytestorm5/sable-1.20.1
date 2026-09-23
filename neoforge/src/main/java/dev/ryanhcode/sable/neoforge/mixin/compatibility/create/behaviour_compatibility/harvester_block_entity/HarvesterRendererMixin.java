@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(HarvesterRenderer.class)
 public class HarvesterRendererMixin {
 
-    @WrapOperation(method = "renderSafe(Lcom/simibubi/create/content/contraptions/actors/harvester/HarvesterBlockEntity;FLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;II)V", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/contraptions/actors/harvester/HarvesterRenderer;transform(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/Direction;Lnet/createmod/catnip/render/SuperByteBuffer;FLnet/minecraft/world/phys/Vec3;)V"))
+    @WrapOperation(method = "renderSafe(Lcom/simibubi/create/content/contraptions/actors/harvester/HarvesterBlockEntity;FLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;II)V", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/contraptions/actors/harvester/HarvesterRenderer;transform(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/Direction;Lnet/createmod/catnip/render/SuperByteBuffer;FLnet/minecraft/world/phys/Vec3;)V", remap = false), remap = false)
     public void sable$smoothSpeed(final Level world, final Direction facing, final SuperByteBuffer superBuffer, final float speed, final Vec3 pivot, final Operation<Void> original, @Local final HarvesterBlockEntity be, @Local final float pt) {
         if (be.getAnimatedSpeed() != 0) {
             original.call(world, facing, superBuffer, speed, pivot);

@@ -28,7 +28,7 @@ public class ChainPackageInteractionHandlerMixin {
         return origin;
     }
 
-    @Redirect(method = "lambda$onUse$0", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/foundation/utility/RaycastHelper;getTraceTarget(Lnet/minecraft/world/entity/player/Player;DLnet/minecraft/world/phys/Vec3;)Lnet/minecraft/world/phys/Vec3;"))
+    @Redirect(method = "lambda$onUse$0", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/foundation/utility/RaycastHelper;getTraceTarget(Lnet/minecraft/world/entity/player/Player;DLnet/minecraft/world/phys/Vec3;)Lnet/minecraft/world/phys/Vec3;", remap = false))
     private static Vec3 sable$getTraceTarget(final Player playerIn, final double range, final Vec3 from, @Local(argsOnly = true) final ChainConveyorPackage.ChainConveyorPackagePhysicsData data) {
         Vec3 target = RaycastHelper.getTraceTarget(playerIn, range, playerIn.getEyePosition());
 

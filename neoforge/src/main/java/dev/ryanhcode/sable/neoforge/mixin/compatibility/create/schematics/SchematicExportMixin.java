@@ -92,7 +92,7 @@ public class SchematicExportMixin {
         SubLevelSchematicSerializationContext.setCurrentContext(context);
     }
 
-    @Inject(method = "saveSchematic", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/schematics/SchematicAndQuillItem;clampGlueBoxes(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/phys/AABB;Lnet/minecraft/nbt/CompoundTag;)V", shift = At.Shift.AFTER))
+    @Inject(method = "saveSchematic", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/schematics/SchematicAndQuillItem;clampGlueBoxes(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/phys/AABB;Lnet/minecraft/nbt/CompoundTag;)V", shift = At.Shift.AFTER, remap = false), remap = false)
     private static void sable$saveSchematicPost(
             final Path dir,
             final String fileName,

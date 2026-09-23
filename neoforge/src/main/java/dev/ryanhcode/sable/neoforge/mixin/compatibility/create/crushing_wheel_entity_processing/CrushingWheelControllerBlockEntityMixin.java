@@ -31,7 +31,7 @@ public abstract class CrushingWheelControllerBlockEntityMixin extends SmartBlock
         super(typeIn, pos, state);
     }
 
-    @Inject(method = "tick", at = @At("HEAD"))
+    @Inject(method = "tick", at = @At("HEAD"), remap = false)
     public void sable$initSublevel(final CallbackInfo ci) {
         this.sable$parentSublevel = Sable.HELPER.getContaining(this);
     }

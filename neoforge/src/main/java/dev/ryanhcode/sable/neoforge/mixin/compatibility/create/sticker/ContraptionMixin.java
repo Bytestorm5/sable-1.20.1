@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(Contraption.class)
 public class ContraptionMixin {
 
-    @WrapOperation(method = "getBlockEntityNBT", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/entity/BlockEntity;saveWithFullMetadata(Lnet/minecraft/core/HolderLookup$Provider;)Lnet/minecraft/nbt/CompoundTag;"))
+    @WrapOperation(method = "getBlockEntityNBT", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/entity/BlockEntity;saveWithFullMetadata(Lnet/minecraft/core/HolderLookup$Provider;)Lnet/minecraft/nbt/CompoundTag;", remap = true), remap = false)
     private CompoundTag sable$saveStickerNBT(final BlockEntity instance, final HolderLookup.Provider registries, final Operation<CompoundTag> original) {
         if (instance instanceof final StickerBlockEntityExtension extension) {
             extension.sable$saveToContraption(registries);

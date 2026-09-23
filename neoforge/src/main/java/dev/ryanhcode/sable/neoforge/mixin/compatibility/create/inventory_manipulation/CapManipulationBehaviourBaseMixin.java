@@ -41,7 +41,7 @@ public class CapManipulationBehaviourBaseMixin {
         });
     }
 
-    @Redirect(method = "findNewCapability", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;getCapability(Lnet/neoforged/neoforge/capabilities/BlockCapability;Lnet/minecraft/core/BlockPos;Ljava/lang/Object;)Ljava/lang/Object;"))
+    @Redirect(method = "findNewCapability", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;getCapability(Lnet/neoforged/neoforge/capabilities/BlockCapability;Lnet/minecraft/core/BlockPos;Ljava/lang/Object;)Ljava/lang/Object;", remap = true), remap = false)
     public <T> T sable$redirectPos(final Level instance, final BlockCapability<T, Direction> blockCapability, final BlockPos pos, final Object dir, @Local final BlockFace targetBlockFace) {
         return instance.getCapability(blockCapability, this.sable$caughtPos, this.bypassSided ? null : targetBlockFace.getFace());
     }

@@ -19,7 +19,7 @@ public abstract class DisplayLinkBlockEntityMixin extends LinkWithBulbBlockEntit
         super(type, pos, state);
     }
 
-    @Inject(method = "getTargetPosition", at = @At("TAIL"), cancellable = true)
+    @Inject(method = "getTargetPosition", at = @At("TAIL"), cancellable = true, remap = false)
     public void sable$accountForSubLevels(final CallbackInfoReturnable<BlockPos> cir) {
         final BlockPos target = cir.getReturnValue();
         final int range = AllConfigs.server().logistics.displayLinkRange.get();

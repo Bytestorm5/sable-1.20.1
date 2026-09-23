@@ -30,7 +30,7 @@ public class SchematicToolBaseMixin {
     @Shadow
     protected Vec3 lastChasingSelectedPos;
 
-    @Inject(method = "updateSelection", at = @At("TAIL"))
+    @Inject(method = "updateSelection", at = @At("TAIL"), remap = false)
     public void sable$forceUpdateSelection(final CallbackInfo ci, @Local(ordinal = 0) final Vec3 target) {
         ActiveSableCompanion helper = Sable.HELPER;
         if (helper.getContainingClient(target) != helper.getContainingClient(this.lastChasingSelectedPos)) {
@@ -38,7 +38,7 @@ public class SchematicToolBaseMixin {
         }
     }
 
-    @WrapOperation(method = "updateTargetPos", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/foundation/utility/RaycastHelper;rayTraceUntil(Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;Ljava/util/function/Predicate;)Lcom/simibubi/create/foundation/utility/RaycastHelper$PredicateTraceResult;"))
+    @WrapOperation(method = "updateTargetPos", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/foundation/utility/RaycastHelper;rayTraceUntil(Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;Ljava/util/function/Predicate;)Lcom/simibubi/create/foundation/utility/RaycastHelper$PredicateTraceResult;", remap = false), remap = false)
     public RaycastHelper.PredicateTraceResult sable$rayTraceSublevels(final Vec3 start, final Vec3 end, final Predicate<BlockPos> predicate, final Operation<RaycastHelper.PredicateTraceResult> original, @Local final LocalPlayer player, @Local final SchematicTransformation transformation) {
         final ClientSubLevel subLevel = Sable.HELPER.getContainingClient(transformation.getAnchor());
         if (subLevel != null) {

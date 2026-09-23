@@ -56,7 +56,7 @@ public class SchematicPlacePacketMixin {
 
     @Shadow @Final private ItemStack stack;
 
-    @Inject(method = "handle", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/schematics/SchematicPrinter;loadSchematic(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/level/Level;Z)V", shift = At.Shift.AFTER), cancellable = true)
+    @Inject(method = "handle", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/schematics/SchematicPrinter;loadSchematic(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/level/Level;Z)V", shift = At.Shift.AFTER, remap = false), cancellable = true, remap = false)
     private void sable$preHandle(final ServerPlayer player,
                                  final CallbackInfo ci,
                                  @Local final SchematicPrinter printer) {
@@ -72,7 +72,7 @@ public class SchematicPlacePacketMixin {
         }
     }
 
-    @Inject(method = "handle", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/infrastructure/config/AllConfigs;server()Lcom/simibubi/create/infrastructure/config/CServer;"))
+    @Inject(method = "handle", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/infrastructure/config/AllConfigs;server()Lcom/simibubi/create/infrastructure/config/CServer;", remap = false), remap = false)
     private void sable$handle(final ServerPlayer player,
                               final CallbackInfo ci,
                               @Local final Level level,
@@ -165,7 +165,7 @@ public class SchematicPlacePacketMixin {
         }
     }
 
-    @Inject(method = "handle", at = @At(value = "TAIL"))
+    @Inject(method = "handle", at = @At(value = "TAIL"), remap = false)
     private void sable$postHandle(final ServerPlayer player, final CallbackInfo ci) {
         SubLevelSchematicSerializationContext.setCurrentContext(null);
     }

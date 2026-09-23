@@ -26,7 +26,7 @@ public class BoilerDataMixin {
     private int sable$ticksUntilUpdate = 20;
 
 
-    @Inject(method = "tick", at = @At(value = "FIELD", target = "Lcom/simibubi/create/content/fluids/tank/BoilerData;ticksUntilNextSample:I", ordinal = 0))
+    @Inject(method = "tick", at = @At(value = "FIELD", target = "Lcom/simibubi/create/content/fluids/tank/BoilerData;ticksUntilNextSample:I", ordinal = 0, remap = false), remap = false)
     public void sable$forceUpdateHeatIfDisconnected(final FluidTankBlockEntity controller, final CallbackInfo ci) {
         if (this.sable$ticksUntilUpdate-- <= 0) {
             this.sable$ticksUntilUpdate = 20;
@@ -34,7 +34,7 @@ public class BoilerDataMixin {
         }
     }
 
-    @WrapOperation(method = "updateTemperature", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/api/boiler/BoilerHeater;findHeat(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)F"))
+    @WrapOperation(method = "updateTemperature", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/api/boiler/BoilerHeater;findHeat(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)F", remap = false), remap = false)
     public float sable$subLevelHeating(final Level level, final BlockPos pos, final BlockState state, final Operation<Float> original) {
         final Float originalHeat = original.call(level, pos, state);
         if (originalHeat != -1) {

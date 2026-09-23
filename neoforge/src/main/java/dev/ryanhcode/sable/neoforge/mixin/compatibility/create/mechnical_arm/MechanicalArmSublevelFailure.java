@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ArmInteractionPointHandler.class)
 public class MechanicalArmSublevelFailure {
 
-	@Inject(method = "flushSettings", at = @At("HEAD"))
+	@Inject(method = "flushSettings", at = @At("HEAD"), remap = false)
 	private static void sable$gatherSublevelInformation(final BlockPos pos, final CallbackInfo ci, @Share("parentSublevel") final LocalRef<SubLevel> parentSublevel, @Share("pointsRemovedSublevel") final LocalRef<Integer> pointsRemovedSublevel) {
 		parentSublevel.set(Sable.HELPER.getContainingClient(pos));
 		pointsRemovedSublevel.set(0);
@@ -34,7 +34,7 @@ public class MechanicalArmSublevelFailure {
 		}
 	}
 
-	@Redirect(method = "flushSettings", at = @At(value = "INVOKE", target = "Lnet/createmod/catnip/lang/LangBuilder;translate(Ljava/lang/String;[Ljava/lang/Object;)Lnet/createmod/catnip/lang/LangBuilder;"))
+	@Redirect(method = "flushSettings", at = @At(value = "INVOKE", target = "Lnet/createmod/catnip/lang/LangBuilder;translate(Ljava/lang/String;[Ljava/lang/Object;)Lnet/createmod/catnip/lang/LangBuilder;", remap = false), remap = false)
 	private static LangBuilder sable$relayRemovedPoints(final LangBuilder instance, final String langKey, final Object[] args, @Local(name = "removed") final int removed, @Share("pointsRemovedSublevel") final LocalRef<Integer> pointsRemovedSublevel) {
 
 		final Integer arg = (Integer) args[0];

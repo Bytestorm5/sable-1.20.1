@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(FanProcessingType.class)
 public interface FanProcessingTypeMixin {
-	@WrapMethod(method = "getAt")
+	@WrapMethod(method = "getAt", remap = false)
 	private static FanProcessingType getAt(Level level, BlockPos pos, Operation<FanProcessingType> original) {
 		ActiveSableCompanion helper = Sable.HELPER;
 		return helper.runIncludingSubLevels(level, pos.getCenter(), true, helper.getContaining(level, pos),

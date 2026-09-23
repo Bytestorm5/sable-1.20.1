@@ -24,7 +24,7 @@ public abstract class ChuteBlockEntityMixin extends SmartBlockEntity {
 		super(type, pos, state);
 	}
 
-	@WrapMethod(method = "grabCapability")
+	@WrapMethod(method = "grabCapability", remap = false)
 	public IItemHandler sable$grabCap(final Direction side, final Operation<IItemHandler> original) {
 		final IItemHandler handler = original.call(side);
 		if (handler != null) {

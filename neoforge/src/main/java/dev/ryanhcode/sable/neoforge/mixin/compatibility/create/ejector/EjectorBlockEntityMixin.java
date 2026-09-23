@@ -66,7 +66,7 @@ public abstract class EjectorBlockEntityMixin extends SmartBlockEntity {
     @Shadow
     protected abstract Direction getFacing();
 
-    @Inject(method = "activateDeferred", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/logistics/depot/EjectorBlockEntity;launchItems()V"))
+    @Inject(method = "activateDeferred", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/logistics/depot/EjectorBlockEntity;launchItems()V", remap = false), remap = false)
     public void sable$launchSubLevels(final CallbackInfo ci) {
         final SubLevelScanResult scanResult = this.sable$lookForLaunchableSubLevels();
         if (scanResult == null) return;
@@ -140,7 +140,7 @@ public abstract class EjectorBlockEntityMixin extends SmartBlockEntity {
         return new SubLevelScanResult(result, serverSubLevel);
     }
 
-    @Inject(method = "tick", at = @At("HEAD"))
+    @Inject(method = "tick", at = @At("HEAD"), remap = false)
     public void sable$tick(final CallbackInfo ci) {
         if (this.level.isClientSide && !this.isVirtual()) return;
 

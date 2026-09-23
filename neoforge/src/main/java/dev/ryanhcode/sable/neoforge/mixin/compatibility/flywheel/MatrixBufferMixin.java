@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 @Mixin(MatrixBuffer.class)
 public class MatrixBufferMixin {
 
-    @ModifyArg(method = "<init>", at = @At(value = "INVOKE", target = "Ldev/engine_room/flywheel/backend/engine/indirect/ResizableStorageArray;<init>(J)V"), index = 0)
+    @ModifyArg(method = "<init>", at = @At(value = "INVOKE", target = "Ldev/engine_room/flywheel/backend/engine/indirect/ResizableStorageArray;<init>(J)V", remap = false), index = 0)
     private long sable$overrideMatrixSize(final long stride) {
         return SableFlywheelMatrixBuffer.INFO_SIZE_BYTES;
     }

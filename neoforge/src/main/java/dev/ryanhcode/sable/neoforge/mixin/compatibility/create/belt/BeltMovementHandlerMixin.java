@@ -36,7 +36,7 @@ public class BeltMovementHandlerMixin {
         return original.call(instance);
     }
 
-    @ModifyVariable(method = "transportEntity", at = @At("STORE"), ordinal = 0)
+    @ModifyVariable(method = "transportEntity", at = @At("STORE"), ordinal = 0, remap = false)
     private static double sable$diffCenter(final double originalValue,
                                            @Local(argsOnly = true) final BeltBlockEntity be,
                                            @Local(argsOnly = true) final Entity entity,

@@ -38,7 +38,7 @@ public class LODMixin {
     @Unique
     private Vec3 sable$localPos = null;
 
-    @WrapMethod(method = "isPlaneCulled(Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;FF)Z")
+    @WrapMethod(method = "isPlaneCulled(Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;FF)Z", remap = false)
     private boolean sable$isPlaneCulled(Vec3 planeNormal, Vec3 offset, final float discRadius, final float cosTolerance, final Operation<Boolean> original) {
         final ClientSubLevel clientSubLevel = Sable.HELPER.getContainingClient(this.sable$localPos);
 

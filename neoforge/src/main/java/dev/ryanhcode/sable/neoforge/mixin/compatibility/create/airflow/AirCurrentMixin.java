@@ -36,7 +36,7 @@ public abstract class AirCurrentMixin {
     @Unique
     private WeakReference<SubLevel> sable$subLevelReference;
 
-    @Inject(method = "tick", at = @At("HEAD"))
+    @Inject(method = "tick", at = @At("HEAD"), remap = false)
     public void sable$updateSubLevel(final CallbackInfo ci) {
         if (this.sable$subLevelReference == null) {
             this.sable$subLevelReference = new WeakReference<>(Sable.HELPER.getContaining(this.source.getAirCurrentWorld(), this.source.getAirCurrentPos()));

@@ -61,7 +61,7 @@ public abstract class AirFlowParticleMixin extends SimpleAnimatedParticle {
         return new Vec3(x, y, z);
     }
 
-    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/kinetics/fan/IAirCurrentSource;getAirCurrent()Lcom/simibubi/create/content/kinetics/fan/AirCurrent;", ordinal = 1))
+    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/kinetics/fan/IAirCurrentSource;getAirCurrent()Lcom/simibubi/create/content/kinetics/fan/AirCurrent;", ordinal = 1, remap = false))
     public void sable$transformNormal(final CallbackInfo ci, @Local(ordinal = 1) final LocalRef<Vec3> motion) {
         final SubLevel subLevel = Sable.HELPER.getContainingClient(this.source.getAirCurrentPos());
 

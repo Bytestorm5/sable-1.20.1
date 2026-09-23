@@ -27,7 +27,7 @@ public class PackagePortTargetMixin {
     @Nullable
     public BlockPos connection;
 
-    @Inject(method = "export", at = @At(value = "INVOKE", target = "Ljava/util/Set;contains(Ljava/lang/Object;)Z"), cancellable = true)
+    @Inject(method = "export", at = @At(value = "INVOKE", target = "Ljava/util/Set;contains(Ljava/lang/Object;)Z"), cancellable = true, remap = false)
     public void sable$testSublevelDistance(final LevelAccessor level, final BlockPos portPos, final ItemStack box, final boolean simulate, final CallbackInfoReturnable<Boolean> cir, @Local final ChainConveyorBlockEntity cbe) {
         final Vec3 targetPos = cbe.getPackagePosition(this.chainPos, this.connection);
 

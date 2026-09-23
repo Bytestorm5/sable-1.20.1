@@ -37,7 +37,7 @@ public class EmbeddedEnvironmentMixin implements EmbeddedEnvironmentExtension {
         this.sable$skyLightScale = skyLightScale;
     }
 
-    @Inject(method = "setupDraw", at = @At("TAIL"))
+    @Inject(method = "setupDraw", at = @At("TAIL"), remap = false)
     private void sable$setupDraw(final GlProgram program, final CallbackInfo ci) {
         program.setUInt(SableFlywheelEmbeddingUniforms.SCENE, this.sable$sceneId);
         program.setFloat(SableFlywheelEmbeddingUniforms.SKY_LIGHT_SCALE, this.sable$skyLightScale);
@@ -49,7 +49,7 @@ public class EmbeddedEnvironmentMixin implements EmbeddedEnvironmentExtension {
         }
     }
 
-    @Inject(method = "flush", at = @At("TAIL"))
+    @Inject(method = "flush", at = @At("TAIL"), remap = false)
     public void sable$flush(final long ptr, final CallbackInfo ci) {
         MemoryUtil.memPutFloat(ptr + 28 * Float.BYTES, this.sable$skyLightScale);
         MemoryUtil.memPutInt(ptr + 29 * Float.BYTES, this.sable$sceneId);

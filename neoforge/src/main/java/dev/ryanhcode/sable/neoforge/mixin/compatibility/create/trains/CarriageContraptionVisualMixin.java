@@ -27,7 +27,7 @@ public abstract class CarriageContraptionVisualMixin extends ContraptionVisual<C
         super(ctx, entity, partialTick);
     }
 
-    @Redirect(method = "animate", at = @At(value = "INVOKE", target = "Ldev/engine_room/flywheel/lib/transform/PoseTransformStack;translate(Lorg/joml/Vector3fc;)Ldev/engine_room/flywheel/lib/transform/Translate;"))
+    @Redirect(method = "animate", at = @At(value = "INVOKE", target = "Ldev/engine_room/flywheel/lib/transform/PoseTransformStack;translate(Lorg/joml/Vector3fc;)Ldev/engine_room/flywheel/lib/transform/Translate;", remap = false), remap = false)
     private Translate sable$translate(final PoseTransformStack instance, final Vector3fc vector3fc, @Local final Vector3f visualPosition, @Local(argsOnly = true) final float partialTick) {
         final Vec3 pos = this.entity.position();
         final SubLevelContainer container = SubLevelContainer.getContainer(this.entity.level());

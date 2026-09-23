@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.Mixin;
 public class HarvesterMovementBehaviourMixin {
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    @WrapMethod(method = "visitNewPosition")
+    @WrapMethod(method = "visitNewPosition", remap = false)
     public void sable$checkAllPositions(final MovementContext context, final BlockPos pos, final Operation<Void> original) {
         if (context instanceof DummyMovementContext) {
             original.call(context, pos);

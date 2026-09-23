@@ -39,7 +39,7 @@ public abstract class ContraptionVisualMixin extends AbstractEntityVisual<Abstra
         super(ctx, entity, partialTick);
     }
 
-    @Inject(method = "setEmbeddingMatrices", at = @At(value = "HEAD"), cancellable = true)
+    @Inject(method = "setEmbeddingMatrices", at = @At(value = "HEAD"), cancellable = true, remap = false)
     private void sable$setEmbeddingMatrices(final float partialTick, final CallbackInfo ci) {
         final SubLevelContainer container = SubLevelContainer.getContainer(this.entity.level());
 

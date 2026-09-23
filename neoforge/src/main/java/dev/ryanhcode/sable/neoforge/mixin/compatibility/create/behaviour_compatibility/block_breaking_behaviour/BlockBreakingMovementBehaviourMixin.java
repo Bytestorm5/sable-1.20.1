@@ -33,7 +33,7 @@ public abstract class BlockBreakingMovementBehaviourMixin implements MovementBeh
     @Shadow
     public abstract boolean canBreak(Level world, BlockPos breakingPos, BlockState state);
 
-    @WrapMethod(method = "visitNewPosition")
+    @WrapMethod(method = "visitNewPosition", remap = false)
     public void sable$checkPosition(final MovementContext context, final BlockPos pos, final Operation<Void> original) {
         if (!context.stall) {
             original.call(context, pos);
@@ -78,12 +78,12 @@ public abstract class BlockBreakingMovementBehaviourMixin implements MovementBeh
         }
     }
 
-    @Inject(method = "cancelStall", at = @At("TAIL"))
+    @Inject(method = "cancelStall", at = @At("TAIL"), remap = false)
     public void sable$removeProjected(final MovementContext context, final CallbackInfo ci) {
         context.data.remove("ProjectedPos");
     }
 
-    @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "tick", at = @At("HEAD"), cancellable = true, remap = false)
     public void sable$testProjectedPosDist(final MovementContext context, final CallbackInfo ci) {
         final CompoundTag data = context.data;
 

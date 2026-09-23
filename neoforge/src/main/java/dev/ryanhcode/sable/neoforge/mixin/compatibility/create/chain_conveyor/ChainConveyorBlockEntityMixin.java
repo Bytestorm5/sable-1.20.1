@@ -25,7 +25,7 @@ public abstract class ChainConveyorBlockEntityMixin {
     @Shadow
     protected abstract void drop(ChainConveyorPackage box);
 
-    @Inject(method = "removeInvalidConnections", at = @At(value = "INVOKE", target = "Ljava/util/Iterator;remove()V"))
+    @Inject(method = "removeInvalidConnections", at = @At(value = "INVOKE", target = "Ljava/util/Iterator;remove()V"), remap = false)
     public void dropInvalidPackages(final CallbackInfo ci, @Local(name = "next") final BlockPos next) {
         this.connectionStats.remove(next);
 

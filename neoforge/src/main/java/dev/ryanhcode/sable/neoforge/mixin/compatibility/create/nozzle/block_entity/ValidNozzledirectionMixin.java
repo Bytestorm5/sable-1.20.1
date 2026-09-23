@@ -30,7 +30,7 @@ public abstract class ValidNozzledirectionMixin extends SmartBlockEntity impleme
 		return this.sable$validDirections;
 	}
 
-	@Inject(method = "tick", at = @At("HEAD"))
+	@Inject(method = "tick", at = @At("HEAD"), remap = false)
 	public void sable$updateValidDirections(final CallbackInfo ci) {
 		this.sable$validDirections.clear();
 

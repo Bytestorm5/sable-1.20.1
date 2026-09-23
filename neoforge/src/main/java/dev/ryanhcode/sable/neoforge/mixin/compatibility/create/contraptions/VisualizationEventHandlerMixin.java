@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(VisualizationEventHandler.class)
 public class VisualizationEventHandlerMixin {
 
-    @Inject(method = "onEntityJoinLevel", at = @At("TAIL"))
+    @Inject(method = "onEntityJoinLevel", at = @At("TAIL"), remap = false)
     private static void sable$onEntityJoinLevel(final Level level, final Entity entity, final CallbackInfo ci) {
         final SubLevel subLevel = Sable.HELPER.getContaining(entity);
 

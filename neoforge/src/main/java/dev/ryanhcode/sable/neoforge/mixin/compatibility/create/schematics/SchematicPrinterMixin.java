@@ -33,7 +33,7 @@ public class SchematicPrinterMixin implements SchematicPrinterExtension {
 
     @Shadow private SchematicLevel blockReader;
 
-    @Inject(method = "loadSchematic", at = @At("TAIL"))
+    @Inject(method = "loadSchematic", at = @At("TAIL"), remap = false)
     private void sable$loadSchematic(final ItemStack blueprint,
                                      final Level originalWorld,
                                      final boolean processNBT,

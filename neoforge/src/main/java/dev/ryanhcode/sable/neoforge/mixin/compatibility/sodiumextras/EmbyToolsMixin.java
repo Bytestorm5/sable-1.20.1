@@ -15,7 +15,7 @@ public class EmbyToolsMixin {
      * @author Ocelot
      * @reason Take into account sub-levels
      */
-    @Overwrite
+    @Overwrite(remap = false)
     public static boolean isEntityWithinDistance(final BlockPos bePos, final Vec3 camVec, final int maxHeight, final int maxDistanceSquare) {
         return Sable.HELPER.distanceSquaredWithSubLevels(Minecraft.getInstance().level, bePos.getX() + 0.5, bePos.getY() + 0.5, bePos.getZ() + 0.5, camVec.x, camVec.y, camVec.z) < maxDistanceSquare;
     }

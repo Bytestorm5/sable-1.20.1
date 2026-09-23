@@ -19,12 +19,12 @@ public class ChainPackageInteractionPacketMixin {
 
     @Shadow @Final private float chainPosition;
 
-    @Inject(method = "applySettings(Lnet/minecraft/server/level/ServerPlayer;Lcom/simibubi/create/content/kinetics/chainConveyor/ChainConveyorBlockEntity;)V", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/kinetics/chainConveyor/ChainConveyorBlockEntity;addLoopingPackage(Lcom/simibubi/create/content/kinetics/chainConveyor/ChainConveyorPackage;)Z"))
+    @Inject(method = "applySettings(Lnet/minecraft/server/level/ServerPlayer;Lcom/simibubi/create/content/kinetics/chainConveyor/ChainConveyorBlockEntity;)V", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/kinetics/chainConveyor/ChainConveyorBlockEntity;addLoopingPackage(Lcom/simibubi/create/content/kinetics/chainConveyor/ChainConveyorPackage;)Z", remap = false), remap = false)
     private void sable$initialiseLoopingWorldPosition(final ServerPlayer player, final ChainConveyorBlockEntity be, final CallbackInfo ci, @Local(name = "chainConveyorPackage") final ChainConveyorPackage chainConveyorPackage) {
         chainConveyorPackage.worldPosition = be.getPackagePosition(this.chainPosition, null);
     }
 
-    @Inject(method = "applySettings(Lnet/minecraft/server/level/ServerPlayer;Lcom/simibubi/create/content/kinetics/chainConveyor/ChainConveyorBlockEntity;)V", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/kinetics/chainConveyor/ChainConveyorBlockEntity;addTravellingPackage(Lcom/simibubi/create/content/kinetics/chainConveyor/ChainConveyorPackage;Lnet/minecraft/core/BlockPos;)Z"))
+    @Inject(method = "applySettings(Lnet/minecraft/server/level/ServerPlayer;Lcom/simibubi/create/content/kinetics/chainConveyor/ChainConveyorBlockEntity;)V", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/kinetics/chainConveyor/ChainConveyorBlockEntity;addTravellingPackage(Lcom/simibubi/create/content/kinetics/chainConveyor/ChainConveyorPackage;Lnet/minecraft/core/BlockPos;)Z", remap = false), remap = false)
     private void sable$initialiseTravellingWorldPosition(final ServerPlayer player, final ChainConveyorBlockEntity be, final CallbackInfo ci, @Local(name = "chainConveyorPackage") final ChainConveyorPackage chainConveyorPackage) {
         chainConveyorPackage.worldPosition = be.getPackagePosition(this.chainPosition, this.selectedConnection);
     }

@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(ToolboxHandlerClient.class)
 public class ToolBoxClientHandlerMixin {
 
-    @Redirect(method = "*", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/equipment/toolbox/ToolboxHandler;distance(Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/core/BlockPos;)D"))
+    @Redirect(method = "*", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/equipment/toolbox/ToolboxHandler;distance(Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/core/BlockPos;)D", remap = false))
     private static double sable$sublevelDistance(final Vec3 location, final BlockPos p) {
         return Sable.HELPER.distanceSquaredWithSubLevels(Minecraft.getInstance().level, location, p.getX() + 0.5, p.getY(), p.getZ() + 0.5);
     }

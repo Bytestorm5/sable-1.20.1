@@ -239,7 +239,7 @@ public abstract class StickerBlockEntityMixin extends SmartBlockEntity implement
         this.sable$removeConstraint();
     }
 
-    @Inject(method = "tick", at = @At("HEAD"))
+    @Inject(method = "tick", at = @At("HEAD"), remap = false)
     public void tick(final CallbackInfo ci) {
         if (this.level.isClientSide()) {
             if (this.sable$hadConstraint != this.sable$hasConstraint) {
@@ -264,7 +264,7 @@ public abstract class StickerBlockEntityMixin extends SmartBlockEntity implement
         this.sable$doNotSaveConstraint = false;
     }
 
-    @Inject(method = "write", at = @At("TAIL"))
+    @Inject(method = "write", at = @At("TAIL"), remap = false)
     public void write(final CompoundTag compound, final HolderLookup.Provider registries, final boolean clientPacket, final CallbackInfo ci) {
         if (clientPacket) {
             compound.putBoolean("SableHasConstraint", this.sable$handle != null);
@@ -292,7 +292,7 @@ public abstract class StickerBlockEntityMixin extends SmartBlockEntity implement
         }
     }
 
-    @Inject(method = "read", at = @At("TAIL"))
+    @Inject(method = "read", at = @At("TAIL"), remap = false)
     public void read(final CompoundTag compound, final HolderLookup.Provider registries, final boolean clientPacket, final CallbackInfo ci) {
         if (clientPacket) {
             this.sable$hasConstraint = compound.getBoolean("SableHasConstraint");

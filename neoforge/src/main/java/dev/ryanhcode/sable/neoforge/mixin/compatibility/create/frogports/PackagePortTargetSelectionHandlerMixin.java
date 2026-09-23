@@ -25,7 +25,7 @@ public class PackagePortTargetSelectionHandlerMixin {
      * @author RyanH
      * @reason Take into account sub-level
      */
-    @Overwrite
+    @Overwrite(remap = false)
     public static String validateDiff(final Vec3 nonProjectedTarget, final BlockPos placedPos) {
         final ActiveSableCompanion helper = Sable.HELPER;
         final Minecraft mc = Minecraft.getInstance();

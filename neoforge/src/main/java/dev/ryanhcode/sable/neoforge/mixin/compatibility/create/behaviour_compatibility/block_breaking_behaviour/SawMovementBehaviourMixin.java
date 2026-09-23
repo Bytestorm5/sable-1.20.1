@@ -18,7 +18,7 @@ public class SawMovementBehaviourMixin {
         return Math.sqrt(Sable.HELPER.distanceSquaredWithSubLevels(context.world, instance, vec3));
     }
 
-    @Redirect(method = "dropItemFromCutTree", at = @At(value = "FIELD", target = "Lcom/simibubi/create/content/contraptions/behaviour/MovementContext;relativeMotion:Lnet/minecraft/world/phys/Vec3;"))
+    @Redirect(method = "dropItemFromCutTree", at = @At(value = "FIELD", target = "Lcom/simibubi/create/content/contraptions/behaviour/MovementContext;relativeMotion:Lnet/minecraft/world/phys/Vec3;", remap = false), remap = false)
     public Vec3 sable$fixRelativeMotion(final MovementContext instance, @Local(argsOnly = true) final MovementContext context, @Local(ordinal = 0) final Vec3 dropPos) {
         final ActiveSableCompanion helper = Sable.HELPER;
         final SubLevel parentSublevel = helper.getContaining(context.world, context.contraption.anchor);

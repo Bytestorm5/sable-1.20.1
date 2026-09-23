@@ -20,7 +20,7 @@ public abstract class BlueprintEntityMixin extends Entity {
 	 * @author IThundxr
 	 * @reason Switch to Player#canInteractWithEntity, which is patched by sable.
 	 */
-	@Overwrite
+	@Overwrite(remap = false)
 	public boolean canPlayerUse(final Player player) {
 		return player.canInteractWithEntity(this, 8);
 	}

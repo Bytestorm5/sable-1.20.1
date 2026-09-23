@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(TrackGraphVisualizer.class)
 public class TrackGraphVisualizerMixin {
 
-    @WrapOperation(method = "debugViewGraph", at = @At(value = "FIELD", target = "Lcom/simibubi/create/content/trains/graph/TrackGraphBounds;box:Lnet/minecraft/world/phys/AABB;", opcode = Opcodes.GETFIELD))
+    @WrapOperation(method = "debugViewGraph", at = @At(value = "FIELD", target = "Lcom/simibubi/create/content/trains/graph/TrackGraphBounds;box:Lnet/minecraft/world/phys/AABB;", opcode = Opcodes.GETFIELD, remap = false), remap = false)
     private static AABB debugViewGraph(final TrackGraphBounds instance,
                                        final Operation<AABB> original) {
         if (instance.box == null) return original.call(instance);

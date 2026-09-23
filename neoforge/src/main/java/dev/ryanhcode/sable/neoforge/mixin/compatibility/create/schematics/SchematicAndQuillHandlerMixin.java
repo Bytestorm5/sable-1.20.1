@@ -82,7 +82,7 @@ public abstract class SchematicAndQuillHandlerMixin {
         return original.call(instance);
     }
 
-    @Inject(method = "tick", at = @At("TAIL"))
+    @Inject(method = "tick", at = @At("TAIL"), remap = false)
     private void sable$renderSubLevelBoxes(final CallbackInfo ci) {
 
         final ClientLevel level = Minecraft.getInstance().level;
