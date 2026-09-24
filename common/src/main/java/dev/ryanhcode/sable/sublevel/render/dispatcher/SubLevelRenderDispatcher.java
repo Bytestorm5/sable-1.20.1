@@ -99,7 +99,11 @@ public interface SubLevelRenderDispatcher extends NativeResource, ResourceManage
      */
     void renderAfterSections(final Iterable<ClientSubLevel> sublevels, final double cameraX, double cameraY, double cameraZ, final Matrix4f modelView, final Matrix4f projection, final float partialTicks);
 
-    void renderBlockEntities(final Iterable<ClientSubLevel> sublevels, final BlockEntityRenderer blockEntityRenderer, final double cameraX, double cameraY, double cameraZ, final float partialTick);
+    /**
+     * @param viewPose the pose block entities are rendered relative to. On 1.20.1 this carries the camera rotation,
+     *                 which lives in the level renderer's pose stack rather than in the model-view matrix like on 1.21.
+     */
+    void renderBlockEntities(final Iterable<ClientSubLevel> sublevels, final BlockEntityRenderer blockEntityRenderer, final PoseStack.Pose viewPose, final double cameraX, double cameraY, double cameraZ, final float partialTick);
 
     void addDebugInfo(final Consumer<String> consumer);
 

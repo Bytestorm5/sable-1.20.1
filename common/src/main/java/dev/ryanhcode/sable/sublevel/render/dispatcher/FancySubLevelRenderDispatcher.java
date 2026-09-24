@@ -1,5 +1,6 @@
 package dev.ryanhcode.sable.sublevel.render.dispatcher;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import dev.ryanhcode.sable.Sable;
@@ -292,7 +293,7 @@ public class FancySubLevelRenderDispatcher implements SubLevelRenderDispatcher {
     }
 
     @Override
-    public void renderBlockEntities(final Iterable<ClientSubLevel> sublevels, final BlockEntityRenderer blockEntityRenderer, final double cameraX, final double cameraY, final double cameraZ, final float partialTick) {
+    public void renderBlockEntities(final Iterable<ClientSubLevel> sublevels, final BlockEntityRenderer blockEntityRenderer, final PoseStack.Pose viewPose, final double cameraX, final double cameraY, final double cameraZ, final float partialTick) {
         // TODO
     }
 

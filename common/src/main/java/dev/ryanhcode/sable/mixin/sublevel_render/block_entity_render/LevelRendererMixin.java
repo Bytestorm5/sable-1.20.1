@@ -96,6 +96,6 @@ public class LevelRendererMixin {
     public void sable$preRenderBEs(final PoseStack poseStack, final float partialTick, final long finishNanoTime, final boolean renderBlockOutline, final Camera camera, final GameRenderer gameRenderer, final LightTexture lightTexture, final Matrix4f projectionMatrix, final CallbackInfo ci) {
         final List<ClientSubLevel> subLevels = SubLevelContainer.getContainer(this.level).getAllSubLevels();
         final Vec3 cameraPosition = camera.getPosition();
-        SubLevelRenderDispatcher.get().renderBlockEntities(subLevels, this.sable$subLevelBlockEntityRenderer, cameraPosition.x, cameraPosition.y, cameraPosition.z, partialTick);
+        SubLevelRenderDispatcher.get().renderBlockEntities(subLevels, this.sable$subLevelBlockEntityRenderer, poseStack.last(), cameraPosition.x, cameraPosition.y, cameraPosition.z, partialTick);
     }
 }

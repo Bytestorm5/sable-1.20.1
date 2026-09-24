@@ -220,7 +220,7 @@ public class VanillaSubLevelRenderDispatcher implements SubLevelRenderDispatcher
     }
 
     @Override
-    public void renderBlockEntities(final Iterable<ClientSubLevel> sublevels, final BlockEntityRenderer blockEntityRenderer, final double cameraX, final double cameraY, final double cameraZ, final float partialTick) {
+    public void renderBlockEntities(final Iterable<ClientSubLevel> sublevels, final BlockEntityRenderer blockEntityRenderer, final PoseStack.Pose viewPose, final double cameraX, final double cameraY, final double cameraZ, final float partialTick) {
         final Vector3f cameraPosition = new Vector3f();
         final Vector3d chunkOffset = new Vector3d();
         final Matrix4f transformation = new Matrix4f();
@@ -239,6 +239,8 @@ public class VanillaSubLevelRenderDispatcher implements SubLevelRenderDispatcher
             dispatcher.sable$setCameraPosition(new Vec3(cameraPosition.x - chunkOffset.x(), cameraPosition.y - chunkOffset.y(), cameraPosition.z - chunkOffset.z()));
 
             matrixStack.clear();
+            matrices.last().pose().set(viewPose.pose());
+            matrices.last().normal().set(viewPose.normal());
             matrices.mulPoseMatrix(transformation);
             if (data instanceof final VanillaChunkedSubLevelRenderData chunkedRenderData) {
                 for (final ChunkRenderDispatcher.RenderChunk renderSection : chunkedRenderData.allRenderSections()) {
