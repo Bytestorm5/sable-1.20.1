@@ -97,11 +97,13 @@ Some mixins targeted 1.21-only classes: `Leashable`, `PathfindingContext`, the `
 
 ### API interfaces for block entities
 
-Some API interfaces are meant to be implemented by block entities and declare methods that `BlockEntity` already has: `BlockEntityPropeller.getLevel`/`getBlockPos` and `BlockEntitySubLevelReactionWheel.getBlockState`. On 1.21 production uses Mojang names, so `BlockEntity`'s methods implement them. On Forge 1.20.1 those methods have SRG names in production, so implementers would throw `AbstractMethodError`.
+`BlockEntityPropeller` and `BlockEntitySubLevelReactionWheel` are implemented by block entities. On 1.21 they declared `getLevel()`/`getBlockPos()`/`getBlockState()` and let `BlockEntity` implement them. That can't work on Forge 1.20.1:
+- In production, `BlockEntity`'s methods have SRG names, so implementers throw `AbstractMethodError`.
+- Declaring SRG-named methods on the interface breaks mods built against Sable. ModDevGradle remaps them back to dev names, where they collide.
 
-These interfaces now provide the methods as defaults that call `BlockEntity` through a cast, and they also answer to the SRG names (`m_58904_`, `m_58899_`, `m_58900_`). That second part is needed because the reobfuscator can rename calls made through the interface. Implementers need no changes.
+**Breaking API change:** these are now `getPropellerLevel()`, `getPropellerPos()` and `getReactionWheelState()`, defaults that call `BlockEntity` through a cast. Block-entity implementers need no changes. Code that called `getLevel()`/`getBlockPos()`/`getBlockState()` through the interface type must switch to the new names.
 
-New API interfaces must not declare abstract methods that share a name with a Minecraft method.
+**Rule:** Sable interfaces must never declare a method with the same name and descriptor as a Minecraft method. `checkMixinsProduction` catches unimplemented interfaces that mixins add. Consumer breakage needs a test build: a ModDevGradle mod depending on the published jar that runs `reobfJar`.
 
 ## Known issues
 

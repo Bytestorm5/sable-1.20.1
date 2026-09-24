@@ -8,7 +8,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import org.jetbrains.annotations.ApiStatus;
 import org.joml.Vector3d;
 
 import net.minecraft.util.Mth;
@@ -45,8 +44,8 @@ public interface BlockEntityPropeller {
     }
 
     default double getCurrentAirPressure() {
-        final Level level = this.getLevel();
-        return DimensionPhysicsData.getAirPressure(level, Sable.HELPER.projectOutOfSubLevel(level, JOMLConversion.toJOML(this.getBlockPos().getCenter())));
+        final Level level = this.getPropellerLevel();
+        return DimensionPhysicsData.getAirPressure(level, Sable.HELPER.projectOutOfSubLevel(level, JOMLConversion.toJOML(this.getPropellerPos().getCenter())));
     }
 
     default double getAirflowScaling() {
@@ -56,9 +55,9 @@ public interface BlockEntityPropeller {
             return 1.0;
         }
 
-        final Level level = this.getLevel();
-        final Vector3d pos = JOMLConversion.toJOML(this.getBlockPos().getCenter());
-        final SubLevel subLevel = Sable.HELPER.getContaining(level, this.getBlockPos());
+        final Level level = this.getPropellerLevel();
+        final Vector3d pos = JOMLConversion.toJOML(this.getPropellerPos().getCenter());
+        final SubLevel subLevel = Sable.HELPER.getContaining(level, this.getPropellerPos());
 
         if (subLevel == null) {
             return 1.0;
@@ -73,43 +72,22 @@ public interface BlockEntityPropeller {
     /**
      * @return the level of this propeller's block entity
      * <p>
-     * A default delegating to {@link BlockEntity} rather than an abstract method: on Forge 1.20.1 {@code BlockEntity}'s
-     * method has its SRG name in production, so it would not implement this interface method and every implementer
-     * would throw {@link AbstractMethodError}. Implementers that aren't block entities must override it.
+     * Deliberately not named like the {@link BlockEntity} method: on Forge 1.20.1 a Sable interface method that shares a
+     * name with a Minecraft method is either left unimplemented in production ({@link AbstractMethodError}) or clashes
+     * when mods built against Sable remap it. Non-block-entity implementers must override it.
      */
-    default Level getLevel() {
+    default Level getPropellerLevel() {
         return ((BlockEntity) this).getLevel();
     }
 
     /**
      * @return the position of this propeller's block entity
      * <p>
-     * A default delegating to {@link BlockEntity} rather than an abstract method: on Forge 1.20.1 {@code BlockEntity}'s
-     * method has its SRG name in production, so it would not implement this interface method and every implementer
-     * would throw {@link AbstractMethodError}. Implementers that aren't block entities must override it.
+     * Deliberately not named like the {@link BlockEntity} method: on Forge 1.20.1 a Sable interface method that shares a
+     * name with a Minecraft method is either left unimplemented in production ({@link AbstractMethodError}) or clashes
+     * when mods built against Sable remap it. Non-block-entity implementers must override it.
      */
-    default BlockPos getBlockPos() {
+    default BlockPos getPropellerPos() {
         return ((BlockEntity) this).getBlockPos();
     }
-
-    /**
-     * Production (SRG) name of {@link #getLevel()}. The reobfuscator may rename calls to {@code getLevel()} made through this
-     * interface to the name of the {@link BlockEntity} method it matches, in Sable or in mods built against it, so
-     * the interface answers to both names.
-     */
-    @ApiStatus.Internal
-    default Level m_58904_() {
-        return this.getLevel();
-    }
-
-    /**
-     * Production (SRG) name of {@link #getBlockPos()}. The reobfuscator may rename calls to {@code getBlockPos()} made through this
-     * interface to the name of the {@link BlockEntity} method it matches, in Sable or in mods built against it, so
-     * the interface answers to both names.
-     */
-    @ApiStatus.Internal
-    default BlockPos m_58899_() {
-        return this.getBlockPos();
-    }
 }
-

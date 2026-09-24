@@ -30,7 +30,7 @@ public interface BlockEntitySubLevelPropellerActor extends BlockEntitySubLevelAc
         final BlockEntityPropeller prop = this. getPropeller();
         final Vec3 thrust = thrustDirection.scale(prop.getScaledThrust() * timeStep);
 
-        THRUST_POSITION.set(JOMLConversion.atCenterOf(prop.getBlockPos()));
+        THRUST_POSITION.set(JOMLConversion.atCenterOf(prop.getPropellerPos()));
         THRUST_VECTOR.set(thrust.x, thrust.y, thrust.z);
 
         final QueuedForceGroup forceGroup = subLevel.getOrCreateQueuedForceGroup(ForceGroups.PROPULSION.get());
