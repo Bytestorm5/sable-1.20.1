@@ -90,7 +90,8 @@ public final class SableClientConfig {
 
         if (notify) {
             if (reloadShaders) {
-                VeilRenderSystem.renderer().getVanillaShaderCompiler().reload(((GameRendererAccessor) Minecraft.getInstance().gameRenderer).getShaders().values());
+                // Forge fires config events on its file watcher thread, and recompiling shaders needs the GL context
+                Minecraft.getInstance().execute(() -> VeilRenderSystem.renderer().getVanillaShaderCompiler().reload(((GameRendererAccessor) Minecraft.getInstance().gameRenderer).getShaders().values()));
             }
 
             if (reloadChunks) {
