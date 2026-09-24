@@ -17,7 +17,7 @@ import java.util.List;
 @Mixin(value = SuperGlueEntity.class, remap = false)
 public class SuperGlueEntityMixin {
 
-    @Redirect(method = "collectCropped", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;getEntitiesOfClass(Ljava/lang/Class;Lnet/minecraft/world/phys/AABB;)Ljava/util/List;"))
+    @Redirect(method = "collectCropped", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;getEntitiesOfClass(Ljava/lang/Class;Lnet/minecraft/world/phys/AABB;)Ljava/util/List;", remap = true))
     private static List sable$collectGlueEntities(final Level instance, final Class aClass, final AABB aabb) {
         if (((LevelAccessor) instance).invokeGetEntities() instanceof final SubLevelInclusiveLevelEntityGetter<Entity> getter) {
             final List<Entity> list = Lists.newArrayList();

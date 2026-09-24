@@ -60,7 +60,13 @@ The mechanical rewrites are scripted, so upstream changes can be ported the same
   - `@Shadow` / `@Accessor` / `@Invoker` members
   - Mixin 0.8.5 limits, such as no private methods in interface mixins
 
-  It currently reports 559 injectors and no problems.
+  It currently reports 561 injectors and no problems.
+- `./gradlew :forge:checkMixinsProduction -PforgeClientInstall=<dir>` runs the same checks against what production loads:
+  - the reobfuscated jar, with every name resolved through its refmap as Mixin does at runtime
+  - SRG-named Minecraft (from a Forge client install: `java -jar forge-…-installer.jar --installClient <dir>`)
+  - the original SRG mod jars
+
+  It catches references the refmap doesn't cover. The common case is a `remap = false` injector whose target is a mod class's override of a Minecraft method (e.g. Create's `AbstractContraptionEntity.tick`, which is `m_8119_` in production). Those work in dev and crash in production. Run it before a release. It currently reports 561 injectors and no problems.
 
 Some mixins targeted 1.21-only classes: `Leashable`, `PathfindingContext`, the `TestCommand` changes, the reach attributes and the `NetherPortalBlock` rework. Those mixins were dropped, and the mixins in the same packages that target the 1.20.1 classes cover their behavior.
 
@@ -80,7 +86,7 @@ Some mixins targeted 1.21-only classes: `Leashable`, `PathfindingContext`, the `
 
 ## Verification
 
-- Both modules compile without errors, and `checkMixins` is clean.
+- Both modules compile without errors, and `checkMixins` and `checkMixinsProduction` are clean.
 - GameTest server: all required tests pass. The optional gravity test is off by about one tick, which matches its upstream `FIXME`.
 - Dev dedicated server: assembling a sub-level, saving and reloading work.
 - Dev client (software GL): sub-levels render, and a spinning sub-level falls and lands on another one.

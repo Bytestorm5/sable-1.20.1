@@ -94,7 +94,8 @@ public abstract class AbstractContraptionEntityMixin extends Entity implements K
         original.call(instance, pos.x, pos.y, pos.z);
     }
 
-    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Ljava/util/Map;entrySet()Ljava/util/Set;"), remap = false)
+    // tick overrides Entity#tick, so it needs remapping even though Create is not a Minecraft class
+    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Ljava/util/Map;entrySet()Ljava/util/Set;", remap = false))
     private void sable$contraptionInitialize(final CallbackInfo ci) {
         if (!this.sable$initialized && this.level() instanceof final ServerLevel serverLevel) {
             this.sable$buildProperties();

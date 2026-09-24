@@ -54,7 +54,7 @@ public class ContraptionColliderMixin {
         return createMatrix;
     }
 
-    @Redirect(method = "collideEntities", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/contraptions/AbstractContraptionEntity;getBoundingBox()Lnet/minecraft/world/phys/AABB;"))
+    @Redirect(method = "collideEntities", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/contraptions/AbstractContraptionEntity;getBoundingBox()Lnet/minecraft/world/phys/AABB;", remap = true))
     private static AABB sable$contraptionBounds(final AbstractContraptionEntity instance, @Share("subLevel") final LocalRef<SubLevel> contraptionSubLevel) {
         final SubLevel subLevel = Sable.HELPER.getContaining(instance);
         contraptionSubLevel.set(subLevel);
@@ -68,7 +68,7 @@ public class ContraptionColliderMixin {
         return instance.getBoundingBox();
     }
 
-    @Redirect(method = "collideEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/AABB;expandTowards(DDD)Lnet/minecraft/world/phys/AABB;"))
+    @Redirect(method = "collideEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/AABB;expandTowards(DDD)Lnet/minecraft/world/phys/AABB;", remap = true))
     private static AABB sable$entityQueryBounds(final AABB instance, final double d, final double e, final double f, @Local(argsOnly = true) final AbstractContraptionEntity contraption, @Share("subLevel") final LocalRef<SubLevel> contraptionSubLevel) {
         final SubLevel subLevel = contraptionSubLevel.get();
 
@@ -81,7 +81,7 @@ public class ContraptionColliderMixin {
         return instance.expandTowards(d, e, f);
     }
 
-    @Redirect(method = "collideEntities", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/contraptions/AbstractContraptionEntity;position()Lnet/minecraft/world/phys/Vec3;"))
+    @Redirect(method = "collideEntities", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/contraptions/AbstractContraptionEntity;position()Lnet/minecraft/world/phys/Vec3;", remap = true))
     private static Vec3 sable$contraptionPosition(final AbstractContraptionEntity instance, @Share("subLevel") final LocalRef<SubLevel> contraptionSubLevel) {
         final SubLevel subLevel = contraptionSubLevel.get();
 

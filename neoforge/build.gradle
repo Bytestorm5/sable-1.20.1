@@ -134,6 +134,7 @@ sourceSets {
 
 dependencies {
     mixinCheckImplementation 'org.ow2.asm:asm-tree:9.7'
+    mixinCheckImplementation 'com.google.code.gson:gson:2.10'
 }
 
 tasks.register('checkMixins', JavaExec) {
@@ -148,4 +149,56 @@ tasks.register('checkMixins', JavaExec) {
 // Forge 1.20.1 only loads mixin configs listed in the jar manifest
 tasks.named('jar', Jar) {
     manifest.attributes('MixinConfigs': "${mod_id}.mixins.json,${mod_id}-neoforge.mixins.json")
+}
+
+// The same audit against what production loads (see MixinChecker): the reobfuscated jar and its refmap, checked
+// against SRG-named Minecraft and the original (SRG) mod jars. Needs a Forge client install for the SRG Minecraft jars:
+//   java -jar forge-1.20.1-<forge_version>-installer.jar --installClient <dir>   (an empty launcher_profiles.json is enough)
+//   ./gradlew :forge:checkMixinsProduction -PforgeClientInstall=<dir>
+tasks.register('checkMixinsProduction', JavaExec) {
+    group = 'verification'
+    description = 'Checks the reobfuscated mixins and refmap against SRG-named Minecraft and mod jars'
+    dependsOn 'reobfJar', 'mixinCheckClasses'
+    def jarFile = tasks.named('reobfJar').flatMap { it.archiveFile }
+    def devClasspath = sourceSets.main.compileClasspath
+    def refmapFile = layout.buildDirectory.file("tmp/checkMixinsProduction/${mod_id}.refmap.json")
+    mainClass = 'MixinChecker'
+    doFirst {
+        if (!project.hasProperty('forgeClientInstall')) {
+            throw new GradleException('Pass -PforgeClientInstall=<dir of a Forge client install>')
+        }
+        def install = file(project.property('forgeClientInstall'))
+        def libraries = new File(install, 'libraries')
+        def srgMinecraft = [
+                "net/minecraftforge/forge/${minecraft_version}-${forge_version}/forge-${minecraft_version}-${forge_version}-client.jar",
+                "net/minecraftforge/forge/${minecraft_version}-${forge_version}/forge-${minecraft_version}-${forge_version}-universal.jar",
+        ].collect { new File(libraries, it) }
+        srgMinecraft += fileTree(new File(libraries, 'net/minecraft/client')).matching { include '**/*-srg.jar' }.files
+        srgMinecraft.each { if (!it.exists()) throw new GradleException("Missing $it") }
+
+        // ModDevGradle only puts dev-remapped copies of mods on the classpath; use the originals from the Gradle cache
+        def modulesCache = new File(gradle.gradleUserHomeDir, 'caches/modules-2/files-2.1')
+        def originals = [:]
+        def libs = []
+        devClasspath.files.each { f ->
+            if (f.path.contains('/transforms/')) {
+                originals[f.name] = null
+            } else if (!f.path.contains('/moddev/') && !f.path.startsWith(rootDir.path)) {
+                libs << f
+            }
+        }
+        def mavenLocalDir = new File(System.getProperty('user.home'), '.m2/repository')
+        [modulesCache, mavenLocalDir].findAll { it.exists() }.each { dir ->
+            fileTree(dir).matching { originals.keySet().each { name -> include "**/$name" } }.files.each { originals[it.name] = it }
+        }
+        originals.each { name, f -> if (f == null) throw new GradleException("No original jar for $name in $modulesCache or $mavenLocalDir") }
+
+        def refmap = refmapFile.get().asFile
+        refmap.parentFile.mkdirs()
+        refmap.bytes = zipTree(jarFile.get().asFile).matching { include "${mod_id}.refmap.json" }.singleFile.bytes
+
+        classpath = files(sourceSets.mixinCheck.runtimeClasspath.files.findAll { !it.path.contains('/moddev/') && !it.path.contains('/transforms/') && !it.path.startsWith(rootDir.path) || it.path.contains('mixinCheck') },
+                jarFile, srgMinecraft, originals.values(), libs)
+        args = ['--refmap', refmap.path] + ["${mod_id}.mixins.json", "${mod_id}-neoforge.mixins.json"].collect { layout.buildDirectory.file("resources/main/$it").get().asFile.path }
+    }
 }

@@ -17,10 +17,11 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(FunnelBlock.class)
 public class FunnelBlockMixin {
 
+    // entityInside overrides Block#entityInside, so it needs remapping even though Create is not a Minecraft class
     @Redirect(method = "entityInside",
             at = @At(value = "INVOKE",
-                    target = "Lnet/createmod/catnip/math/VecHelper;getCenterOf(Lnet/minecraft/core/Vec3i;)Lnet/minecraft/world/phys/Vec3;"),
-            remap = false)
+                    target = "Lnet/createmod/catnip/math/VecHelper;getCenterOf(Lnet/minecraft/core/Vec3i;)Lnet/minecraft/world/phys/Vec3;",
+                    remap = false))
     private Vec3 sable$projectFunnelPos(final Vec3i pos, @Local(argsOnly = true) final Level level) {
         return JOMLConversion.toMojang(Sable.HELPER.projectOutOfSubLevel(level, JOMLConversion.atCenterOf(pos)));
     }

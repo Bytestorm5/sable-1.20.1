@@ -1,3 +1,6 @@
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
@@ -34,6 +37,11 @@ import java.util.regex.Pattern;
  * </ul>
  * Run through the {@code checkMixins} Gradle task of the {@code :forge} project. Mixins whose target class is not on
  * the classpath (optional compat targets) are reported separately and not checked further.
+ * <p>
+ * With {@code --refmap <file>} it checks what production sees instead ({@code checkMixinsProduction}): the reobfuscated
+ * mixin classes against SRG-named Minecraft and mod jars, with every selector and target resolved through the refmap
+ * like Mixin does at runtime. That catches members the refmap doesn't cover, e.g. a {@code remap = false} injector
+ * whose target is a mod class's override of a Minecraft method.
  */
 public final class MixinChecker {
 
@@ -68,6 +76,9 @@ public final class MixinChecker {
     private static final Pattern MEMBER_REF = Pattern.compile("^(?:L([^;]+);)?([^(:]+)(?:(\\(.*)|:(.+))?$");
 
     private final ClassLoader classpath;
+    /** Refmap mappings per mixin class, empty when checking against the development (Mojang) names */
+    private final Map<String, Map<String, String>> refmap = new HashMap<>();
+    private Map<String, String> currentRefs = Map.of();
     private final Map<String, ClassNode> cache = new HashMap<>();
     private final List<String> errors = new ArrayList<>();
     private final List<String> missingTargets = new ArrayList<>();
@@ -79,8 +90,12 @@ public final class MixinChecker {
 
     public static void main(final String[] args) throws IOException {
         final MixinChecker checker = new MixinChecker(MixinChecker.class.getClassLoader());
-        for (final String config : args) {
-            checker.checkConfig(Path.of(config));
+        for (int i = 0; i < args.length; i++) {
+            if (args[i].equals("--refmap")) {
+                checker.loadRefmap(Path.of(args[++i]));
+                continue;
+            }
+            checker.checkConfig(Path.of(args[i]));
         }
 
         System.out.println("Checked " + checker.checkedInjectors + " injectors");
@@ -94,6 +109,28 @@ public final class MixinChecker {
             System.exit(1);
         }
         System.out.println("No problems found");
+    }
+
+    private void loadRefmap(final Path path) throws IOException {
+        final JsonObject mappings = JsonParser.parseString(Files.readString(path)).getAsJsonObject().getAsJsonObject("mappings");
+        for (final Map.Entry<String, JsonElement> mixin : mappings.entrySet()) {
+            final Map<String, String> refs = new HashMap<>();
+            for (final Map.Entry<String, JsonElement> ref : mixin.getValue().getAsJsonObject().entrySet()) {
+                refs.put(ref.getKey(), ref.getValue().getAsString());
+            }
+            this.refmap.put(mixin.getKey(), refs);
+        }
+    }
+
+    /** Resolves a member reference the way Mixin does at runtime: the refmap entry if there is one, else as written */
+    private String remap(final String reference) {
+        return this.currentRefs.getOrDefault(reference, reference);
+    }
+
+    /** The bare member name of a refmap value such as {@code m_1234_(I)V} or {@code f_1234_:I} */
+    private static String memberName(final String reference) {
+        final int end = reference.indexOf('(') >= 0 ? reference.indexOf('(') : reference.indexOf(':');
+        return end >= 0 ? reference.substring(0, end) : reference;
     }
 
     private void checkConfig(final Path config) throws IOException {
@@ -138,6 +175,7 @@ public final class MixinChecker {
             this.errors.add(mixinName + ": no @Mixin annotation");
             return;
         }
+        this.currentRefs = this.refmap.getOrDefault(mixinName, Map.of());
 
         final List<String> targets = new ArrayList<>();
         for (final Object value : list(mixinAnnotation, "value")) {
@@ -210,6 +248,7 @@ public final class MixinChecker {
             if (name == null || name.isEmpty()) {
                 name = decapitalize(method.name.replaceFirst("^(get|set|is)", ""));
             }
+            name = memberName(this.remap(name));
             if (this.findField(target, name, fieldDesc) == null) {
                 this.errors.add(where + ": @Accessor field " + name + " " + fieldDesc + " not found in " + target.name);
             }
@@ -220,6 +259,7 @@ public final class MixinChecker {
             if (name == null || name.isEmpty()) {
                 name = decapitalize(method.name.replaceFirst("^(call|invoke|new|create)", ""));
             }
+            name = memberName(this.remap(name));
             String desc = method.desc;
             if (name.equals("<init>")) {
                 desc = Type.getMethodDescriptor(Type.VOID_TYPE, Type.getArgumentTypes(method.desc));
@@ -240,7 +280,7 @@ public final class MixinChecker {
         }
         // Alternative names for the same method (e.g. dev and production lambda names) are fine as long as one matches
         for (final Object selector : selectors) {
-            targetMethods.addAll(this.selectMethods(target, (String) selector));
+            targetMethods.addAll(this.selectMethods(target, this.remap((String) selector)));
         }
         if (targetMethods.isEmpty()) {
             this.errors.add(where + "." + handler.name + ": @" + kind + " target method " + selectors + " not found in " + target.name);
@@ -320,8 +360,12 @@ public final class MixinChecker {
 
     private int checkAt(final String label, final MethodNode target, final AnnotationNode at, final String injector, final MethodNode handler) {
         final String value = (String) value(at, "value");
-        final String ref = (String) value(at, "target");
-        if (value == null || ref == null || ref.isEmpty()) {
+        final String written = (String) value(at, "target");
+        if (value == null || written == null || written.isEmpty()) {
+            return -1;
+        }
+        final String ref = this.remap(written);
+        if (ref.isEmpty()) {
             return -1;
         }
 
