@@ -7,6 +7,8 @@ import dev.ryanhcode.sable.sublevel.SubLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import org.jetbrains.annotations.ApiStatus;
 import org.joml.Vector3d;
 
 import net.minecraft.util.Mth;
@@ -68,8 +70,46 @@ public interface BlockEntityPropeller {
         return Mth.clamp((airflow + velocity.dot(thrustDirection.x, thrustDirection.y, thrustDirection.z)) / airflow, 0, 1);
     }
 
-    Level getLevel();
+    /**
+     * @return the level of this propeller's block entity
+     * <p>
+     * A default delegating to {@link BlockEntity} rather than an abstract method: on Forge 1.20.1 {@code BlockEntity}'s
+     * method has its SRG name in production, so it would not implement this interface method and every implementer
+     * would throw {@link AbstractMethodError}. Implementers that aren't block entities must override it.
+     */
+    default Level getLevel() {
+        return ((BlockEntity) this).getLevel();
+    }
 
-    BlockPos getBlockPos();
+    /**
+     * @return the position of this propeller's block entity
+     * <p>
+     * A default delegating to {@link BlockEntity} rather than an abstract method: on Forge 1.20.1 {@code BlockEntity}'s
+     * method has its SRG name in production, so it would not implement this interface method and every implementer
+     * would throw {@link AbstractMethodError}. Implementers that aren't block entities must override it.
+     */
+    default BlockPos getBlockPos() {
+        return ((BlockEntity) this).getBlockPos();
+    }
+
+    /**
+     * Production (SRG) name of {@link #getLevel()}. The reobfuscator may rename calls to {@code getLevel()} made through this
+     * interface to the name of the {@link BlockEntity} method it matches, in Sable or in mods built against it, so
+     * the interface answers to both names.
+     */
+    @ApiStatus.Internal
+    default Level m_58904_() {
+        return this.getLevel();
+    }
+
+    /**
+     * Production (SRG) name of {@link #getBlockPos()}. The reobfuscator may rename calls to {@code getBlockPos()} made through this
+     * interface to the name of the {@link BlockEntity} method it matches, in Sable or in mods built against it, so
+     * the interface answers to both names.
+     */
+    @ApiStatus.Internal
+    default BlockPos m_58899_() {
+        return this.getBlockPos();
+    }
 }
 

@@ -79,6 +79,9 @@ public final class MixinChecker {
     /** Refmap mappings per mixin class, empty when checking against the development (Mojang) names */
     private final Map<String, Map<String, String>> refmap = new HashMap<>();
     private Map<String, String> currentRefs = Map.of();
+    /** Methods each mixin adds to its target (name + desc), and every (mixin, target) pair, for the interface check */
+    private final Map<String, java.util.Set<String>> contributed = new HashMap<>();
+    private final List<ClassNode[]> applied = new ArrayList<>();
     private final Map<String, ClassNode> cache = new HashMap<>();
     private final List<String> errors = new ArrayList<>();
     private final List<String> missingTargets = new ArrayList<>();
@@ -98,6 +101,11 @@ public final class MixinChecker {
             checker.checkConfig(Path.of(args[i]));
         }
 
+        if (!checker.refmap.isEmpty()) {
+            for (final ClassNode[] pair : checker.applied) {
+                checker.checkAddedInterfaces(pair[0], pair[1]);
+            }
+        }
         System.out.println("Checked " + checker.checkedInjectors + " injectors");
         if (!checker.missingTargets.isEmpty()) {
             System.out.println("\nMixins whose target class is not on the compile classpath (not checked):");
@@ -192,6 +200,66 @@ public final class MixinChecker {
                 continue;
             }
             this.checkAgainst(mixin, target);
+            this.recordContributions(mixin, target);
+        }
+    }
+
+    /**
+     * Production only: every abstract method of an interface the mixin adds must be implemented by the mixin or by the
+     * target's hierarchy under production names. An interface method named like a Minecraft method (e.g.
+     * {@code getLevel()} "implemented" by {@code BlockEntity}) is only implemented in dev, where both share a name; in
+     * production the class has the SRG name and calls throw {@link AbstractMethodError}.
+     */
+    private void recordContributions(final ClassNode mixin, final ClassNode target) {
+        this.applied.add(new ClassNode[]{mixin, target});
+        final java.util.Set<String> methods = this.contributed.computeIfAbsent(target.name, k -> new java.util.HashSet<>());
+        for (final MethodNode method : mixin.methods) {
+            final boolean generated = annotation(method, ACCESSOR) != null || annotation(method, INVOKER) != null;
+            if (generated || ((method.access & Opcodes.ACC_ABSTRACT) == 0 && annotation(method, SHADOW) == null)) {
+                methods.add(method.name + method.desc);
+            }
+        }
+    }
+
+    /** Whether the class or a superclass (including what mixins add to them) has a concrete method */
+    private boolean implementedInHierarchy(final ClassNode start, final String name, final String desc) {
+        for (ClassNode node = start; node != null; node = node.superName != null ? this.load(node.superName) : null) {
+            if (this.contributed.getOrDefault(node.name, java.util.Set.of()).contains(name + desc)) {
+                return true;
+            }
+            for (final MethodNode method : node.methods) {
+                if (method.name.equals(name) && method.desc.equals(desc) && (method.access & Opcodes.ACC_ABSTRACT) == 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private void checkAddedInterfaces(final ClassNode mixin, final ClassNode target) {
+        if ((target.access & (Opcodes.ACC_INTERFACE | Opcodes.ACC_ABSTRACT)) != 0) {
+            return;
+        }
+        final List<String> interfaces = new ArrayList<>(mixin.interfaces);
+        for (int i = 0; i < interfaces.size(); i++) {
+            final ClassNode itf = this.load(interfaces.get(i));
+            if (itf == null) {
+                continue;
+            }
+            interfaces.addAll(itf.interfaces);
+            for (final MethodNode method : itf.methods) {
+                if ((method.access & Opcodes.ACC_ABSTRACT) == 0 || (method.access & Opcodes.ACC_STATIC) != 0) {
+                    continue;
+                }
+                final boolean inMixin = false; // the mixin's own methods are recorded as contributions to the target
+                final boolean inTarget = this.implementedInHierarchy(target, method.name, method.desc);
+                final boolean asDefault = interfaces.stream().map(this::load).filter(n -> n != null).anyMatch(n -> n.methods.stream()
+                        .anyMatch(m -> m.name.equals(method.name) && m.desc.equals(method.desc) && (m.access & Opcodes.ACC_ABSTRACT) == 0));
+                if (!inMixin && !inTarget && !asDefault) {
+                    this.errors.add(simple(mixin.name) + ": adds " + itf.name + " to " + target.name + ", but nothing implements "
+                            + method.name + method.desc + " in production (AbstractMethodError)");
+                }
+            }
         }
     }
 

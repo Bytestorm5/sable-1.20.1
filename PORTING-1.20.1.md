@@ -66,6 +66,7 @@ The mechanical rewrites are scripted, so upstream changes can be ported the same
   - SRG-named Minecraft (from a Forge client install: `java -jar forge-…-installer.jar --installClient <dir>`)
   - the original SRG mod jars
 
+  It also checks that every interface a mixin adds is fully implemented under production names, catching `AbstractMethodError`s.
   It catches references the refmap doesn't cover. The common case is a `remap = false` injector whose target is a mod class's override of a Minecraft method (e.g. Create's `AbstractContraptionEntity.tick`, which is `m_8119_` in production). Those work in dev and crash in production. Run it before a release. It currently reports 561 injectors and no problems.
 
 Some mixins targeted 1.21-only classes: `Leashable`, `PathfindingContext`, the `TestCommand` changes, the reach attributes and the `NetherPortalBlock` rework. Those mixins were dropped, and the mixins in the same packages that target the 1.20.1 classes cover their behavior.
@@ -93,6 +94,14 @@ Some mixins targeted 1.21-only classes: `Leashable`, `PathfindingContext`, the `
 - Production jar on a stock Forge 1.20.1-47.4.10 server (Sable only):
   - boots and loads the nested Veil and Rapier natives
   - assembles a sub-level and saves
+
+### API interfaces for block entities
+
+Some API interfaces are meant to be implemented by block entities and declare methods that `BlockEntity` already has: `BlockEntityPropeller.getLevel`/`getBlockPos` and `BlockEntitySubLevelReactionWheel.getBlockState`. On 1.21 production uses Mojang names, so `BlockEntity`'s methods implement them. On Forge 1.20.1 those methods have SRG names in production, so implementers would throw `AbstractMethodError`.
+
+These interfaces now provide the methods as defaults that call `BlockEntity` through a cast, and they also answer to the SRG names (`m_58904_`, `m_58899_`, `m_58900_`). That second part is needed because the reobfuscator can rename calls made through the interface. Implementers need no changes.
+
+New API interfaces must not declare abstract methods that share a name with a Minecraft method.
 
 ## Known issues
 
