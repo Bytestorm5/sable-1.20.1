@@ -20,9 +20,7 @@ void flw_shaderLight() {
     if (flw_light(sceneId, vertexLightingPos.xyz, flw_vertexNormal, renderOrigin, light)) {
         flw_fragLight = max(flw_fragLight, light.light);
 
-        if (flw_material.ambientOcclusion) {
-            flw_fragColor.rgb *= light.ao;
-        }
+        flw_fragColor.rgb *= light.ao;
     }
 
     #ifdef FLW_EMBEDDED

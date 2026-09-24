@@ -13,7 +13,7 @@ uniform float _flw_lightingSkyLightScaleUniform;
 uniform mat4 _flw_lightingSceneMatrixUniform;
 #endif
 
-uniform uint _flw_baseVertex;
+uniform uint _flw_vertexOffset;
 
 void main() {
     _flw_unpackMaterialProperties(_flw_packedMaterial.y, flw_material);
@@ -28,5 +28,5 @@ void main() {
     _flw_skyLightScale = _flw_lightingSkyLightScaleUniform;
     #endif
 
-    _flw_main(instance, uint(gl_InstanceID), _flw_baseVertex);
+    _flw_main(instance, uint(gl_InstanceID), _flw_vertexOffset);
 }

@@ -81,9 +81,7 @@ out vec4 flw_vertexLightingPos;
 flat out uvec2 _flw_ids;
 #endif
 
-void _flw_main(in FlwInstance instance, in uint stableInstanceID, in uint baseVertex) {
-    flw_vertexId = gl_VertexID - baseVertex;
-
+void _flw_main(in FlwInstance instance, in uint stableInstanceID, in uint modelID) {
     _flw_layoutVertex();
     flw_instanceVertex(instance);
     flw_materialVertex();
@@ -107,6 +105,6 @@ void _flw_main(in FlwInstance instance, in uint stableInstanceID, in uint baseVe
     gl_Position = flw_viewProjection * flw_vertexPos;
 
     #ifdef _FLW_DEBUG
-    _flw_ids = uvec2(stableInstanceID, baseVertex);
+    _flw_ids = uvec2(stableInstanceID, modelID);
     #endif
 }

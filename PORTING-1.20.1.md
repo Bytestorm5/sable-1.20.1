@@ -67,7 +67,11 @@ Some mixins targeted 1.21-only classes: `Leashable`, `PathfindingContext`, the `
 ### Compatibility
 
 - **Create 6.0.8 (1.20.1)**: ported. The 1.20.1 packet handlers are lambdas, and `FanProcessingType` logic lives in `AirCurrent`. Fluids use Forge `FluidStack`, and capabilities use `LazyOptional`.
-- **Ported, compile-checked only**: Flywheel 1.0.6, Sodium Extras, Oculus, Jade (and Jade Addons), Shoulder Surfing 5.1.1, Exposure, CC: Tweaked, Etched, and the Distant Horizons API.
+- **Flywheel 1.0.5 / Ponder 1.0.91**: Sable builds against the versions bundled in Create 6.0.8, since that's what players run, and accepts Flywheel 1.0.5 and newer.
+  - Sable's Flywheel shader overrides in `assets/flywheel` are rebased onto the 1.0.5 shaders. 1.0.5 has no `flw_vertexId` variable, uses the `_flw_vertexOffset` uniform and has no `ambientOcclusion` material flag.
+  - On Forge, Flywheel resolves `#include`d shaders through a lookup that returns Flywheel's own copy. `ShaderSourceFinderMixin` makes it load Sable's overrides every time. Resource packs can still override both.
+  - Checked in the dev client: Create kinetic blocks render through Flywheel on a moving sub-level.
+- **Ported, compile-checked only**: Sodium Extras, Oculus, Jade (and Jade Addons), Shoulder Surfing 5.1.1, Exposure, CC: Tweaked, Etched, and the Distant Horizons API.
 - **Dropped** (no 1.20.1 build or API): Vista, PMWeather, Sophisticated Backpacks pickup events.
 - Forge 1.20.1 has no `incompatible` dependency type, so the NeoForge build's guards aren't expressed:
   - against a newer sable-companion
@@ -86,7 +90,7 @@ Some mixins targeted 1.21-only classes: `Leashable`, `PathfindingContext`, the `
 
 ## Known issues
 
-- **Veil dev environment**: Veil's `PipelinePoseStackMixin` uses a `shadow$` method. ModDevGradle's dev-time remapper doesn't remap it, so the dev client crashes on start. Production isn't affected. The fix belongs in the Veil repo: call `((PoseStack) (Object) this).translate(...)` instead of the shadow.
+- **Veil dev environment**: Veil builds before `8a396a8` crash the dev client on start. Their `PipelinePoseStackMixin` uses `shadow$` methods, which ModDevGradle's dev remapper skips. Production isn't affected. Build Veil from `veil-1-20-1-migration-aan416` at or after that commit.
 - Without Create, the `create:flywheel` entry in `physics_block_properties/flywheel.json` logs an error on world load. Upstream does the same.
 - These are ported but not runtime-tested yet:
   - Camera roll

@@ -60,6 +60,7 @@
     "compatibility.flywheel.LightStorageAccessor",
     "compatibility.flywheel.MatrixBufferMixin",
     "compatibility.flywheel.RenderDispatcherImplMixin",
+    "compatibility.flywheel.ShaderSourceFinderMixin",
     "compatibility.flywheel.ShaderSourcesMixin",
     "compatibility.flywheel.VisualManagerImplMixin",
     "compatibility.sodiumextras.EmbyToolsMixin",

@@ -10,9 +10,7 @@ void flw_shaderLight() {
     if (flw_light(flw_vertexLightingSceneId, flw_vertexLightingPos.xyz, flw_vertexNormal, renderOrigin, light)) {
         flw_fragLight = max(flw_fragLight, light.light);
 
-        if (flw_material.ambientOcclusion) {
-            flw_fragColor.rgb *= light.ao;
-        }
+        flw_fragColor.rgb *= light.ao;
     }
 
     flw_fragLight.y *= flw_skyLightScale;
