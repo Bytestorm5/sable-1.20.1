@@ -458,6 +458,10 @@ public class SubLevelAssemblyHelper {
 
                 level.onBlockStateChange(block, chunk.getBlockState(block), airState);
                 chunk.setBlockState(block, airState, true);
+                // With isMoving set, the old block's onRemove decides whether its block entity goes. Blocks that
+                // skip super.onRemove while moving (e.g. DiodeBlock) would leave it behind on the air block, where it
+                // ticks and is saved with the chunk. Its data already lives in the sub-level, so drop what's left.
+                chunk.removeBlockEntity(block);
             } catch (final Exception e) {
                 Sable.LOGGER.error("Failed to destroy old block during assembly {}", block, e);
             }
