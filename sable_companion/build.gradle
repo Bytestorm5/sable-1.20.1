@@ -68,3 +68,8 @@ jar {
         attributes('Automatic-Module-Name': 'sablecompanion')
     }
 }
+
+// The unpacked upstream sources already carry a LICENSE, and the common build adds one too
+tasks.named('sourcesJar', Jar) {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
