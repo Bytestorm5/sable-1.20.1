@@ -23,6 +23,7 @@ import net.minecraft.server.level.BlockDestructionProgress;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
@@ -56,6 +57,16 @@ public class LevelRendererMixin {
     @Unique
     private VanillaSubLevelBlockEntityRenderer sable$subLevelBlockEntityRenderer;
 
+    /**
+     * The pose the global block entity loop starts from (the camera rotation). Sub-level block entities are rendered
+     * relative to it instead of undoing the loop's per-entity translation, which is by plot coordinates (~10^7 blocks)
+     * and loses up to a block of precision in float, making large off-screen renderers jitter as the camera moves.
+     */
+    @Unique
+    private final Matrix4f sable$globalBasePose = new Matrix4f();
+    @Unique
+    private final Matrix3f sable$globalBaseNormal = new Matrix3f();
+
     @Inject(method = "<init>", at = @At("TAIL"))
     public void init(final Minecraft minecraft, final EntityRenderDispatcher entityRenderDispatcher, final BlockEntityRenderDispatcher blockEntityRenderDispatcher, final RenderBuffers renderBuffers, final CallbackInfo ci) {
         this.sable$subLevelBlockEntityRenderer = new VanillaSubLevelBlockEntityRenderer(blockEntityRenderDispatcher, renderBuffers, this.destructionProgress);
@@ -71,10 +82,11 @@ public class LevelRendererMixin {
 
         final BlockEntityRenderDispatcherExtension extension = (BlockEntityRenderDispatcherExtension) this.blockEntityRenderDispatcher;
         final Vec3 cameraPosition = camera.getPosition();
-        final BlockPos blockPos = blockEntity.getBlockPos();
 
         poseStack.pushPose();
-        poseStack.translate(-(blockPos.getX() - cameraPosition.x()), -(blockPos.getY() - cameraPosition.y()), -(blockPos.getZ() - cameraPosition.z())); //undo translation
+        // Start from the loop's base pose rather than translating back by -(blockPos - camera), see sable$globalBasePose
+        poseStack.last().pose().set(this.sable$globalBasePose);
+        poseStack.last().normal().set(this.sable$globalBaseNormal);
 
         final Vector3f sableCameraPosition = new Vector3f();
         final SubLevelRenderData subLevelRenderData = subLevel.getRenderData();
@@ -94,6 +106,9 @@ public class LevelRendererMixin {
 
     @Inject(method = "renderLevel", at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/LevelRenderer;globalBlockEntities:Ljava/util/Set;", shift = At.Shift.BEFORE, ordinal = 0))
     public void sable$preRenderBEs(final PoseStack poseStack, final float partialTick, final long finishNanoTime, final boolean renderBlockOutline, final Camera camera, final GameRenderer gameRenderer, final LightTexture lightTexture, final Matrix4f projectionMatrix, final CallbackInfo ci) {
+        this.sable$globalBasePose.set(poseStack.last().pose());
+        this.sable$globalBaseNormal.set(poseStack.last().normal());
+
         final List<ClientSubLevel> subLevels = SubLevelContainer.getContainer(this.level).getAllSubLevels();
         final Vec3 cameraPosition = camera.getPosition();
         SubLevelRenderDispatcher.get().renderBlockEntities(subLevels, this.sable$subLevelBlockEntityRenderer, poseStack.last(), cameraPosition.x, cameraPosition.y, cameraPosition.z, partialTick);
