@@ -105,6 +105,14 @@ Some mixins targeted 1.21-only classes: `Leashable`, `PathfindingContext`, the `
 
 **Rule:** Sable interfaces must never declare a method with the same name and descriptor as a Minecraft method. `checkMixinsProduction` catches unimplemented interfaces that mixins add. Consumer breakage needs a test build: a ModDevGradle mod depending on the published jar that runs `reobfJar`.
 
+### Behaviour change: quadratic aerodynamics
+
+This is a deliberate change from upstream; everything else in this port aims to match upstream behaviour. Sail lift and drag (`BlockSubLevelLiftProvider#sable$contributeLiftAndDrag`) now scale with airspeed squared: all three terms are multiplied by `|v| / aerodynamic_reference_speed`.
+- **Config:** server config `aerodynamic_reference_speed` (default 1.0 m/s) and `quadratic_aerodynamics` (default true). `false` restores the old linear model bit for bit.
+- **Stability cap:** a per-sub-level cap keeps the explicit impulses stable for light, fast bodies (see `AerodynamicScaling`).
+- **Tests:** `AerodynamicsTest` (GameTests) checks bit-identity with the toggle off, exact airspeed scaling, energy sign, and a thrown lone sail.
+- **Pre-existing upstream quirk, unchanged:** the lift term uses `|v − DRAG|`, where `DRAG` is the already-scaled parallel drag impulse, rather than the tangential speed. So v·F can be slightly negative (lift adds a little energy) at some angles, even with the linear model.
+
 ## Known issues
 
 - **Veil dev environment**: Veil builds before `8a396a8` crash the dev client on start. Their `PipelinePoseStackMixin` uses `shadow$` methods, which ModDevGradle's dev remapper skips. Production isn't affected. Build Veil from `veil-1-20-1-migration-aan416` at or after that commit.

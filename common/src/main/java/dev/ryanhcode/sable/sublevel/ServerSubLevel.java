@@ -1,5 +1,6 @@
 package dev.ryanhcode.sable.sublevel;
 
+import dev.ryanhcode.sable.physics.AerodynamicScaling;
 import foundry.veil.api.network.VeilPacketManager;
 import dev.ryanhcode.sable.Sable;
 import dev.ryanhcode.sable.SableConfig;
@@ -314,6 +315,9 @@ public class ServerSubLevel extends SubLevel implements PhysicsPipelineBody {
 
             final List<BlockSubLevelLiftProvider.LiftProviderGroup> groups = trackForces ? BlockSubLevelLiftProvider.groupLiftProviders(liftProviders) : List.of();
 
+            // Per-substep stability cap for quadratic aerodynamics, covering sails on the sub-level and its contraptions
+            AerodynamicScaling.begin(this, liftProviders, contraptions, physicsSystem.getPartialPhysicsTick(), timeStep);
+
             // main sub-level lift & drag
             for (final BlockSubLevelLiftProvider.LiftProviderContext context : liftProviders) {
                 BlockSubLevelLiftProvider.LiftProviderGroup group = null;
@@ -375,6 +379,8 @@ public class ServerSubLevel extends SubLevel implements PhysicsPipelineBody {
                     }
                 }
             }
+
+            AerodynamicScaling.end();
 
             // TODO: what.
             linearVelocity.fma(-1.0 / 2.1 * timeStep, DimensionPhysicsData.getGravity(this.getLevel()));

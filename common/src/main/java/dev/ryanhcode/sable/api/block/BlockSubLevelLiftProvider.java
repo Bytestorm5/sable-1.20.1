@@ -1,6 +1,7 @@
 package dev.ryanhcode.sable.api.block;
 
 import dev.ryanhcode.sable.companion.math.Pose3d;
+import dev.ryanhcode.sable.physics.AerodynamicScaling;
 import dev.ryanhcode.sable.physics.config.dimension_physics.DimensionPhysicsData;
 import dev.ryanhcode.sable.sublevel.ServerSubLevel;
 import dev.ryanhcode.sable.sublevel.SubLevel;
@@ -153,26 +154,32 @@ public interface BlockSubLevelLiftProvider {
         LIFT_VELO.set(linearVelocity).add(angularVelocity.cross(TEMP, TEMP));
         pose.transformNormalInverse(LIFT_VELO);
 
+        // Airspeed factor shared by all three terms (exactly 1 with the linear model), see AerodynamicScaling
+        final double airspeedScale = AerodynamicScaling.scale(LIFT_VELO);
+
         LIFT_FORCE.zero();
 
         if (this.sable$getParallelDragScalar() > 0) {
             // DRAG = NORMAL * (NORMAL dot VELO)
             // FORCE = DRAG * scalars
             final double dragStrength = LIFT_NORMAL.dot(LIFT_VELO) * this.sable$getParallelDragScalar() * pressure * timeStep;
-            final Vector3d parallelDrag = LIFT_NORMAL.mul(dragStrength, DRAG);
+            // DRAG keeps the linear value because the lift term below reads it; only the applied force is scaled
+            LIFT_NORMAL.mul(dragStrength, DRAG);
+            final double scaledDragStrength = dragStrength * airspeedScale;
+            final Vector3d parallelDrag = DRAG.mul(airspeedScale, TEMP);
             LIFT_FORCE.add(parallelDrag);
 
             if (group != null) {
                 group.totalDrag.sub(parallelDrag);
-                group.dragCenter.fma(Math.abs(dragStrength), LIFT_POS);
-                group.totalDragStrength += Math.abs(dragStrength);
+                group.dragCenter.fma(Math.abs(scaledDragStrength), LIFT_POS);
+                group.totalDragStrength += Math.abs(scaledDragStrength);
             }
         }
 
         if (this.sable$getDirectionlessDragScalar() > 0) {
             // TEMP = VELO * scalars
             // FORCE += TEMP
-            final double dragStrength = this.sable$getDirectionlessDragScalar() * pressure * timeStep;
+            final double dragStrength = this.sable$getDirectionlessDragScalar() * pressure * timeStep * airspeedScale;
             final Vector3d directionlessDrag = LIFT_VELO.mul(dragStrength, TEMP);
             LIFT_FORCE.add(directionlessDrag);
 
@@ -187,7 +194,7 @@ public interface BlockSubLevelLiftProvider {
             // TEMP = VELO - DRAG
             // TEMP = NORMAL * |TEMP| * scalars
             // FORCE += TEMP
-            final double liftStrength = LIFT_VELO.sub(DRAG, TEMP).length() * this.sable$getLiftScalar() * pressure * timeStep;
+            final double liftStrength = LIFT_VELO.sub(DRAG, TEMP).length() * this.sable$getLiftScalar() * pressure * timeStep * airspeedScale;
             final Vector3d lift = LIFT_NORMAL.mul(liftStrength, TEMP);
             LIFT_FORCE.add(lift);
 
