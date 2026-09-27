@@ -102,6 +102,11 @@ public interface BlockSubLevelLiftProvider {
     /**
      * {@code parallelDragScalar = k1, liftScalar = k2 }<br>
      * Should be at minimum {@code (-k1 + sqrt(k1^2 + k2^2)) / 2} to prevent exponential velocity gain. <br>
+     * Note: this bound assumes the lift term uses the tangential speed {@code |v - n(n·v)|}. The implementation uses
+     * {@code |LIFT_VELO - DRAG|}, which is effectively the full airspeed {@code |v|} (see the lift term in
+     * {@link #sable$contributeLiftAndDrag}). So with the default scalars {@code v·F} can be slightly negative at some
+     * orientations, and the no-energy-gain guarantee does not strictly hold. That is pre-existing upstream behaviour,
+     * unchanged by the quadratic aerodynamics scaling. <br>
      * @return How effective this lift provider is at producing directionless drag.
      */
     default float sable$getDirectionlessDragScalar() {
@@ -191,6 +196,16 @@ public interface BlockSubLevelLiftProvider {
         }
 
         if (this.sable$getLiftScalar() > 0) {
+            // Known issue, pre-existing upstream behaviour, deliberately left as is pending a decision:
+            // - The lift speed is |LIFT_VELO - DRAG|. DRAG is the parallel-drag impulse (already × k1·p·dt), not the
+            //   normal component n(n·v), so this is effectively the full airspeed |v|, not the tangential speed
+            //   |v - n(n·v)|.
+            // - The k3 lower bound in sable$getDirectionlessDragScalar assumes the tangential speed, so v·F can be
+            //   slightly negative at some orientations: 1718 of 20000 random samples for the default scalars, worst
+            //   -0.0089·|v|²·dt (AerodynamicsTest). The no-energy-gain guarantee does not strictly hold.
+            // - The quadratic aerodynamics scaling doesn't change this (it preserves the sign of v·F).
+            // - Using the tangential speed would restore the guarantee, but it would reduce lift for sails meeting
+            //   the air near face-on.
             // TEMP = VELO - DRAG
             // TEMP = NORMAL * |TEMP| * scalars
             // FORCE += TEMP
